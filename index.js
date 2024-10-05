@@ -992,7 +992,10 @@ app.post('/admin-login', (req, res) => {
   }
 });
 
-// Example of a protected route (only accessible if logged in)
+app.post('/api/insert-data', (req, res) => {
+  const {temperature, water_level, ip_address, hostname} = req.body;
+  
+});
 
 
 
