@@ -46,6 +46,7 @@ testConnection();
 
 // Middleware for parsing JSON
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from the "dist" and "img" directories
 app.use("/dist", express.static(path.join(__dirname, "dist")));
@@ -992,21 +993,83 @@ app.post('/admin-login', (req, res) => {
   }
 });
 
-app.post('/api/insert-data', (req, res) => {
-  const {temperature, water_level, ip_address, hostname} = req.body;
-  
+// POST endpoint to receive sensor data
+app.post('/api/insert_data', async (req, res) => {
+  const { temperature, water_level, ip_address, hostname } = req.body;
+
+  // Check if all required fields are present
+  if (!temperature || !water_level || !ip_address || !hostname) {
+      return res.status(400).send('Missing required POST data');
+  }
+
+  try {
+      // Check if the table for the given hostname exists
+      const tableCheckQuery = `SHOW TABLES LIKE ?`;
+      const [result] = await db.query(tableCheckQuery, [hostname]);
+
+      // If the table doesn't exist, create it
+      if (result.length === 0) {
+          const createTableQuery = `
+              CREATE TABLE \`${hostname}\` (
+                  Num_Id INT(255) NOT NULL AUTO_INCREMENT,
+                  Var_Ip VARCHAR(50) NOT NULL,
+                  Var_Temp VARCHAR(50) NOT NULL,
+                  Var_WLvl VARCHAR(50) NOT NULL,
+                  Date_Dev DATE NOT NULL,
+                  Time_Dev TIME NOT NULL,
+                  PRIMARY KEY (Num_Id)
+              );
+          `;
+          await db.query(createTableQuery);
+          console.log(`Table ${hostname} created successfully`);
+      }
+
+      const insertDataQuery = `
+          INSERT INTO \`${hostname}\` (Var_Ip, Var_Temp, Var_WLvl, Date_Dev, Time_Dev)
+          VALUES (?, ?, ?, CURDATE(), CURTIME())
+      `;
+      await db.query(insertDataQuery, [ip_address, temperature, water_level]);
+      res.send('New record created successfully');
+
+  } catch (err) {
+      console.error('Error:', err);
+      res.status(500).send('Database error');
+  }
 });
 
+// POST endpoint to insert device info
+app.post('/api/save_device_info', async (req, res) => {
+  const { hostname, ip_address } = req.body;
 
+  // Validate input
+  if (!hostname || !ip_address) {
+      return res.status(400).send('Missing required fields: hostname or ip_address');
+  }
 
+  try {
+      // Query to check if the device already exists
+      const checkQuery = `SELECT * FROM device_info WHERE Var_Host = ? AND Var_Ip = ?`;
+      const [result] = await db.query(checkQuery, [hostname, ip_address]);
+
+      // If no record exists, insert the new data
+      if (result.length === 0) {
+          const insertQuery = `INSERT INTO device_info (Var_Host, Var_Ip) VALUES (?, ?)`;
+          await db.query(insertQuery, [hostname, ip_address]);
+          res.send('New record created successfully');
+      } else {
+          res.send('Record already exists');
+      }
+  } catch (err) {
+      console.error('Error querying database:', err);
+      res.status(500).send('Database error');
+  }
+});
 
 
 // Handle index.html
 app.get("/index.html", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
-
-
 // Handle settings.html
 app.get("/settings.html", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "settings.html"));
@@ -1015,7 +1078,7 @@ app.get("/settings.html", (req, res) => {
 app.get("/archive.html", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "archive.html"));
 });
-
+// Handle login.html
 app.get("/login.html", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "login.html"));
 });
