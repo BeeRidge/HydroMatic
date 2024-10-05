@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYDROMATIC</title>
+    <meta name="author" content="David Grzyb">
+    <meta name="description" content="Tailwind Admin Template for managing beds and tracking growth stages.">
+
+    <!-- Tailwind CSS for styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 for alerts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #06641b;
+        }
+
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            color: #15cc15;
+        }
+
+        .nav-item:hover {
+            color: #15cc15;
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 8px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b
+        }
+
+        .text1 {
+            color: #15cc15;
+            /* Green color for "Matic" */
+        }
+
+        .text2 {
+            color: #FFFF;
+            /* Black color for "Hydro" */
+        }
+
+        .text-combined {
+            display: inline-block;
+
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+
+
+
+<body class="bg-c font-family-karla flex bg-gray-300">
+    <div class="w-full flex flex-col h-screen overflow-y-hidden">
+        <!-- Header -->
+        <header class="w-full bg-sidebar py-5 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo and Branding -->
+                <a href="index.html"
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+                <!-- Navigation for Desktop -->
+                <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                    <a href="index.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-folder mr-3"></i>
+                        Archive
+                    </a>
+                    <a href="settings.html" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-cog mr-3"></i>
+                        Settings
+                    </a>
+                    <button id="logout-button" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </nav>
+                <!-- Navigation for Mobile -->
+                <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none"
+                    onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars fa-2x"></i>
+                </button>
+            </div>
+            <!-- Mobile Navigation Menu -->
+            <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
+                <a href="index.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-folder mr-3"></i>
+                    Archive
+                </a>
+                <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                <button id="mobile-logout" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                    Logout
+                </button>
+            </nav>
+        </header>
+        <!-- Body -->
+        <div class="flex-grow overflow-hidden">
+            <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
+                <main class="w-full h-full p-6">
+                    <h1 class="text-4xl text-black pb-6 font-bold">Settings</h1>
+                    <div
+                        class="w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-3 gap-5 overflow-auto">
+                        <div id="account" style="border-color: #15cc15;"
+                            class="w-full bg-white border-4 border-solid rounded-lg shadow-lg p-6 aspect-square">
+                            <h1 class="text-3xl text-black py-8 font-bold uppercase">Account Information</h1>
+                            <h1 class="text-xl text-black py-6 px-6 font-bold uppercase">Phone Number:</h1><br>
+                            <h1 id="Acc_Pnumber" class="text-xl text-black py-6 px-6 font-bold uppercase text-center">
+                            </h1><br>
+                            <h1 class="text-xl text-black py-6 px-6 font-bold uppercase items-center justify-center">
+                                Password: </h1><br>
+                            <div class="text-center">
+                                <input type="password" id="Acc_Password"
+                                    class="w-1/2 text-xl text-black py-6 font-bold text-center" readonly>
+                                <button id="togglePassword" class="px-3 py-2 bg-gray-300 rounded">
+                                    Show
+                                </button>
+                            </div>
+                            <div class="col-span-3 text-xl text-right py-8 px-3">
+                                <button id="accEditBttn"
+                                    class="py-2 px-5 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+                        <div id="device-info" style="border-color: #15cc15;"
+                            class="w-full bg-white border-4 border-black border-solid rounded-lg shadow-lg p-6 aspect-square xl:col-span-2">
+                            <h1 class="text-3xl text-black py-2 font-bold uppercase">Device Information</h1>
+                            <div class="px-6 overflow-x-auto">
+                                <table id="archivedTable" class="w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th
+                                                class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                Name</th>
+                                            <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
+                                            </th>
+                                            <th
+                                                class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                IP Address</th>
+                                            <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
+                                            </th>
+                                            <!-- <th class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                Status
+                                            </th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                                        <!-- Data will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    <!-- AlpineJS for interactivity -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <!-- JavaScript to toggle mobile menu visibility -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Account Information -->
+    <script>
+        document.getElementById('accEditBttn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Update Account Info',
+                html: `
+                    <label>Phone Number</label><br>
+                    <input type="text" id="swal_Acc_Pnumber" class="swal2-input" placeholder="Enter Phone Number"><br>
+                    <label>Password</label><br>
+                    <input type="text" id="swal_Acc_Password" class="swal2-input" placeholder="Enter Password"><br>
+                `,
+                confirmButtonText: 'Update Account',
+                cancelButtonText: 'Cancel',
+                showCancelButton: true,
+                preConfirm: () => {
+                    const Acc_Pnumber = Swal.getPopup().querySelector('#swal_Acc_Pnumber').value;
+                    const Acc_Password = Swal.getPopup().querySelector('#swal_Acc_Password').value;
+
+                    if (!Acc_Pnumber || !Acc_Password) {
+                        Swal.showValidationMessage('Please enter both phone number and password.');
+                        return false;
+                    }
+
+                    return {
+                        Acc_Pnumber,
+                        Acc_Password
+                    };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const { Acc_Pnumber, Acc_Password } = result.value; // Destructure the returned values
+                    const pnum = localStorage.getItem('userPhone');
+                    const pass = localStorage.getItem('userPassword');
+
+                    // Ensure the fields match those expected by the server
+                    fetch('/api/account', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            Acc_Pnumber,  // New phone number
+                            Acc_Password,  // New password
+                            old_Pnum: pnum,  // Old phone number (from localStorage)
+                            old_Pass: pass,  // Old password (from localStorage)
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                console.log('Account updated:', data.message);
+                                // Store new account details in localStorage
+                                localStorage.setItem('userPhone', Acc_Pnumber);
+                                localStorage.setItem('userPassword', Acc_Password);
+                                Swal.fire('Success', 'Account information updated successfully', 'success');
+                                // Update the account info display
+                                load();
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire('Error', 'Something went wrong, please try again.', 'error');
+                        });
+                }
+            });
+        });
+
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('Acc_Password');
+            const toggleButton = document.getElementById('togglePassword');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.textContent = 'Show';
+            }
+        });
+
+        function load() {
+            const pnum = localStorage.getItem('userPhone');
+            const pass = localStorage.getItem('userPassword');
+
+            document.getElementById("Acc_Pnumber").textContent = `${pnum}`;
+            document.getElementById("Acc_Password").value = `${pass}`;
+        }
+
+        load();
+    </script>
+    <!-- Device Information and Connection -->
+    <script>
+        function reload() {
+            // Variable to hold the current row data
+            let currentRowData = {
+                host: '',
+                ip: ''
+            };
+
+            // Fetch archived data and populate the table
+            fetch('/api/device_info')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('tableBody');
+                    tableBody.innerHTML = ''; // Clear any existing rows
+
+                    data.forEach(row => {
+                        const tableRow = `
+                <tr>
+                  <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                  <td class="px-1 py-4 border-b border-gray-200 text-center">
+                    <button class="editName bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300" data-host="${row.Var_Host}" data-ip="${row.Var_Ip}">Edit Host</button>
+                  </td>
+                  <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                  <td class="px-1 py-4 border-b border-gray-200 text-center">
+                    <button class="editIp bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300" data-host="${row.Var_Host}" data-ip="${row.Var_Ip}">Edit IP</button>
+                  </td>
+                </tr>
+              `;
+                        //<td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Status}</td>
+                        tableBody.innerHTML += tableRow;
+                    });
+
+
+                    // Add event listeners to buttons
+                    document.querySelectorAll('.editName').forEach(button => {
+                        button.addEventListener('click', () => {
+                            currentRowData.host = button.getAttribute('data-host');
+                            let oldName = currentRowData.host;
+                            Swal.fire({
+                                title: 'Edit Host',
+                                html: '<p>Note! If you make changes in Hostname make sure to configure your device again so you can monitor your crops.</p>',
+                                input: 'text',
+                                inputValue: oldName,
+                                showCancelButton: true,
+                                confirmButtonText: 'Save',
+                                cancelButtonText: 'Cancel',
+                                inputValidator: (value) => {
+                                    if (!value) {
+                                        return 'You need to input a value!';
+                                    }
+                                }
+                            }).then(result => {
+                                if (result.isConfirmed) {
+                                    const newName = result.value;
+                                    console.log('Updated Host:', newName);
+                                    fetch('/api/edit-name', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            oldName,
+                                            newName,
+                                        })
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.error) {
+                                                console.error('Error:', data.error);
+                                                Swal.fire('Error', data.error, 'error');
+                                            } else {
+                                                console.log(data.message);
+                                                Swal.fire('Success', 'Account information updated successfully', 'success');
+                                                reload();
+                                                // Update the table or handle the response
+                                            }
+                                        })
+                                        .catch(error => console.error('Error:', error));
+                                    Swal.fire('Error', 'Something went wrong, please try again.', 'error');
+                                }
+                            });
+                        });
+                    });
+
+                    document.querySelectorAll('.editIp').forEach(button => {
+                        button.addEventListener('click', () => {
+                            currentRowData.ip = button.getAttribute('data-ip');
+                            currentRowData.host = button.getAttribute('data-host');
+                            let oldip = currentRowData.ip;
+                            let hostname = currentRowData.host;
+
+                            Swal.fire({
+                                title: 'Edit IP',
+                                html: '<p>Note! If you make changes in Ip Address make sure to configure your device again so you can monitor your crops.</p>',
+                                input: 'text',
+                                inputValue: oldip,
+                                showCancelButton: true,
+                                confirmButtonText: 'Save',
+                                cancelButtonText: 'Cancel',
+                                inputValidator: (value) => {
+                                    if (!value) {
+                                        return 'You need to input a value!';
+                                    }
+                                }
+                            }).then(result => {
+                                if (result.isConfirmed) {
+                                    const newip = result.value;
+                                    console.log('Updated IP:', newip);
+                                    console.log('Updated Host:', hostname);
+
+                                    fetch('/api/edit-ip', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            oldip,
+                                            newip,
+                                            hostname,
+                                        })
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.error) {
+                                                console.error('Error:', data.error);
+                                                Swal.fire('Error', data.error, 'error');
+                                            } else {
+                                                console.log(data.message);
+                                                Swal.fire('Success', 'IP address updated successfully', 'success');
+                                                reload();
+                                                // Update the table or handle the response
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            Swal.fire('Error', 'Something went wrong, please try again.', 'error');
+                                        });
+                                }
+                            });
+                        });
+                    });
+
+
+                })
+                .catch(error => console.error('Error fetching archived data:', error));
+        }
+
+        reload();
+    </script>
+    <!-- Function for Log Out -->
+    <script>
+        function isUserAuthenticated() {
+                return !!sessionStorage.getItem('authToken'); // Example check
+                        }
+
+        if (!isUserAuthenticated()) {
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+                }
+
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+    
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+    
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+    
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    
+        // Optional: Prevent navigation back to the protected page
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Redirect to the login page if the user tries to go back
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            }
+        });
+    </script>
+    <!--Toggle mobile menu visibility -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+    <!-- mobile Log out button -->
+    <script>
+        document.getElementById('mobile-logout').addEventListener('click', async () => {
+            try {
+
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+    <!-- Check logged in user -->
+    <script>
+        // Function to check if there's a logged-in account
+        function checkLoginStatus() {
+            // Check sessionStorage for a logged-in user
+            let sessionUser = sessionStorage.getItem('userPhone');
+
+            // Check localStorage for a logged-in user
+            let localUser = localStorage.getItem('userPhone');
+
+            // If user exists in sessionStorage or localStorage, return the user's info
+            if (sessionUser) {
+                console.log('User is logged in via session storage:', sessionUser);
+                return sessionUser;
+            } else if (localUser) {
+                console.log('User is logged in via local storage:', localUser);
+                return localUser;
+            } else {
+                console.log('No user is logged in.');
+                return null;
+            }
+        }
+
+        // Example usage
+        let loggedInUser = checkLoginStatus();
+        if (loggedInUser) {
+            // User is logged in, proceed with logged-in logic
+            console.log('Logged in as:', loggedInUser);
+        } else {
+            // No user is logged in, show Swal alert and then redirect to login
+            Swal.fire({
+                icon: 'warning',
+                title: 'No user logged in',
+                text: 'You will be redirected to the login page.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear all items from local storage and session storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    // Redirect to login page after user clicks "OK"
+                    window.location.href = 'http://localhost:3000/';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

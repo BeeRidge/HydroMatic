@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Edit Landing Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-body {
+            background: #1f272b;
+        }
+
+        .text1 {
+            color: #15cc15;
+        }
+
+        .content-editable {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 150px;
+            background-color: #fff;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .selected {
+            border: 2px solid green;
+        }
+    </style>
+</head>
+
+<body class="bg-body text-black font-family-karla">
+    <header class="bg-body py-4 p-6 sticky top-0 z-40 flex justify-between items-center">
+        <h1 class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase text1 font-bold mb-8">HYDROMATIC CMS</h1>
+        <!-- Logout Button in the Header -->
+        <button id="logout-button" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300">
+            Logout
+        </button>
+    </header>
+    <div class="container mx-auto flex justify-between items-center">
+        <div id="admin-content" class="space-y-6">
+            <!-- Content will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in on page load
+        window.onload = function () {
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                // If no token found, redirect to login page
+                window.location.href = 'admin-login.html'; // Change this to your login page URL
+            } else {
+                fetchAdminContent(); // Fetch content if logged in
+            }
+        };
+
+        let selectedImageUrl = ''; // To store the selected image URL
+
+        async function fetchAdminContent() {
+            try {
+                const response = await fetch('http://localhost:3000/api/admin-content');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                renderAdminContent(data);
+            } catch (error) {
+                console.error('Error fetching content:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to fetch content. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        async function fetchSectionImages(section_id) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/section-images/${section_id}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return await response.json(); // Return the list of images for the section
+            } catch (error) {
+                console.error('Error fetching images:', error);
+                return [];
+            }
+        }
+
+        function renderAdminContent(data) {
+            const adminContentDiv = document.getElementById('admin-content');
+            adminContentDiv.innerHTML = ''; // Clear existing content
+
+            data.forEach(async section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.classList.add('card', 'p-6', 'bg-gray-100', 'rounded-lg');
+
+                // Create a container for editable content
+                const contentContainer = document.createElement('div');
+                contentContainer.classList.add('content-editable');
+                contentContainer.contentEditable = true;
+                contentContainer.innerHTML = section.content || '<p>No content available</p>'; // Fallback
+
+                // Fetch the images for the current section
+                const images = await fetchSectionImages(section.section_id);
+
+                // Create a container for the image gallery
+                const imageGallery = document.createElement('div');
+                imageGallery.classList.add('grid', 'grid-cols-3', 'gap-4', 'my-4');
+
+                // Create image previews and make them selectable
+                images.forEach(image => {
+                    const imgElem = document.createElement('img');
+                    imgElem.src = image.url; // Set the image URL
+                    imgElem.classList.add('image-preview');
+                    imgElem.alt = image.filename;
+
+                    // Add click event to select the image
+                    imgElem.addEventListener('click', () => {
+                        document.querySelectorAll('.image-preview').forEach(img => img.classList.remove('selected'));
+                        imgElem.classList.add('selected');
+                        selectedImageUrl = image.url; // Set the selected image URL
+                    });
+
+                    imageGallery.appendChild(imgElem);
+                });
+
+                // Create an image upload input
+                const imageUploadInput = document.createElement('input');
+                imageUploadInput.type = 'file';
+                imageUploadInput.accept = 'image/*';
+                imageUploadInput.classList.add('mt-2');
+
+                // Add event listener for image upload
+                imageUploadInput.addEventListener('change', async (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        formData.append('oldImageUrl', selectedImageUrl); // Pass the selected image URL for replacement
+
+                        try {
+                            const uploadResponse = await fetch('http://localhost:3000/api/upload-image', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            if (!uploadResponse.ok) {
+                                throw new Error('Image upload failed');
+                            }
+                            const uploadData = await uploadResponse.json();
+
+                            // Update the selected image preview
+                            const selectedImgElem = Array.from(document.querySelectorAll('.image-preview')).find(img => img.src === selectedImageUrl);
+                            if (selectedImgElem) {
+                                selectedImgElem.src = uploadData.imageUrl; // Update preview with the new image
+                                selectedImageUrl = uploadData.imageUrl; // Update the selected image URL
+                            }
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Image uploaded successfully!',
+                                text: 'The image has been updated.',
+                                confirmButtonText: 'OK'
+                            });
+                        } catch (error) {
+                            console.error('Error uploading image:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Upload failed',
+                                text: 'There was an error uploading the image. Please try again.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    }
+                });
+
+                sectionDiv.innerHTML = ` 
+                    <div class="section-header">
+                        <h3 class="text-2xl font-semibold text-gray-800">${section.section_name}</h3>
+                    </div>
+                `;
+                sectionDiv.appendChild(contentContainer);
+                sectionDiv.appendChild(imageGallery);
+                sectionDiv.appendChild(imageUploadInput);
+
+                // Add update button
+                const updateButton = document.createElement('button');
+                updateButton.textContent = 'Update';
+                updateButton.classList.add('mt-4', 'bg-green-500', 'text-white', 'px-6', 'py-3', 'rounded-lg', 'hover:bg-green-700', 'transition', 'duration-300');
+                updateButton.onclick = () => {
+                    const content = contentContainer.innerHTML; // Get the updated content
+                    updateContent(section.section_id, content);
+                };
+                sectionDiv.appendChild(updateButton);
+
+                adminContentDiv.appendChild(sectionDiv);
+            });
+        }
+
+        async function updateContent(section_id, content) {
+            if (!section_id) {
+                console.error('Section ID is missing or undefined');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/admin/content/${section_id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text(); // Get the error response text
+                    throw new Error(`Network response was not ok: ${errorText}`);
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Content updated successfully!',
+                    text: 'Your changes have been saved.',
+                    confirmButtonText: 'OK'
+                });
+                fetchAdminContent(); // Refresh content after update
+            } catch (error) {
+                console.error('Error updating content:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update failed',
+                    text: 'There was an error updating the content. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logout-button').addEventListener('click', () => {
+            // Clear the auth token
+            localStorage.removeItem('authToken');
+            // Redirect to login page
+            window.location.href = 'admin-login.html'; // Redirect to your login page
+        });
+    </script>
+</body>
+
+</html>

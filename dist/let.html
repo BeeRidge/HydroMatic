@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashboard - SB Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" />
+    <link href="css/new.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+<style>
+    body {
+    font-family: 'Poppins', sans-serif;
+}
+
+    /* Base styles */
+.hydro {
+    color: black;
+    
+}
+
+.matic {
+    color: #15cc15;
+    
+}
+
+.hydro,
+.matic {
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    font-size: 2em;
+    letter-spacing: -3px;
+    
+}
+
+
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .hydro, .matic {
+        font-size: 1.5em;
+    }
+}
+
+@media (max-width: 900px) {
+    .hydro, .matic {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 600px) {
+    .hydro, .matic {
+        font-size: 1em;
+    }
+}
+
+   .h1 {
+    font-family: 'Poppins', sans-serif;
+   }
+    
+
+    .container {
+       width: 100%;
+        padding: 0 !important;
+    }
+
+    .row {
+     margin: auto;
+        
+       
+        /* Adjust spacing between rows */
+    }
+
+    .col {
+        flex: 1;
+    
+        /* Adjust spacing between columns */
+        display: flex;
+        flex-direction: column;
+        /* Ensure contents stack vertically */
+        align-items: center;
+        /* Center items horizontally */
+        text-align: center;
+        /* Center text within column */
+    }
+
+    .progress {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        background-color: #fff;
+        /* Set background color of the container */
+        border-radius: 50%;
+        /* Ensures the container is round */
+    }
+
+    .progress svg {
+        display: block;
+        /* Ensure SVG is block-level for centering */
+        margin: 0 auto;
+        /* Center SVG horizontally */
+    }
+
+    .progress circle {
+        fill: none;
+        stroke: #ddd;
+        /* Set background color to white */
+        stroke-width: 10;
+    }
+
+    .progress .bar {
+        fill: none;
+        stroke: #4caf50;
+        stroke-width: 10;
+        stroke-linecap: round;
+        stroke-dasharray: 0, 1000;
+        transition: stroke-dasharray 1s ease;
+    }
+
+    .image-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150%; /* Increase the width to make the image larger */
+    height: auto; /* Maintain aspect ratio */
+    z-index: 1; /* Ensure the image appears above the progress bar */
+}
+
+    .progress-label {
+        margin-top: 10px;
+        /* Adjust margin as needed */
+        color: #333;
+        /* Adjust color */
+        font-size: 14px;
+        /* Adjust font size */
+    }
+        
+    .bed-container {
+        display: flex;
+        justify-content: space-around;
+        
+        margin-top: 50px;
+        /* Adjust spacing */
+    }
+
+    .bed-container .progress {
+        width: 100px;
+        /* Adjust width of each progress bar */
+        height: 100px;
+        /* Adjust height of each progress bar */
+        margin: 0 10px;
+        /* Adjust spacing between progress bars */
+    }
+
+    .card {
+   
+    width: 100%;
+    max-width: 100%; /* Ensure full width on small screens */
+    
+    border-radius: 25px;
+        
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 20px; /* Add margin for spacing between cards */
+}
+
+.container-fluid {
+    padding: 0 15px; /* Adjust padding as needed */
+    margin: 0; /* Ensure no margin to avoid extra spacing */
+}
+
+
+
+.card-content {
+    display: flex;
+    flex-direction: row; /* Horizontally align items by default */
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.card-content .item {
+    width: 100%; /* Make each item take the full width */
+    margin-bottom: 20px; /* Space between items */
+    max-width: 290px; /* Set a maximum width if needed */
+}
+
+.card-content .item:last-child {
+    margin-bottom: 0; /* Remove bottom margin for the last item */
+}
+
+
+.card-content .item h3 {
+    font-size: 1.2em;
+    word-wrap: break-word; /* Ensure text wraps if necessary */
+}
+
+
+@media (max-width: 900px) {
+    .card-content {
+        flex-direction: column; /* Stack items vertically on smaller screens */
+    }
+
+    .larger-card,.card h1 {
+        font-size: 1.5rem; /* Smaller size for small screens */
+    }
+
+    .card h2 {
+        font-size: 1.25rem; /* Smaller size for small screens */
+    }
+
+    .card {
+        margin-bottom: 20px; /* Space between stacked cards */
+        max-width: 100%; /* Ensure cards use full width on small screens */
+    }
+}
+
+/* Adjust for larger screens */
+@media (min-width: 1200px) {
+    .card h1 {
+        font-size: 2.5rem; /* Larger size for wider screens */
+    }
+
+    .card h2 {
+        font-size: 2rem; /* Larger size for wider screens */
+    }
+}
+
+/* Adjust for medium screens */
+
+
+/* Adjust for smaller screens */
+
+
+/* Further reduce for very small screens */
+@media (max-width: 576px) {
+    .card h1 {
+        font-size: 1.25rem; /* Further reduced size */
+    }
+
+    .card h2 {
+        font-size: 1rem; /* Further reduced size */
+    }
+
+    .card-content {
+        flex-direction: column; /* Stack the items vertically on small screens */
+        text-align: center; /* Ensure centered text on small screens */
+    }
+
+    .card-content .item {
+        margin: 10px 0; /* Adjust margin for stacked layout */
+        max-width: 100%; /* Ensure full width on small screens */
+    }
+}
+
+/* Adjust for larger cards */
+.larger-card {
+    max-width: 100%; /* Ensure full width on small screens */
+    height: auto; /* Let the height adjust based on content */
+    padding: 20px; /* Adjust padding inside the card */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    font-size: 1.5rem; /* Increase text size if needed */
+}
+
+/* Further adjustments for smaller screens */
+@media (max-width: 768px) {
+    .larger-card {
+        font-size: 1.2rem; /* Adjust text size on smaller screens */
+        padding: 15px; /* Adjust padding */
+    }
+}
+
+    
+
+    .custom-shadow{
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
+    }
+    
+    .larger-card {
+    width: 100%;
+    height: 250px; /* Increase height */
+    padding: 20px; /* Adjust padding inside the card */
+    display: flex;
+   
+    font-size: 1.5rem; /* Increase text size if needed */
+    
+}
+
+
+
+@media (max-width: 768px) {
+    .larger-card {
+        font-size: 1.2rem; /* Adjust text size on smaller screens */
+    }
+}
+
+</style>
+
+ <nav id="slide-menu">
+	<ul>
+    <li class="timeline"><a href="index.php">Overview</a></li>
+    <li class="events"><a href="graphs.php">Graphs</a></li>
+		<li class="calendar">Calendar</li>
+		<li class="sep settings">Dark Mode</li>
+		<li class="logout">Logout</li>
+	</ul>
+</nav>
+<div id="content">
+	<div class="menu-trigger"></div>
+    <div>
+    <h1 class="mt-4" style="font-weight: 700; margin-left: 30px">
+    <span class="hydro">HYDRO</span>
+    <span class="matic">MATIC</span>
+            </h1>
+    </div>
+
+  
+    <div class="container-fluid" style="padding-top: 20px;">
+    <main>
+        
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card mb-4">
+                        <h1 style="margin-top: 30px; margin-left: 30px;">Water Properties</h1>
+                        <div class="card-body rounded-card">
+                            <div class="row">
+                                <!-- Chart 1 -->
+                                <div class="col-md-4" style="margin-bottom: 20px;">
+                                    <div class="card custom-shadow text-white mb-4" style="background-color: #4690B5;">
+                                        <div class="card-body">
+                                            <canvas id="chart1"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+    <div class="col-md-12" style="margin-bottom: 20px;">
+        <div class="card custom-shadow text-white mb-4" style="background-color: #FF6B6B;">
+            <div class="card-body">
+                <!-- New card content -->
+                <h3>New Card Title</h3>
+                <p>New card content goes here...</p>
+            </div>
+        </div>
+    </div>
+</div>
+                                </div>
+                                <!-- Chart 2 -->
+                                <div class="col-md-4" style="margin-bottom: 20px;">
+                                    <div class="card custom-shadow text-white mb-4" style="background-color: #6CDDF6;">
+                                        <div class="card-body">
+                                            <canvas id="chart2"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+    <div class="col-md-12" style="margin-bottom: 20px;">
+        <div class="card custom-shadow text-white mb-4" style="background-color: #FF6B6B;">
+            <div class="card-body">
+                <!-- New card content -->
+                <h3>New Card Title</h3>
+                <p>New card content goes here...</p>
+            </div>
+        </div>
+    </div>
+</div>
+                                </div>
+                                <!-- Chart 3 -->
+                                <div class="col-md-4" style="margin-bottom: 20px;">
+                                    <div class="card custom-shadow text-white mb-4" style="background-color: #f8f9fa;">
+                                        <div class="card-body">
+                                            <canvas id="chart3"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer small text-muted">
+                            Updated yesterday at 11:59 PM
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    </main>
+</div>
+
+
+
+        
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card mb-4">
+                            
+                            <div class="card-body">
+                                <div class="bed-container">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col " >
+                                                <div class="bed1">
+                                                    <div class="progress">
+                                                        <svg viewBox="0 0 100 100">
+                                                            <circle cx="50" cy="50" r="40"></circle>
+                                                            <circle class="bar1 bar" cx="50" cy="50" r="40"></circle>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-label">
+                                                        <span>Progress Label Bed 1</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="bed2">
+                                                    <div class="progress">
+                                                        <svg viewBox="0 0 100 100">
+                                                            <circle cx="50" cy="50" r="40"></circle>
+                                                            <circle class="bar2 bar" cx="50" cy="50" r="40"></circle>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-label">
+                                                        <span>Progress Label Bed 2</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="bed3">
+                                                    <div class="progress">
+                                                        <svg viewBox="0 0 100 100">
+                                                            <circle cx="50" cy="50" r="40"></circle>
+                                                            <circle class="bar3 bar" cx="50" cy="50" r="40"></circle>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-label">
+                                                        <span>Progress Label Bed 3</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="bed4 ">
+                                                    <div class="progress">
+                                                        <svg viewBox="0 0 100 100">
+                                                            <circle cx="50" cy="50" r="40"></circle>
+                                                            <circle class="bar4 bar" cx="50" cy="50" r="40"></circle>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-label">
+                                                        <span>Progress Label Bed 4</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="bed5">
+                                                    <div class="progress">
+                                                        <svg viewBox="0 0 100 100">
+                                                            <circle cx="50" cy="50" r="40"></circle>
+                                                            <circle class="bar5 bar" cx="50" cy="50" r="40"></circle>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-label">
+                                                        <span>Progress Label Bed 5</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="bed6">
+                                                    <div class="progress">
+                                                        <svg viewBox="0 0 100 100">
+                                                            <circle cx="50" cy="50" r="40"></circle>
+                                                            <circle class="bar6 bar" cx="50" cy="50" r="40"></circle>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-label">
+                                                        <span>Progress Label Bed 6</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer small text-muted">
+                                Updated yesterday at 11:59 PM
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="row">
+                        <div class="col-xl-12">
+
+                        <div class="card mb-4">
+                        <div class="card-body">
+                            <table id="datatablesSimple">
+                                <thead>
+                                    <tr>
+                                        <th>Lettuce Variant</th>
+                                        <th>Time</th>
+                                        <th>start date</th>
+                                        <th>current date</th>
+                                        <th>ph level</th>
+                                        <th>moisture</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Position</th>
+                                        <th>Office</th>
+                                        <th>Age</th>
+                                        <th>Start date</th>
+                                        <th>Salary</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Position</th>
+                                        <th>Office</th>
+                                        <th>Age</th>
+                                        <th>Start date</th>
+                                        <th>Salary</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+         
+    
+                    </div>
+
+                        </div>
+                    </div>
+                    
+            
+           
+        
+        </main>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="assets/demo/chart-pie-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
+    <script src="js/datatables-simple-demo.js"></script>
+    <script>
+    
+        function setProgress1(percent) {
+            const circle = document.querySelector('.bar1');
+            setProgress(circle, percent, 'assets/img/lettuce1.png'); // Image for bed 1
+        }
+
+        function setProgress2(percent) {
+            const circle = document.querySelector('.bar2');
+            setProgress(circle, percent, 'assets/img/lettuce2.png'); // Image for bed 2
+        }
+
+        function setProgress3(percent) {
+            const circle = document.querySelector('.bar3');
+            setProgress(circle, percent, 'assets/img/lettuce3.png'); // Image for bed 3
+        }
+
+        function setProgress4(percent) {
+            const circle = document.querySelector('.bar4');
+            setProgress(circle, percent, 'assets/img/lettuce4.png'); // Image for bed 4
+        }
+
+        function setProgress5(percent) {
+            const circle = document.querySelector('.bar5');
+            setProgress(circle, percent, 'assets/img/lettuce5.png'); // Image for bed 5
+        }
+
+        function setProgress6(percent) {
+            const circle = document.querySelector('.bar6');
+            setProgress(circle, percent, 'assets/img/lettuce6.png'); // Image for bed 6
+        }
+
+        function setProgress(circle, percent, imagePath) {
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - percent / 100 * circumference;
+
+            circle.style.strokeDasharray = `${circumference}`;
+            circle.style.strokeDashoffset = offset;
+
+            // Create image element
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = 'Lettuce Image';
+            img.className = 'image-container';
+            img.style.width = '75%'; // Adjust image size
+            img.style.height = 'auto'; // Maintain aspect ratio
+
+            // Clear previous images
+            const progress = circle.closest('.progress');
+            const existingImage = progress.querySelector('.image-container');
+            if (existingImage) {
+                progress.removeChild(existingImage);
+            }
+
+            // Append image to progress container
+            progress.appendChild(img);
+        }
+
+        // Example: Set progress for each bed
+        setProgress1(15);
+        setProgress2(30);
+        setProgress3(45);
+        setProgress4(60);
+        setProgress5(75);
+        setProgress6(90);
+    </script>
+    <script>
+        /*
+  Slidemenu
+*/
+(function() {
+	var $body = document.body
+	, $menu_trigger = $body.getElementsByClassName('menu-trigger')[0];
+
+	if ( typeof $menu_trigger !== 'undefined' ) {
+		$menu_trigger.addEventListener('click', function() {
+			$body.className = ( $body.className == 'menu-active' )? '' : 'menu-active';
+		});
+	}
+
+}).call(this);
+    </script>
+
+<script>
+    // Chart 1 Configuration
+    var ctx1 = document.getElementById('chart1').getContext('2d');
+    var chart1 = new Chart(ctx1, {
+        type: 'line', // or 'bar', 'pie', etc.
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Dataset 1',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Chart 2 Configuration
+    var ctx2 = document.getElementById('chart2').getContext('2d');
+    var chart2 = new Chart(ctx2, {
+        type: 'bar', // or 'line', 'pie', etc.
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Dataset 2',
+                data: [28, 48, 40, 19, 86, 27, 90],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Chart 3 Configuration
+    var ctx3 = document.getElementById('chart3').getContext('2d');
+    var chart3 = new Chart(ctx3, {
+        type: 'pie', // or 'line', 'bar', etc.
+        data: {
+            labels: ['Red', 'Blue', 'Yellow'],
+            datasets: [{
+                label: 'Dataset 3',
+                data: [300, 50, 100],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

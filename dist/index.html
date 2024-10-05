@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>HYDROMATIC</title>
+    <!-- Tailwind CSS for styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 for alerts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #06641b;
+        }
+
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            color: #15cc15;
+        }
+
+        .nav-item:hover {
+            color: #15cc15;
+        }
+
+        .text-g {
+             {
+            color: #15cc15;
+        }
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 2px 4px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b
+        }
+
+        .text1 {
+            color: #15cc15;
+            /* Green color for "Matic" */
+        }
+
+        .text2 {
+            color: #FFFF;
+            /* Black color for "Hydro" */
+        }
+
+        .text-combined {
+            display: inline-block;
+
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class="font-family-karla flex flex-col bg-c h-screen">
+    <div class="w-full flex flex-col h-screen overflow-y-hidden">
+        <!-- Header -->
+        <header class="w-full bg-sidebar py-5 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo and Branding -->
+                <a href="index.html"
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+                <!-- Navigation for Desktop -->
+                <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                    <a href="index.html" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-folder mr-3"></i>
+                        Archive
+                    </a>
+                    <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-cog mr-3"></i>
+                        Settings
+                    </a>
+                    <button id="logout-button" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </nav>
+                <!-- Navigation for Mobile -->
+                <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none"
+                    onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars fa-2x"></i>
+                </button>
+            </div>
+            <!-- Mobile Navigation Menu -->
+            <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
+                <a href="index.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-folder mr-3"></i>
+                    Archive
+                </a>
+                <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                <button id="mobile-logout" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                    Logout
+                </button>
+            </nav>
+        </header>
+        <!-- Body -->
+        <div class="flex-grow overflow-hidden">
+            <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
+                <main class="w-full h-full p-6">
+                    <!-- Container for bed fields -->
+                    <div class="py-4 grid sm:grid-cols-1 md:grid-cols-2">
+                        <h1 class="text-4xl text-black pb-6 font-bold">Dashboard</h1>
+                        <div class="text-right w-full">
+                            <button id="addBedBtn" style="border-color: #15cc15;" class="py-4 px-6 bg-gray-200 border-4 border-dashed rounded-lg shadow-lg text-center aspect-square
+                                 w-full sm:w-full md:w-40 lg:w-40 xl:w-48"><p style="color: #15cc15;">  + Add Bed </p>
+                               
+                            </button>
+                        </div>
+
+                    </div>
+                    <div id="bedsContainer"
+                        class="w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-2
+                            grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 overflow-auto">
+                        <!-- Bed items -->
+                    </div>
+                </main>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="w-full bg-sidebar py-4 px-6 text-white text-center">
+            <p>&copy; 2024 HydroMatic. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- add & display bed -->
+    <script>
+        document.getElementById('addBedBtn').addEventListener('click', function () {
+            Promise.all([
+                fetch('/api/display_bed').then(response => response.json()),
+                fetch('/api/growthtimeline').then(response => response.json()),
+            ])
+                .then(([DeviceData, ImageData]) => {
+                    Swal.fire({
+                        title: 'Device Connection',
+                        html: `
+                            <label>Device Hostname</label><br>
+                            <input type="text" id="Var_Host" class="swal2-input" placeholder="Enter Hostname"><br>
+                            <label>Device IP Address</label><br>
+                            <input type="text" id="Var_Ip" class="swal2-input" placeholder="Enter IP Address"><br>
+                            <label>How many days ago was lettuce planted?</label><br>
+                            <input type="number" id="Last_Day" class="swal2-input" placeholder="Number of days" min="1"><br>
+                            <label>Date of Planting</label><br>
+                            <input type="date" id="Start_Date" class="swal2-input" placeholder="Select Date"><br>
+                            <p>Note!<br> Make sure that the Name and IP are the same as the device Name and IP.</p>
+                        `,
+                        confirmButtonText: 'Add Device',
+                        cancelButtonText: 'Cancel',
+                        showCancelButton: true,
+                        preConfirm: () => {
+                            const Var_Host = Swal.getPopup().querySelector('#Var_Host').value;
+                            const Var_Ip = Swal.getPopup().querySelector('#Var_Ip').value;
+                            const Last_Day = Swal.getPopup().querySelector('#Last_Day').value;
+                            const Start_Date = Swal.getPopup().querySelector('#Start_Date').value;
+
+                            if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
+                                Swal.showValidationMessage('Please enter all fields: Device Hostname, Device IP Address, Days, and Date of Planting.');
+                                return false;
+                            }
+
+                            return fetch('/api/display_bed')
+                                .then(response => response.json())
+                                .then(beds => {
+                                    if (isDeviceDuplicate(Var_Host, Var_Ip, beds)) {
+                                        Swal.showValidationMessage('A device with this hostname or IP address already exists.');
+                                        return false;
+                                    }
+                                    return { Var_Host, Var_Ip, Last_Day, Start_Date };
+                                });
+                        }
+                    })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                const { Var_Host, Var_Ip, Last_Day, Start_Date } = result.value;
+
+                                // Ensure the fields match those expected by the server
+                                fetch('/api/add-bed-database', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        Var_Host: Var_Host,
+                                        Var_Ip: Var_Ip,
+                                        Last_Day: Last_Day,
+                                        Start_Date: Start_Date
+                                    })
+                                })
+
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Failed to insert data in the database.');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(() => {
+                                        // Reload the beds from the database to get the latest data
+                                        loadBedsFromDatabase();
+                                    })
+                                    .catch(error => {
+                                        console.error('Error insertion', error);
+                                        Swal.fire('Error', 'Could not insert data to the database', 'error');
+                                    });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching data:', error);
+                            Swal.fire('Error', 'Could not retrieve data from server', 'error');
+                        });
+                });
+        });
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', dateString);
+                return 'Invalid Date'; // or return a placeholder text
+            }
+
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            const formatter = new Intl.DateTimeFormat('en-US', options);
+            const [{ value: month }, , { value: day }, , { value: year }] = formatter.formatToParts(date);
+            return `${month}-${day}-${year}`;
+        }
+
+        function addBedToUI(deviceInfo, ImageData) {
+            console.log('Adding bed with Start_Date:', deviceInfo.Start_Date); // Debugging line
+
+            const bedsContainer = document.getElementById('bedsContainer');
+            const newBedDiv = document.createElement('div');
+            const bedId = deviceInfo.Var_Host; // Unique ID for each bed
+
+            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto bg-white border-4  border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer';
+            newBedDiv.style = 'border-color: #15cc15; ';
+            newBedDiv.innerHTML = `
+                <h1 class="text-2xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
+                <h1>Ip: ${deviceInfo.Var_Ip}</h1>
+                <p>Days: ${deviceInfo.Last_Day}</p>
+                <p>Date: ${formatDate(deviceInfo.Start_Date)}</p>
+                <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-3/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
+                <div class="grid grid-cols-2">
+                    <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-left">Delete Bed</button>
+                    <button id="editBtn${bedId}" class="mt-4 text-blue-600 hover:text-blue-800 edit-bed-btn text-right">Edit Bed</button>
+                </div>
+            `;
+
+            bedsContainer.appendChild(newBedDiv);
+
+            newBedDiv.querySelector(`#deleteBtn${bedId}`).addEventListener('click', function (event) {
+                event.stopPropagation();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this bed!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        newBedDiv.remove();
+                        Swal.fire('Deleted!', 'The bed has been deleted.', 'success');
+                        removeBedFromLocalStorage(bedId);
+                        // Send data to the server to update the database
+                        fetch('/api/delete-device', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                Var_Host: bedId,
+                            })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to Delete Data in the database.');
+                                }
+                                return response.json();
+                            })
+                    }
+                });
+            });
+
+            newBedDiv.querySelector(`#editBtn${bedId}`).addEventListener('click', function (event) {
+                event.stopPropagation();
+
+                // Ensure Start_Date is in YYYY-MM-DD format
+                const formattedStartDate = new Date(deviceInfo.Start_Date).toISOString().split('T')[0];
+
+                Swal.fire({
+                    title: 'Update Bed Information',
+                    html: `
+                        <label>Bed Name</label><br>
+                        <input type="text" id="Var_Host" class="swal2-input text-center" placeholder="Enter Bed Name" value="${deviceInfo.Var_Host}" readonly><br>
+                        <label>Device IP Address</label><br>
+                        <input type="text" id="Var_Ip" class="swal2-input text-center" placeholder="Enter IP Address" value="${deviceInfo.Var_Ip}" readonly><br>
+                        <label>How many days ago was lettuce planted?</label><br>
+                        <input type="number" id="Last_Day" class="swal2-input" placeholder="Number of days" min="1" value="${deviceInfo.Last_Day}"><br>
+                        <label>Date of Planting</label><br>
+                        <input type="date" id="Start_Date" class="swal2-input" placeholder="Select Date" value="${formattedStartDate}"><br>
+                    `,
+                    confirmButtonText: 'Update Device',
+                    cancelButtonText: 'Cancel',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const Var_Host = Swal.getPopup().querySelector('#Var_Host').value;
+                        const Var_Ip = Swal.getPopup().querySelector('#Var_Ip').value;
+                        const Last_Day = Swal.getPopup().querySelector('#Last_Day').value;
+                        const Start_Date = Swal.getPopup().querySelector('#Start_Date').value;
+
+                        if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
+                            Swal.showValidationMessage('Please enter all fields: Device Hostname, Device IP Address, Days, and Date of Planting.');
+                            return false;
+                        }
+
+                        return { Var_Host, Var_Ip, Last_Day, Start_Date };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const { Var_Host, Var_Ip, Last_Day, Start_Date } = result.value;
+
+                        // Log data for debugging
+                        console.log('Sending data to server:', { Var_Host, Var_Ip, Last_Day, Start_Date });
+
+                        fetch('/api/update-bed', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                Var_Host,
+                                Var_Ip,
+                                Last_Day,
+                                Start_Date,
+                            })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to update data in the database.');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Optionally handle the success message
+                                Swal.fire('Success', 'Bed information updated successfully!', 'success');
+                                localStorage.removeItem('Last_Day');
+                                localStorage.removeItem('Var_Host');
+                                localStorage.removeItem('Var_Ip');
+                                localStorage.removeItem('Start_Date');
+
+                            })
+                            .catch(error => {
+                                Swal.fire('Error', 'There was an error updating the bed information.', 'error');
+                            });
+                    }
+                });
+            });
+
+            newBedDiv.addEventListener('click', function () {
+                localStorage.setItem('Var_Host', JSON.stringify(deviceInfo.Var_Host));
+                localStorage.setItem('Var_Ip', JSON.stringify(deviceInfo.Var_Ip));
+                localStorage.setItem('Start_Date', JSON.stringify(deviceInfo.Start_Date));
+                localStorage.setItem('Last_Day', JSON.stringify(deviceInfo.Last_Day));
+                window.location.href = 'http://localhost:3000/tables.html';
+            });
+        }
+
+        function getImageForDays(days, ImageData) {
+            const imagePhase = ImageData.find(phase => days >= phase.start_day && days <= phase.end_day);
+            const imageUrl = imagePhase?.image_path ? `${window.location.origin}/${imagePhase.image_path}` : 'http://localhost:3000/img/lettuce7.png';
+            console.log('Image URL:', imageUrl); // Debugging line
+            return imageUrl;
+        }
+
+        async function loadBedsFromDatabase() {
+            try {
+                const response = await fetch('/api/display_bed');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch beds from the database.');
+                }
+                const beds = await response.json();
+                console.log('Fetched beds:', beds); // Debugging line
+
+                const bedsContainer = document.getElementById('bedsContainer');
+                bedsContainer.innerHTML = ''; // Clear any existing content
+
+                const imageResponse = await fetch('/api/growthtimeline');
+                if (!imageResponse.ok) {
+                    throw new Error('Failed to fetch growth timeline data.');
+                }
+                const ImageData = await imageResponse.json();
+                console.log('ImageData:', ImageData); // Debugging line
+
+                beds.forEach(bed => {
+                    console.log('Adding bed with Start_Date:', bed.Start_Date); // Debugging line
+                    addBedToUI(bed, ImageData);
+                });
+            } catch (error) {
+                console.error('Error fetching beds:', error);
+            }
+        }
+
+        function isDeviceDuplicate(hostname, ipAddress, beds) {
+            return beds.some(bed => bed.Var_Host === hostname || bed.Var_Ip === ipAddress);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadBedsFromLocalStorage();
+            loadBedsFromDatabase();
+        });
+
+        function loadBedsFromLocalStorage() {
+            const beds = JSON.parse(localStorage.getItem('beds')) || [];
+            fetch('/api/growthtimeline')
+                .then(response => response.json())
+                .then(ImageData => {
+                    beds.forEach(bed => {
+                        addBedToUI(bed, ImageData);
+                    });
+                });
+        }
+
+        function removeBedFromLocalStorage(bedId) {
+            let beds = JSON.parse(localStorage.getItem('beds')) || [];
+            beds = beds.filter(bed => bed.Var_Host !== bedId);
+            localStorage.setItem('beds', JSON.stringify(beds));
+        }
+    </script>
+    <!-- Load Update day -->
+    <script>
+        function updateData() {
+            fetch('/api/display_bed')
+                .then(response => response.json())
+                .then(bedData => {
+                    // Create an array of promises for updating Last_Day
+                    const updatePromises = bedData.map(bed => {
+                        const { Var_Host, Var_Ip, Start_Day, Start_Date } = bed;
+
+                        // Log the values to check the data being destructured
+                        console.log('Data received for bed:', {
+                            Var_Host,
+                            Var_Ip,
+                            Start_Day,
+                            Start_Date
+                        });
+
+                        const data = {
+                            Var_Host: Var_Host,
+                            Var_Ip: Var_Ip,
+                            Start_Day: Start_Day,
+                            Start_Date: Start_Date,
+                            currentDate: new Date().toISOString().split('T')[0] // Use only the date part
+                        };
+
+                        return fetch('/api/update-last-day', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        })
+                            .then(response => response.json())
+                            .then(result => {
+                                console.log('Update Success for ', Var_Host, ':', result);
+                                return result; // Return result to be handled by Promise.all
+                            })
+                            .catch(error => {
+                                console.error('Error updating Last_Day for ', Var_Host, ':', error);
+                                return Promise.reject(error);
+                            });
+                    });
+
+                    // Wait for all updates to complete
+                    return Promise.all(updatePromises);
+                })
+                .then(results => {
+                    console.log('All updates completed:', results);
+                })
+                .catch(error => {
+                    console.error('Error fetching bed data or updating Last_Day:', error);
+                });
+        }
+        updateData();
+    </script>
+    <!-- Check Harvest Notify -->
+    <script>
+        function loadData() {
+            // Get the phone number from localStorage
+            const phone = localStorage.getItem('userPhone');
+
+            if (!phone) {
+                console.error('Phone number not found in localStorage.');
+                return;
+            }
+
+            fetch('/api/notify-harvest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data loaded:', data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Immediately call loadData when the script is loaded
+        loadData();
+    </script>
+    <!-- Notify anomally -->
+    <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function notifyAnomally() {
+            const phone = localStorage.getItem('userPhone');
+
+            try {
+                const response = await fetch('/api/display_bed');
+                const bedData = await response.json();
+
+                // Iterate through bedData sequentially with a delay
+                for (const bed of bedData) {
+                    const { Var_Host, Var_Ip, Start_Date } = bed;
+
+                    const data = {
+                        Var_Host: Var_Host,
+                        Var_Ip: Var_Ip,
+                        Start_Date: Start_Date,
+                        phone: phone,
+                    };
+
+                    // Log the values to check the data being destructured
+                    console.log('Data received for bed:', {data});
+
+                    try {
+                        const result = await fetch('/api/notify-anomaly', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        const resultJson = await result.json();
+                        console.log('Update Success for', Var_Host, ':', resultJson);
+
+                    } catch (error) {
+                        console.error('Error updating Last_Day for', Var_Host, ':', error);
+                    }
+
+                    // Introduce a delay of 1 hour (3600000ms) between each API call
+                    await sleep(3600000);
+                }
+
+                console.log('All updates completed');
+
+            } catch (error) {
+                console.error('Error fetching bed data or updating Last_Day:', error);
+            }
+        }
+
+        // Call the function
+        notifyAnomally();
+    </script>
+    <!-- Toggle mobile menu visibility -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+    <!-- Logout Button -->
+    <script>
+        function isUserAuthenticated() {
+                return !!sessionStorage.getItem('authToken'); // Example check
+                        }
+
+        if (!isUserAuthenticated()) {
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+                }
+
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+    
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+    
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+    
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    
+        // Optional: Prevent navigation back to the protected page
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Redirect to the login page if the user tries to go back
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            }
+        });
+    </script>
+    
+    <!-- mobile Log out button -->
+    <script>
+        document.getElementById('mobile-logout').addEventListener('click', async () => {
+            try {
+
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+    <!-- Check logged in user -->
+    <script>
+        // Function to check if there's a logged-in account
+        function checkLoginStatus() {
+            // Check sessionStorage for a logged-in user
+            let sessionUser = sessionStorage.getItem('userPhone');
+
+            // Check localStorage for a logged-in user
+            let localUser = localStorage.getItem('userPhone');
+
+            // If user exists in sessionStorage or localStorage, return the user's info
+            if (sessionUser) {
+                console.log('User is logged in via session storage:', sessionUser);
+                return sessionUser;
+            } else if (localUser) {
+                console.log('User is logged in via local storage:', localUser);
+                return localUser;
+            } else {
+                console.log('No user is logged in.');
+                return null;
+            }
+        }
+
+        // Example usage
+        let loggedInUser = checkLoginStatus();
+        if (loggedInUser) {
+            // User is logged in, proceed with logged-in logic
+            console.log('Logged in as:', loggedInUser);
+        } else {
+            // No user is logged in, show Swal alert and then redirect to login
+            Swal.fire({
+                icon: 'warning',
+                title: 'No user logged in',
+                text: 'You will be redirected to the login page.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear all items from local storage and session storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    // Redirect to login page after user clicks "OK"
+                    window.location.href = 'http://localhost:3000/';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

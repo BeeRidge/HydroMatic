@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
+</head>
+<style>
+  .bg-custom-gradient {
+    background: linear-gradient(to left, #1f272b, #1f272b, #1a3d1a, #1d641d);
+  }
+  .bg-dark-gray {
+    background-color: #1f272b;
+  }
+  .image-side {
+    background-image: url('img/kett.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 80vh;
+    width: 60%;
+  }
+  .form-container {
+    padding: 1rem;
+    max-width: 400px;
+  }
+  .input-field {
+    padding: .5rem;
+    font-size: 1rem;
+  }
+  .login-button {
+    padding: .5rem .7rem;
+    font-size: 1rem;
+  }
+</style>
+<body class="bg-custom-gradient h-screen flex items-center justify-center">
+  <div class="flex bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-hidden">
+    <div class="image-side w-1/2"></div>
+    <div class="container mx-auto bg-dark-gray w-1/2 flex items-center justify-center">
+      <div class="form-container">
+        <h1 class="text-3xl font-bold text-center text-white mb-6">Admin Login</h1>
+        <form id="adloginForm">
+          <div class="mb-4">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="email">Email</label>
+            <input class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500" id="email" type="email" name="email" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="password">Password</label>
+            <input class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500" id="password" type="password" name="password" required>
+          </div>
+          <button class="bg-green-600 hover:bg-green-700 text-white font-bold rounded login-button focus:outline-none focus:ring focus:ring-green-500 transition duration-200" type="submit">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('adloginForm').addEventListener('submit', async function(e) {
+      e.preventDefault(); // Prevent default form submission
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/admin-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Assuming the response contains a token
+          localStorage.setItem('authToken', data.token); // Save token to localStorage
+
+          // Show success message
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful',
+            text: data.message,
+          }).then(() => {
+            // Redirect to admin-content.html after closing the alert
+            window.location.href = 'admin-content'; // Ensure this points to your actual admin page
+          });
+        } else {
+          const errorData = await response.json();
+          // Show error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: errorData.error,
+          });
+        }
+      } catch (error) {
+        // Handle network errors
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Something went wrong. Please try again later.',
+        });
+      }
+    });
+  </script>
+</body>
+</html>

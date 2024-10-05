@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYDROMATIC</title>
+    <meta name="author" content="David Grzyb">
+    <meta name="description" content="Tailwind Admin Template for managing beds and tracking growth stages.">
+    <!-- Tailwind CSS for styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 for alerts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #06641b;
+        }
+
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            color: #15cc15;
+        }
+
+        .nav-item:hover {
+            color: #15cc15;
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 8px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b
+        }
+
+        .text1 {
+            color: #15cc15;
+            /* Green color for "Matic" */
+        }
+
+        .text2 {
+            color: #FFFF;
+            /* Black color for "Hydro" */
+        }
+
+        .text-combined {
+            display: inline-block;
+
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class=" font-family-karla flex bg-c">
+    <div class="w-full flex flex-col h-screen overflow-y-hidden">
+        <!-- Header -->
+        <header class="w-full bg-sidebar py-5 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo and Branding -->
+                <a href="index.html"
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+                <!-- Navigation for Desktop -->
+                <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                    <a href="index.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="archive.html" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-folder mr-3"></i>
+                        Archive
+                    </a>
+                    <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-cog mr-3"></i>
+                        Settings
+                    </a>
+                    <button id="logout-button" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </nav>
+                <!-- Navigation for Mobile -->
+                <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none"
+                    onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars fa-2x"></i>
+                </button>
+            </div>
+            <!-- Mobile Navigation Menu -->
+            <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
+                <a href="index.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-folder mr-3"></i>
+                    Archive
+                </a>
+                <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                <button id="mobile-logout" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                    Logout
+                </button>
+            </nav>
+        </header>
+        <!-- Body -->
+        <div class="flex-grow overflow-hidden">
+            <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
+                <main class="w-full h-full p-6">
+                    <h1 class="text-4xl text-black pb-6 font-bold">Archive</h1>
+                    <div class="px-6 overflow-x-auto">
+                        <table id="archivedTable" class="w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        Name</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        IP Address</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                                        Date Archived</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        Status</th>
+                                    <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider"></th>
+                                    <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    <!-- AlpineJS -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Toggle mobile menu visibility -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+    <!-- Load table remove and restore -->
+    <script>
+        function reload() {
+            // Fetch archived data and populate the table
+            fetch('/api/archived')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('tableBody');
+                    tableBody.innerHTML = ''; // Clear any existing rows
+
+                    data.forEach((row) => {
+                        const statusClass = row.Status === 'FINISHED' ? 'text-green-500' : 'text-red-500';
+
+                        // Conditionally disable the restore button if the status is FINISHED
+                        const restoreButtonDisabled = row.Status === 'FINISHED' ? 'disabled' : '';
+
+                        // Convert Date_Archived to MM-DD-YYYY format
+                        const archivedDate = new Date(row.Date_Archived);
+                        const formattedDate = `${(archivedDate.getMonth() + 1).toString().padStart(2, '0')}-${archivedDate.getDate().toString().padStart(2, '0')}-${archivedDate.getFullYear()}`;
+
+                        const tableRow = `
+                            <tr>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedDate}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                                <td class="px-2 py-4 border-b border-gray-200 text-right">
+                                    <button id="restoreBtn" class="restore bg-green-500 text-white px-1 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300" data-id="${row.Archive_Id}" ${restoreButtonDisabled}>
+                                        Restore
+                                    </button>
+                                </td>
+                                <td class="px-2 py-4 border-b border-gray-200 text-left">
+                                    <button id="removeBtn" class="remove bg-red-500 text-white px-1 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300" data-id="${row.Archive_Id}">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+
+                        tableBody.innerHTML += tableRow;
+                    });
+
+                    // Add event listeners for remove buttons
+                    document.querySelectorAll('#removeBtn').forEach(button => {
+                        button.addEventListener('click', async (event) => {
+                            const row = event.target.closest('tr');
+                            // Get data from the row
+                            const id = event.target.getAttribute('data-id');
+                            const varHost = row.querySelector('td:nth-child(1)').innerText.toLowerCase(); // Convert to lowercase
+                            const varIp = row.querySelector('td:nth-child(2)').innerText;
+                            const date = row.querySelector('td:nth-child(3)').innerText;
+                            const status = row.querySelector('td:nth-child(4)').innerText;
+
+                            // Show SweetAlert2 confirmation dialog
+                            const result = await Swal.fire({
+                                title: 'Are you sure?',
+                                text: 'This record will be deleted and cannot be recovered.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Confirm',
+                                cancelButtonText: 'Cancel',
+                                customClass: {
+                                    actions: 'space-x-4' // Adds space between confirm and cancel buttons
+                                }
+                            });
+
+
+                            if (result.isConfirmed) {
+                                console.log('Deleting record with:', { id, varHost, varIp, date });
+                                try {
+                                    const response = await fetch('/api/remove', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            id,
+                                            varHost,
+                                            varIp,
+                                            date,
+                                        }),
+                                    });
+
+                                    if (response.ok) {
+                                        // Remove the row from the table
+                                        row.remove();
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'The record has been deleted.',
+                                            'success'
+                                        );
+                                    } else {
+                                        console.error('Failed to remove data:', response.statusText);
+                                        Swal.fire(
+                                            'Error!',
+                                            'There was an error deleting the record.',
+                                            'error'
+                                        );
+                                    }
+                                } catch (error) {
+                                    console.error('Error removing data:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'There was an error deleting the record.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    });
+
+                    // Add event listeners for remove buttons
+                    document.querySelectorAll('#restoreBtn').forEach(button => {
+                        button.addEventListener('click', async (event) => {
+                            const row = event.target.closest('tr');
+                            // Get data from the row
+                            const id = event.target.getAttribute('data-id');
+                            const varHost = row.querySelector('td:nth-child(1)').innerText.toLowerCase(); // Convert to lowercase
+                            const varIp = row.querySelector('td:nth-child(2)').innerText;
+                            const date = row.querySelector('td:nth-child(3)').innerText;
+                            const status = row.querySelector('td:nth-child(4)').innerText;
+
+                            // Show SweetAlert2 confirmation dialog
+                            const result = await Swal.fire({
+                                title: 'Are you sure?',
+                                text: 'Do you want to recover your bed?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Confirm',
+                                cancelButtonText: 'Cancel',
+                                customClass: {
+                                    actions: 'space-x-4' // Adds space between confirm and cancel buttons
+                                }
+                            });
+
+
+                            if (result.isConfirmed) {
+                                console.log('Deleting record with:', { id, varHost, varIp, date });
+                                try {
+                                    const response = await fetch('/api/recover', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            id,
+                                            varHost,
+                                            varIp,
+                                            date,
+                                        }),
+                                    });
+
+                                    if (response.ok) {
+                                        // Remove the row from the table
+                                        row.remove();
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'The record has been recovered.',
+                                            'success'
+                                        );
+                                    } else {
+                                        console.error('Failed to remove data:', response.statusText);
+                                        Swal.fire(
+                                            'Error!',
+                                            'There was an existing bed with the same Name and Ip in the dashboard.',
+                                            'error'
+                                        );
+                                    }
+                                } catch (error) {
+                                    console.error('Error removing data:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'There was an error recovering the record.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(error => console.error('Error fetching archived data:', error));
+        }
+
+        reload();
+    </script>
+    <!-- Log out button -->
+    <script>
+        function isUserAuthenticated() {
+                return !!sessionStorage.getItem('authToken'); // Example check
+                        }
+
+        if (!isUserAuthenticated()) {
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+                }
+
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+    
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+    
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+    
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    
+        // Optional: Prevent navigation back to the protected page
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Redirect to the login page if the user tries to go back
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            }
+        });
+    </script>
+    <!-- mobile Log out button -->
+    <script>
+        document.getElementById('mobile-logout').addEventListener('click', async () => {
+            try {
+
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+    <!-- Check logged in user -->
+    <script>
+        // Function to check if there's a logged-in account
+        function checkLoginStatus() {
+            // Check sessionStorage for a logged-in user
+            let sessionUser = sessionStorage.getItem('userPhone');
+
+            // Check localStorage for a logged-in user
+            let localUser = localStorage.getItem('userPhone');
+
+            // If user exists in sessionStorage or localStorage, return the user's info
+            if (sessionUser) {
+                console.log('User is logged in via session storage:', sessionUser);
+                return sessionUser;
+            } else if (localUser) {
+                console.log('User is logged in via local storage:', localUser);
+                return localUser;
+            } else {
+                console.log('No user is logged in.');
+                return null;
+            }
+        }
+
+        // Example usage
+        let loggedInUser = checkLoginStatus();
+        if (loggedInUser) {
+            // User is logged in, proceed with logged-in logic
+            console.log('Logged in as:', loggedInUser);
+        } else {
+            // No user is logged in, show Swal alert and then redirect to login
+            Swal.fire({
+                icon: 'warning',
+                title: 'No user logged in',
+                text: 'You will be redirected to the login page.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear all items from local storage and session storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    // Redirect to login page after user clicks "OK"
+                    window.location.href = 'http://localhost:3000/';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

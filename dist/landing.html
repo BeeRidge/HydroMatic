@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYDROMATIC</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- FontAwesome CDN -->
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #15cc15;
+        }
+
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            background: #86efac;
+            color: #06641b;
+        }
+
+        .nav-item:hover {
+            background: #86efac;
+            color: #06641b;
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 8px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b;
+        }
+
+        .text1 {
+            color: #15cc15;
+        }
+
+        .text2 {
+            color: #FFFF;
+        }
+
+        .text-combined {
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+
+        .bg-d {
+            background: #15cc15;
+        }
+
+        .border-d {
+            border-color: #15cc15;
+        }
+
+        .zoom-container {
+            overflow: hidden;
+            /* Remove any automatic zooming */
+        }
+
+        .zoom-container img {
+            transition: transform 0.7s ease;
+            /* Ensure the image scales correctly */
+        }
+
+        /* Zoom on hover */
+        .zoom-container:hover img {
+            transform: scale(1.4);
+        }
+
+        .hover-bg-d {
+            background-color: #15cc15;
+            transition: background-color 0.3s ease;
+        }
+
+        .hover-bg-d:hover {
+            background-color: #1f272b;
+        }
+
+        .nav-link {
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #15cc15;
+            background-color: rgba(21, 204, 21, 0.1);
+        }
+
+        .nav-menu {
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-menu.hidden {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .nav-menu.visible {
+            max-height: 500px;
+        }
+
+        .sub-header {
+            background-color: #1f272b;
+            position: relative;
+            z-index: 1111;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .sub-header .left-content p {
+            color: #fff;
+            padding: 8px 0px;
+            font-size: 13px;
+        }
+
+        .sub-header .right-icons {
+            text-align: right;
+            padding: 8px 0px;
+        }
+
+        .sub-header .right-icons ul li {
+            display: inline-block;
+            margin-left: 15px;
+        }
+
+        .sub-header .right-icons ul li a {
+            color: #fff;
+            font-size: 14px;
+            transition: all .3s;
+        }
+
+        .sub-header .right-icons ul li a:hover {
+            color: #15cc15;
+        }
+
+        .sub-header .left-content p em {
+            font-style: normal;
+            color: #15cc15;
+        }
+
+
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        mark {
+            --color1: springgreen;
+            --color2: springgreen;
+            --bg-height: 40%;
+
+            all: unset;
+            background-image: linear-gradient(var(--color1), var(--color2));
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+            background-size: 0 var(--bg-height);
+            animation: highlight 800ms 1 ease-out;
+            animation-fill-mode: forwards;
+            animation-play-state: paused;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @keyframes highlight {
+            to {
+                background-size: 100% var(--bg-height);
+            }
+        }
+
+        /* Ensure the image scales correctly */
+        .img {
+            transition: transform 0.5s ease;
+
+        }
+
+        /* Clean fade and slide-up animation */
+        @keyframes cleanFadeSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-animation {
+            opacity: 0;
+            /* Start invisible */
+            transform: translateY(20px);
+            /* Start with a slight downward shift */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-animation.visible {
+            animation: cleanFadeSlideUp 0.8s ease-out forwards;
+            /* Smooth fade and slide-up animation */
+        }
+
+        /* Staggered animation for each feature item */
+        .scroll-animation:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .scroll-animation:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .scroll-animation:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+
+<body class="font-family-karla">
+
+    <!-- Sub-header Section -->
+    <div class="sub-header bg-gray-800 text-white py-2 shadow-md hidden lg:block">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center">
+                <div class="w-full lg:w-2/3 sm:w-2/3 mb-2 lg:mb-0">
+                    <div class="left-content">
+                        <p class="text-sm italic">Stay updated with our latest news!</p>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/3 sm:w-1/3 text-right">
+                    <div class="right-icons">
+                        <ul class="flex justify-end space-x-4">
+                            <li>
+                                <a href="https://www.facebook.com/"
+                                    class="transition-colors duration-300 hover:text-green-500">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="https://www.behance.net/"
+                                    class="transition-colors duration-300 hover:text-green-500">
+                                    <i class="fab fa-behance"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/"
+                                    class="transition-colors duration-300 hover:text-green-500">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-body py-4 p-6 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href=""
+                class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                <span class="text2">Hydro</span><span class="text1">Matic</span>
+            </a>
+            <!-- Desktop Navigation -->
+            <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
+                <a href="#device-info" class="nav-link text-white hover:text-green-100">Device Info</a>
+                <a href="#steps" class="nav-link text-white hover:text-green-100">Steps</a>
+                <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
+                <button class="nav-link text-white hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
+            </nav>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars fa-2x"></i>
+            </button>
+        </div>
+        <!-- Mobile Navigation Menu -->
+        <nav id="mobile-menu" class="hidden flex flex-col space-y-4 mt-4">
+            <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
+            <a href="#device-info" class="nav-link text-white hover:text-green-100">Device Info</a>
+            <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
+            <a href="#support" class="nav-link text-white hover:text-green-100">Support</a>
+            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
+        </nav>
+    </header>
+   <!-- Modal Structure -->
+<div id="modal" class="fixed z-50 inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6 space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 id="modal-title" class="text-4xl font-bold text-gray-700">Login</h2>
+        <button class="text-gray-500 hover:text-gray-700 transition duration-300 ease-in-out" onclick="closeModal()">✖</button>
+      </div>
+      <!-- Tabs for switching between Login and Sign Up -->
+      <div class="flex justify-center space-x-6 mb-4">
+        <button id="login-tab" class="py-2 px-4 border-b-2 border-blue-600 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
+          onclick="switchToLogin()">Login</button>
+        <button id="signup-tab" class="py-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition duration-300 ease-in-out" onclick="switchToSignUp()">Sign
+          Up</button>
+      </div>
+      <!-- Login Form -->
+      <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+        <div class="flex flex-col space-y-2">
+          <label for="loginPhone" class="text-sm text-gray-700">Phone Number</label>
+          <input id="loginPhone" type="text" placeholder="Phone Number" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="loginPassword" class="text-sm text-gray-700">Password</label>
+          <input id="loginPassword" type="password" placeholder="Password" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            pattern="^[a-zA-Z0-9]{6,}"
+            title="Password must be at least 6 characters long and contain only letters and numbers" required>
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Log In</button>
+      </form>
+  
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
+        <div class="flex flex-col space-y-2">
+          <label for="signupPhone" class="text-sm text-gray-700">Phone Number</label>
+          <input id="signupPhone" type="text" placeholder="Phone Number" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="signupPassword" class="text-sm text-gray-700">Password</label>
+          <input id="signupPassword" type="password" placeholder="Password" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            pattern="^[a-zA-Z0-9]{6,}"
+            title="Password must be at least 6 characters long and contain only letters and numbers" required>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <label for="signupCode" class="text-sm text-gray-700">Code</label>
+          <input id="signupCode" type="text" placeholder="Code" class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            pattern="[0-9]{6}" title="Code must be 6 digits" required>
+        </div>
+        <button id="send" type="button" class=" bg-green-600 hover:bg-green-700 text-white p-3 rounded-md transition duration-300 ease-in-out">Send Code</button>
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Sign Up</button>
+      </form>
+    </div>
+  </div>
+    <section id="Home" class="bg-c w-full h-auto"></section>
+    <section id="Features" class="bg-body"></section>
+    <section id="Device Information" class="bg-c"></section>
+    <section id="Installation Steps" class="bg-body"></section>
+    <section id="About Us" class="bg-c"></section>
+
+    <!-- Footer Section -->
+    <footer class="bg-body custom-shadow text-gray-200 py-8">
+        <div class="container mx-auto px-4">
+            <!-- Footer Content -->
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <!-- Footer Links -->
+
+
+                <!-- Social Media Icons -->
+                <div class="mb-4 md:mb-0">
+                    <ul class="flex space-x-6">
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-linkedin-in"></i></a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="text-center md:text-right">
+                    <p>&copy; 2024 HydroMatic. All rights reserved.</p>
+                    <p>123 Hydroponic Way, Green City, GA 12345</p>
+                    <p>Email: <a href="mailto:info@hydromatic.com" class="hover:text-gray-400">info@hydromatic.com</a>
+                    </p>
+                    <p>Phone: <a href="tel:+1234567890" class="hover:text-gray-400">+1 (234) 567-890</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const headings = document.querySelectorAll('#headings-container h1');
+            let currentIndex = 0;
+
+            function showNextHeading() {
+                if (currentIndex < headings.length) {
+                    headings[currentIndex].classList.remove('hidden');
+                    headings[currentIndex].classList.add('visible');
+                    headings[currentIndex].style.animation = "bounceIn 1s ease-in-out";
+                    if (currentIndex > 0) {
+                        headings[currentIndex - 1].classList.add('hidden');
+                    }
+                    currentIndex++;
+                    setTimeout(showNextHeading, 1500); // Delay between headings
+                }
+            }
+
+            showNextHeading();
+        });
+
+
+    </script>
+    <!-- JavaScript -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                console.log('Fetching content from API...');
+                const response = await fetch('/api/admin-content');
+                if (!response.ok) {
+                    throw new Error("Network response was not ok: ${response.statusText}");
+                }
+
+                const sections = await response.json();
+                console.log('API response:', sections);
+
+                const uniqueSections = {};
+
+                // Map unique sections based on section_name
+                sections.forEach(section => {
+                    if (section.section_name) {
+                        if (!uniqueSections[section.section_name]) {
+                            uniqueSections[section.section_name] = section.content;
+                        } else {
+                            console.warn("Duplicate section_name found in API response: ${section.section_name}");
+                        }
+                    } else {
+                        console.warn('Section name is missing in API response.');
+                    }
+                });
+
+                console.log('Unique sections to insert:', uniqueSections);
+
+                // Insert content into each unique section
+                Object.keys(uniqueSections).forEach(sectionName => {
+                    const sectionElement = document.getElementById(sectionName);
+                    if (sectionElement) {
+                        console.log("Inserting content into section: ${sectionName}");
+
+                        // Check current content
+                        console.log("Current content of section ${sectionName}:, sectionElement.innerHTML");
+
+                        // Insert content if it's empty
+                        if (sectionElement.innerHTML.trim() === '') {
+                            sectionElement.innerHTML = uniqueSections[sectionName];
+                        } else {
+                            console.warn("Section element with ID ${sectionName} already contains content.");
+                        }
+
+                        // Log the updated content
+                        console.log("Updated content of section ${sectionName}:, sectionElement.innerHTML");
+                    } else {
+                        console.warn("No element found with ID ${sectionName}.");
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching or processing data:', error);
+            }
+        });
+    </script>
+
+
+
+    <script>
+        (function (document) {
+            const markers = [...document.querySelectorAll('mark')];
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach((entry) => {
+                    if (entry.intersectionRatio > 0) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.8
+            });
+
+            markers.forEach(mark => {
+                observer.observe(mark);
+            });
+        })(document);
+    </script>
+
+
+
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+
+
+    <script>
+        // Add this script at the bottom of your body or in a separate JS file
+
+        function handleScroll() {
+            const elements = document.querySelectorAll('.scroll-animation');
+            const viewportHeight = window.innerHeight;
+
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+
+                if (elementTop < viewportHeight) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial check in case elements are already in view
+    </script>
+    <!-- Javascript modal for login/signup -->
+    <script>
+        function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function switchToLogin() {
+            document.getElementById('login-tab').classList.add('border-blue-600');
+            document.getElementById('signup-tab').classList.remove('border-green-600');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('modal-title').innerText = 'Login';
+        }
+
+        function switchToSignUp() {
+            document.getElementById('signup-tab').classList.add('border-green-600');
+            document.getElementById('login-tab').classList.remove('border-blue-600');
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('modal-title').innerText = 'Sign Up';
+        }
+    </script>
+    <!-- Signup -->
+    <script>
+        // Send OTP on button click
+        document.getElementById('send').addEventListener('click', async () => {
+            const phone = document.getElementById('signupPhone').value;
+
+            if (!phone) {
+                Swal.fire('Error', 'Please enter your phone number.', 'error');
+                return;
+            }
+
+            // Basic validation for phone number
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exact 11 digits.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone }),
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire('Success', 'OTP sent successfully!', 'success');
+                } else {
+                    Swal.fire('Error', 'Failed to send OTP. ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                Swal.fire('Error', 'Failed to send OTP.', 'error');
+            }
+        });
+
+        // Handle sign-up form submission
+        async function handleSignUp(event) {
+            event.preventDefault();
+
+            const phone = document.getElementById('signupPhone').value;
+            const password = document.getElementById('signupPassword').value;
+            const otp = document.getElementById('signupCode').value;
+
+            // Basic validation
+            if (!phone || !password || !otp) {
+                Swal.fire('Error', 'All fields are required.', 'error');
+                return;
+            }
+
+            if (!/^\d{10,15}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exact 11 digits.', 'error');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9]{6,}$/.test(password)) {
+                Swal.fire('Error', 'Password must be at least 6 characters long and contain only letters and numbers.', 'error');
+                return;
+            }
+
+            if (!/^\d{6}$/.test(otp)) {
+                Swal.fire('Error', 'Code must be exactly 6 digits.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, otp, password }),
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire('Success', 'Account created successfully!', 'success').then(() => {
+                        // Reload the page after account creation
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', 'Failed to create account. ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                Swal.fire('Error', 'Failed to create account.', 'error');
+            }
+        }
+    </script>
+    <!-- Login -->
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+    
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+    
+            // Basic validation
+            if (!phone || !password) {
+                Swal.fire('Error', 'Both phone number and password are required.', 'error');
+                return;
+            }
+    
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exactly 11 digits.', 'error');
+                return;
+            }
+    
+            if (!/^[a-zA-Z0-9]{6,}$/.test(password)) {
+                Swal.fire('Error', 'Password must be at least 6 characters long and contain only letters and numbers.', 'error');
+                return;
+            }
+    
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, password }),
+                });
+    
+                const data = await response.json();
+                console.log('Server response:', data); // Log the response data
+    
+                if (data.success) {
+                    // Save user data to localStorage and sessionStorage
+                    localStorage.setItem('userPhone', phone);
+                    sessionStorage.setItem('authToken', data.token); // Assuming you get a token on success
+    
+                    Swal.fire('Success', 'Login successful!', 'success').then(() => {
+                        // Redirect to the desired page after successful login
+                        window.location.href = 'http://localhost:3000/dist/index.html';
+                    });
+                } else {
+                    Swal.fire('Error', data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error logging in:', error);
+                Swal.fire('Error', 'Login failed. Please try again.', 'error');
+            }
+        }
+    </script>
+    
+</body>
+</html>
