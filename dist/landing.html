@@ -712,6 +712,7 @@
                 if (data.success) {
                     // Save user data to localStorage and sessionStorage
                     localStorage.setItem('userPhone', phone);
+                    localStorage.setItem('userPassword', password);
                     sessionStorage.setItem('authToken', data.token); // Assuming you get a token on success
     
                     Swal.fire('Success', 'Login successful!', 'success').then(() => {
