@@ -791,18 +791,23 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
             // Convert resultData.Date_Dev to Manila time (GMT+8)
             const resultDateDev = convertToManilaTime(resultData.Date_Dev);
+            const resultTimeDev = formatTime(resultData.Time_Dev); // Format to HH:MM
+            const currentManilaTime = getManilaTime(); // Format to HH:MM
+
             console.log('Var_Host:', Var_Host, 'Var_Ip:', Var_Ip, 'Start_Date:', Start_Date, 'phone:', phone);
             console.log('Current Date:', currentDate);
             console.log('DateDev Date:', resultDateDev);
+            console.log('Raw Time_Dev:', resultData.Time_Dev);
+            console.log('Formatted TimeDev Date:', resultTimeDev);
+            console.log('Formatted Current Manila Time:', currentManilaTime);
             console.log('Last Day:', lastDay);
-            
 
             // Check if Var_Temp is present and dates match
-            if (resultData.Var_Temp !== undefined && (resultData.Var_Temp < 20 || resultData.Var_Temp > 26) && currentDate === resultDateDev) {
+            if (resultData.Var_Temp !== undefined && (resultData.Var_Temp < 20 || resultData.Var_Temp > 26) && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
               const cropName = Var_Host;
 
               // Create SMS message for crops experiencing a temperature issue
-              const message = `Caution! Your crop from "${cropName}" is experiencing a temperature issue. Please check your crop. The water temperature cannot be less than 21°C or more than 25°C. ${currentDate}`;
+              const message = `Caution! Your crop from "${cropName}" is experiencing a temperature issue. Please check your crop. The water temperature cannot be less than 21°C or more than 25°C. Date:${currentDate} Time:${resultTimeDev}`;
 
               // Log SMS details for debugging
               console.log('Sending SMS to:', phone);
@@ -820,11 +825,11 @@ app.post("/api/notify-anomaly", async (req, res) => {
             }
 
             // Check if Var_WLvl is present and dates match
-            if (resultData.Var_WLvl !== undefined && resultData.Var_WLvl === 'LOW' && currentDate === resultDateDev) {
+            if (resultData.Var_WLvl !== undefined && resultData.Var_WLvl === 'LOW' && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
               const cropName = Var_Host;
 
               // Create SMS message for crops with low water level
-              const message = `Caution! Please inspect your crop since the water level from your "${cropName}" is lower than usual. ${currentDate}`;
+              const message = `Caution! Please inspect your crop since the water level from your "${cropName}" is lower than usual. Date:${currentDate} Time:${resultTimeDev}`;
 
               // Log SMS details for debugging
               console.log('Sending SMS to:', phone);
@@ -1022,3 +1027,39 @@ function convertToManilaTime(dateString) {
 }
 
 
+function formatTime(timeInput) {
+  // If timeInput is already in HH:MM format, return it as is
+  if (typeof timeInput === 'string' && /^[0-2][0-3]:[0-5][0-9]$/.test(timeInput)) {
+    return timeInput; // Return the time in HH:MM format
+  }
+
+  // Handle if timeInput is a string in HH:mm:ss format
+  if (typeof timeInput === 'string' && /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(timeInput)) {
+    return timeInput.substring(0, 5); // Return only the HH:MM part
+  }
+
+  // Handle if timeInput is a Date object or timestamp
+  const date = new Date(timeInput);
+  if (isNaN(date)) {
+    console.error('Invalid date:', timeInput); // Log invalid date
+    return '00:00'; // Return a default value or handle as necessary
+  }
+
+  const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zero
+  const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes and pad with zero
+  
+  return `${hours}:${minutes}`; // Return time in HH:MM format
+}
+
+
+function getManilaTime() {
+  const manilaOffset = 8 * 60; // Manila is GMT+8
+  const localDate = new Date();
+  const utcDate = new Date(localDate.getTime() + (localDate.getTimezoneOffset() * 60000));
+  const manilaTime = new Date(utcDate.getTime() + (manilaOffset * 60000));
+
+  const hours = String(manilaTime.getHours()).padStart(2, '0'); // Get hours and pad with zero
+  const minutes = String(manilaTime.getMinutes()).padStart(2, '0'); // Get minutes and pad with zero
+
+  return `${hours}:${minutes}`; // Return time in HH:MM format
+}

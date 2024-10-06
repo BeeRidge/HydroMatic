@@ -155,7 +155,7 @@
                         <h1 class="text-4xl text-black pb-6 font-bold">Dashboard</h1>
                         <div class="text-right w-full">
                             <button id="addBedBtn" style="border-color: #15cc15;" class="py-4 px-6 bg-gray-200 border-4 border-dashed rounded-lg shadow-lg text-center aspect-square
-                                 w-full sm:w-full md:w-40 lg:w-40 xl:w-48"><p style="color: #15cc15;">  + Add Bed </p>
+                                 w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold"><p style="color: #171817;">  + Add Bed </p>
                                
                             </button>
                         </div>
@@ -291,12 +291,12 @@
             newBedDiv.innerHTML = `
                 <h1 class="text-2xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
                 <h1>Ip: ${deviceInfo.Var_Ip}</h1>
-                <p>Days: ${deviceInfo.Last_Day}</p>
+                
                 <p>Date: ${formatDate(deviceInfo.Start_Date)}</p>
-                <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-3/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
-                <div class="grid grid-cols-2">
-                    <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-left">Delete Bed</button>
-                    <button id="editBtn${bedId}" class="mt-4 text-blue-600 hover:text-blue-800 edit-bed-btn text-right">Edit Bed</button>
+                <img id="possibleImage${deviceInfo.Last_Day}" class="w-3/5 sm:w-3/5 md:w-4/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
+                <div class="text-right">
+                    <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Delete Bed</button>
+                    
                 </div>
             `;
 
@@ -336,7 +336,7 @@
                 });
             });
 
-            newBedDiv.querySelector(`#editBtn${bedId}`).addEventListener('click', function (event) {
+            /* newBedDiv.querySelector(`#editBtn${bedId}`).addEventListener('click', function (event) {
                 event.stopPropagation();
 
                 // Ensure Start_Date is in YYYY-MM-DD format
@@ -409,7 +409,7 @@
                             });
                     }
                 });
-            });
+            }); */
 
             newBedDiv.addEventListener('click', function () {
                 localStorage.setItem('Var_Host', JSON.stringify(deviceInfo.Var_Host));
@@ -676,7 +676,6 @@
             }
         });
     </script>
-    
     <!-- mobile Log out button -->
     <script>
         document.getElementById('mobile-logout').addEventListener('click', async () => {
