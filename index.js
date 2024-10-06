@@ -43,10 +43,8 @@ const testConnection = async () => {
 };
 testConnection();
 
-
 // Middleware for parsing JSON
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from the "dist" and "img" directories
 app.use("/dist", express.static(path.join(__dirname, "dist")));
@@ -93,7 +91,6 @@ app.post("/api/send-otp", async (req, res) => {
     res.status(500).json({ error: "Failed to send OTP" });
   }
 });
-
 // API to verify OTP and create an account if OTP is valid
 app.post("/api/verify-otp", async (req, res) => {
   const { phone, otp, password } = req.body;
@@ -123,7 +120,6 @@ app.post("/api/verify-otp", async (req, res) => {
     res.status(400).json({ error: "Invalid OTP" });
   }
 });
-
 // Login API
 app.post('/api/login', async (req, res) => {
   const { phone, password } = req.body;
@@ -145,7 +141,6 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 // Data for displaying the image and description of growth
 app.get("/api/growthtimeline", async (req, res) => {
   try {
@@ -156,7 +151,6 @@ app.get("/api/growthtimeline", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // Get all the data from table device_info
 app.get("/api/device_info", async (req, res) => {
   try {
@@ -171,7 +165,6 @@ app.get("/api/device_info", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // Get all the data from table display_bed
 app.get("/api/display_bed", async (req, res) => {
   try {
@@ -186,7 +179,6 @@ app.get("/api/display_bed", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // Get specific the data from table display_bed
 app.post("/api/display_table", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
@@ -206,7 +198,6 @@ app.post("/api/display_table", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // Get the data from specific table Limit to 1
 app.post("/api/send-Data", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
@@ -224,7 +215,6 @@ app.post("/api/send-Data", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // Displaying data logs on the table
 app.post("/api/DataLogs", async (req, res) => {
   const { Var_Host, Var_Ip, Start_Date } = req.body;
@@ -249,7 +239,6 @@ app.post("/api/DataLogs", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // Creating bed display
 app.post("/api/add-bed-database", async (req, res) => {
   console.log("Request received for /api/add-bed-database");
@@ -301,7 +290,6 @@ app.post("/api/add-bed-database", async (req, res) => {
     return res.status(500).json({ error: "Error inserting data into database" });
   }
 });
-
 // POST endpoint to remove a bed
 app.post("/api/delete-device", async (req, res) => {
   const { Var_Host } = req.body;
@@ -345,7 +333,6 @@ app.post("/api/delete-device", async (req, res) => {
     res.status(500).json({ message: "Failed to delete the bed from the database." });
   }
 });
-
 // Endpoint to update the Last_Day and Last_Update_Date
 app.post("/api/update-last-day", async (req, res) => {
   const { Var_Host, Var_Ip, Start_Day, Start_Date, currentDate } = req.body;
@@ -378,7 +365,6 @@ app.post("/api/update-last-day", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
-
 // API for Dates
 app.post("/api/dates", async (req, res) => {
   console.log("Request body:", req.body);
@@ -393,7 +379,6 @@ app.post("/api/dates", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-
 // API route for growth stages
 app.get("/api/growth-stages", async (req, res) => {
   try {
@@ -413,7 +398,6 @@ app.get("/api/growth-stages", async (req, res) => {
     res.status(500).json({ error: "Error fetching growth stages" });
   }
 });
-
 // API notify
 app.post('/api/notify-harvest', async (req, res) => {
   try {
@@ -479,7 +463,6 @@ app.post('/api/notify-harvest', async (req, res) => {
     res.status(500).json({ message: 'Error processing request' });
   }
 });
-
 // API to fetch all archived data
 app.get('/api/archived', async (req, res) => {
   try {
@@ -490,7 +473,6 @@ app.get('/api/archived', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
-
 // API Update accounts
 app.post('/api/account', async (req, res) => {
   try {
@@ -531,7 +513,6 @@ app.post('/api/account', async (req, res) => {
     res.status(500).send({ error: 'Error updating account information.' });
   }
 });
-
 // API edit device name
 app.post('/api/edit-name', async (req, res) => {
   try {
@@ -592,7 +573,6 @@ app.post('/api/edit-name', async (req, res) => {
     res.status(500).json({ error: "Error updating device name" });
   }
 });
-
 // API to edit device IP address
 app.post('/api/edit-ip', async (req, res) => {
   try {
@@ -656,7 +636,6 @@ app.post('/api/edit-ip', async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 });
-
 // API update bed
 app.post('/api/update-bed', async (req, res) => {
   try {
@@ -684,7 +663,6 @@ app.post('/api/update-bed', async (req, res) => {
     return res.status(500).json({ error: 'Error updating bed information.' });
   }
 });
-
 // API removing from archive
 app.post('/api/remove', async (req, res) => {
   try {
@@ -720,7 +698,6 @@ app.post('/api/remove', async (req, res) => {
     return res.status(500).json({ error: 'Database error' });
   }
 });
-
 // API recover from archive
 app.post('/api/recover', async (req, res) => {
   try {
@@ -769,7 +746,6 @@ app.post('/api/recover', async (req, res) => {
     return res.status(500).json({ error: 'Database error' });
   }
 });
-
 // API Notify user when there's a problem
 app.post("/api/notify-anomaly", async (req, res) => {
   const { Var_Host, Var_Ip, Start_Date, phone } = req.body;
@@ -815,9 +791,14 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
             // Convert resultData.Date_Dev to Manila time (GMT+8)
             const resultDateDev = convertToManilaTime(resultData.Date_Dev);
+            console.log('Var_Host:', Var_Host, 'Var_Ip:', Var_Ip, 'Start_Date:', Start_Date, 'phone:', phone);
+            console.log('Current Date:', currentDate);
+            console.log('DateDev Date:', resultDateDev);
+            console.log('Last Day:', lastDay);
+            
 
             // Check if Var_Temp is present and dates match
-            if (resultData.Var_Temp !== undefined && (resultData.Var_Temp < 21 || resultData.Var_Temp > 25) && currentDate === resultDateDev) {
+            if (resultData.Var_Temp !== undefined && (resultData.Var_Temp < 20 || resultData.Var_Temp > 26) && currentDate === resultDateDev) {
               const cropName = Var_Host;
 
               // Create SMS message for crops experiencing a temperature issue
@@ -829,7 +810,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
               // Send SMS using Semaphore API
               await axios.post('https://api.semaphore.co/api/v4/messages', {
-                apikey: process.env.SEMAPHORE_API_KEY, // Use environment variable for API key
+                apikey: SEMAPHORE_API_KEY, // Use environment variable for API key
                 number: phone,
                 message: message,
                 sendername: "HydroMatic",
@@ -851,7 +832,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
               // Send SMS using Semaphore API
               await axios.post('https://api.semaphore.co/api/v4/messages', {
-                apikey: process.env.SEMAPHORE_API_KEY, // Use environment variable for API key
+                apikey: SEMAPHORE_API_KEY, // Use environment variable for API key
                 number: phone,
                 message: message,
                 sendername: "HydroMatic",
@@ -877,7 +858,6 @@ app.post("/api/notify-anomaly", async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 });
-
 // Fetch all admin content
 app.get('/api/admin-content', async (req, res) => {
   try {
@@ -888,7 +868,6 @@ app.get('/api/admin-content', async (req, res) => {
     res.status(500).send('Error fetching admin content');
   }
 });
-
 // Update admin content for a specific section
 app.put('/admin/content/:section_id', async (req, res) => {
   const { section_id } = req.params;
@@ -907,7 +886,6 @@ app.put('/admin/content/:section_id', async (req, res) => {
     res.status(500).send('Error updating content');
   }
 });
-
 // Fetch images for a specific section
 app.get('/api/section-images/:section_id', async (req, res) => {
   const { section_id } = req.params;
@@ -929,7 +907,6 @@ app.get('/api/section-images/:section_id', async (req, res) => {
     res.status(500).send('Error fetching images for this section');
   }
 });
-
 // API to handle image upload
 app.post('/api/upload-image', upload.single('image'), async (req, res) => {
   const { oldImageUrl } = req.body;
@@ -967,105 +944,6 @@ app.post('/api/upload-image', upload.single('image'), async (req, res) => {
 app.get("/admin-login.html", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
 });
-
-const adminEmail = 'admin@gmail.com';
-const adminPassword = 'password123';
-
-
-// Set up JWT secret key
-const secretKey = 'pablo12';
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.post('/admin-login', (req, res) => {
-  const { email, password } = req.body;
-
-  // Check if the provided email and password are correct
-  if (email === adminEmail && password === adminPassword) {
-    // Generate JWT token
-    const token = jwt.sign({ email: adminEmail }, secretKey, { expiresIn: '1h' });
-
-    // Send the token back to the client
-    res.json({ token });
-  } else {
-    // Return error if credentials are wrong
-    res.status(401).json({ error: 'Invalid email or password' });
-  }
-});
-
-// POST endpoint to receive sensor data
-app.post('/api/insert_data', async (req, res) => {
-  const { temperature, water_level, ip_address, hostname } = req.body;
-
-  // Check if all required fields are present
-  if (!temperature || !water_level || !ip_address || !hostname) {
-      return res.status(400).send('Missing required POST data');
-  }
-
-  try {
-      // Check if the table for the given hostname exists
-      const tableCheckQuery = `SHOW TABLES LIKE ?`;
-      const [result] = await db.query(tableCheckQuery, [hostname]);
-
-      // If the table doesn't exist, create it
-      if (result.length === 0) {
-          const createTableQuery = `
-              CREATE TABLE \`${hostname}\` (
-                  Num_Id INT(255) NOT NULL AUTO_INCREMENT,
-                  Var_Ip VARCHAR(50) NOT NULL,
-                  Var_Temp VARCHAR(50) NOT NULL,
-                  Var_WLvl VARCHAR(50) NOT NULL,
-                  Date_Dev DATE NOT NULL,
-                  Time_Dev TIME NOT NULL,
-                  PRIMARY KEY (Num_Id)
-              );
-          `;
-          await db.query(createTableQuery);
-          console.log(`Table ${hostname} created successfully`);
-      }
-
-      const insertDataQuery = `
-          INSERT INTO \`${hostname}\` (Var_Ip, Var_Temp, Var_WLvl, Date_Dev, Time_Dev)
-          VALUES (?, ?, ?, CURDATE(), CURTIME())
-      `;
-      await db.query(insertDataQuery, [ip_address, temperature, water_level]);
-      res.send('New record created successfully');
-
-  } catch (err) {
-      console.error('Error:', err);
-      res.status(500).send('Database error');
-  }
-});
-
-// POST endpoint to insert device info
-app.post('/api/save_device_info', async (req, res) => {
-  const { hostname, ip_address } = req.body;
-
-  // Validate input
-  if (!hostname || !ip_address) {
-      return res.status(400).send('Missing required fields: hostname or ip_address');
-  }
-
-  try {
-      // Query to check if the device already exists
-      const checkQuery = `SELECT * FROM device_info WHERE Var_Host = ? AND Var_Ip = ?`;
-      const [result] = await db.query(checkQuery, [hostname, ip_address]);
-
-      // If no record exists, insert the new data
-      if (result.length === 0) {
-          const insertQuery = `INSERT INTO device_info (Var_Host, Var_Ip) VALUES (?, ?)`;
-          await db.query(insertQuery, [hostname, ip_address]);
-          res.send('New record created successfully');
-      } else {
-          res.send('Record already exists');
-      }
-  } catch (err) {
-      console.error('Error querying database:', err);
-      res.status(500).send('Database error');
-  }
-});
-
-
 // Handle index.html
 app.get("/index.html", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
@@ -1107,6 +985,31 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+const adminEmail = 'admin@gmail.com';
+const adminPassword = 'password123';
+
+// Set up JWT secret key
+const secretKey = 'pablo12';
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.post('/admin-login', (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if the provided email and password are correct
+  if (email === adminEmail && password === adminPassword) {
+    // Generate JWT token
+    const token = jwt.sign({ email: adminEmail }, secretKey, { expiresIn: '1h' });
+
+    // Send the token back to the client
+    res.json({ token });
+  } else {
+    // Return error if credentials are wrong
+    res.status(401).json({ error: 'Invalid email or password' });
+  }
+});
+
 // Utility function to convert database date to Manila time (GMT+8)
 function convertToManilaTime(dateString) {
   const date = new Date(dateString);
