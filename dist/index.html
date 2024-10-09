@@ -286,17 +286,15 @@
             const newBedDiv = document.createElement('div');
             const bedId = deviceInfo.Var_Host; // Unique ID for each bed
 
-            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto bg-white border-4  border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer';
+            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-white border-4  border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer';
             newBedDiv.style = 'border-color: #15cc15; ';
             newBedDiv.innerHTML = `
                 <h1 class="text-2xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
-                <h1>Ip: ${deviceInfo.Var_Ip}</h1>
-                
-                <p>Date: ${formatDate(deviceInfo.Start_Date)}</p>
+                <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
+                <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
                 <img id="possibleImage${deviceInfo.Last_Day}" class="w-3/5 sm:w-3/5 md:w-4/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
                 <div class="text-right">
                     <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Delete Bed</button>
-                    
                 </div>
             `;
 
@@ -341,7 +339,7 @@
                 localStorage.setItem('Var_Ip', JSON.stringify(deviceInfo.Var_Ip));
                 localStorage.setItem('Start_Date', JSON.stringify(deviceInfo.Start_Date));
                 localStorage.setItem('Last_Day', JSON.stringify(deviceInfo.Last_Day));
-                window.location.href = 'http://localhost:3000/tables.html';
+                window.location.href = 'http://localhost:3000/tables';
             });
         }
 
