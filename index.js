@@ -946,56 +946,7 @@ app.post('/api/upload-image', upload.single('image'), async (req, res) => {
     res.status(500).send('Failed to upload image');
   }
 });
-app.get("/admin-login.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
-});
-// Handle index.html
-app.get("/index.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
-});
-// Handle settings.html
-app.get("/settings.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "settings.html"));
-});
-// Handle archive.html
-app.get("/archive.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "archive.html"));
-});
-// Handle login.html
-app.get("/login.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "login.html"));
-});
-// Handle tables.html
-app.get("/tables.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "tables.html"));
-});
-// Serve admin content HTML file
-app.get("/admin-content", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-content.html"));
-});
-
-app.get("/admin-content1", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-content1.html"));
-});
-
-// Serve the home page
-app.get("/", (req, res) => {
-  console.log("Serving landing.html");
-  res.sendFile(path.join(__dirname, "dist", "landing.html"), (err) => {
-    if (err) {
-      console.error("Error serving landing.html:", err);
-      res.status(500).send("Internal Server Error");
-    }
-  });
-});
-// Handle 404 errors
-app.use((req, res) => {
-  res.status(404).send("404 Not Found");
-});
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
+// Function to Log in admin
 const adminEmail = 'admin@gmail.com';
 const adminPassword = 'password123';
 
@@ -1019,6 +970,61 @@ app.post('/admin-login', (req, res) => {
     res.status(401).json({ error: 'Invalid email or password' });
   }
 });
+// Handle admin-login.html
+app.get("/admin-login", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
+});
+// Handle index.html
+app.get("/index", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+// Handle settings.html
+app.get("/settings", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "settings.html"));
+});
+// Handle archive.html
+app.get("/archive", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "archive.html"));
+});
+// Handle login.html
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "login.html"));
+});
+// Handle tables.html
+app.get("/tables", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "tables.html"));
+});
+// Serve admin content HTML file
+app.get("/admin-content", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-content.html"));
+});
+// Handle admin-content1.html
+app.get("/admin-content1", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-content1.html"));
+});
+// Handle admin-main.html
+app.get("/admin-main", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
+});
+// Serve the home page
+app.get("/", (req, res) => {
+  console.log("Serving landing.html");
+  res.sendFile(path.join(__dirname, "dist", "landing.html"), (err) => {
+    if (err) {
+      console.error("Error serving landing.html:", err);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+});
+// Handle 404 errors
+app.use((req, res) => {
+  res.status(404).send("404 Not Found");
+});
+// Handle PORT serve
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 
 // Utility function to convert database date to Manila time (GMT+8)
 function convertToManilaTime(dateString) {

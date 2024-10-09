@@ -99,21 +99,21 @@
         <header class="w-full bg-sidebar py-5 px-6">
             <div class="container mx-auto flex justify-between items-center">
                 <!-- Logo and Branding -->
-                <a href="index.html"
+                <a href="index"
                     class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
                     <span class="text2">Hydro</span><span class="text1">Matic</span>
                 </a>
                 <!-- Navigation for Desktop -->
                 <nav id="navbar-menu" class="hidden lg:flex space-x-8">
-                    <a href="index.html" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+                    <a href="index" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
                         <i class="fas fa-tachometer-alt mr-3"></i>
                         Dashboard
                     </a>
-                    <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
                         <i class="fas fa-folder mr-3"></i>
                         Archive
                     </a>
-                    <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <a href="settings" class="flex items-center text-white py-2 pl-4 nav-item">
                         <i class="fas fa-cog mr-3"></i>
                         Settings
                     </a>
@@ -129,15 +129,15 @@
             </div>
             <!-- Mobile Navigation Menu -->
             <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
-                <a href="index.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
                 </a>
-                <a href="archive.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-folder mr-3"></i>
                     Archive
                 </a>
-                <a href="settings.html" class="flex items-center text-white py-2 pl-4 nav-item">
+                <a href="settings" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-cog mr-3"></i>
                     Settings
                 </a>
@@ -335,81 +335,6 @@
                     }
                 });
             });
-
-            /* newBedDiv.querySelector(`#editBtn${bedId}`).addEventListener('click', function (event) {
-                event.stopPropagation();
-
-                // Ensure Start_Date is in YYYY-MM-DD format
-                const formattedStartDate = new Date(deviceInfo.Start_Date).toISOString().split('T')[0];
-
-                Swal.fire({
-                    title: 'Update Bed Information',
-                    html: `
-                        <label>Bed Name</label><br>
-                        <input type="text" id="Var_Host" class="swal2-input text-center" placeholder="Enter Bed Name" value="${deviceInfo.Var_Host}" readonly><br>
-                        <label>Device IP Address</label><br>
-                        <input type="text" id="Var_Ip" class="swal2-input text-center" placeholder="Enter IP Address" value="${deviceInfo.Var_Ip}" readonly><br>
-                        <label>How many days ago was lettuce planted?</label><br>
-                        <input type="number" id="Last_Day" class="swal2-input" placeholder="Number of days" min="1" value="${deviceInfo.Last_Day}"><br>
-                        <label>Date of Planting</label><br>
-                        <input type="date" id="Start_Date" class="swal2-input" placeholder="Select Date" value="${formattedStartDate}"><br>
-                    `,
-                    confirmButtonText: 'Update Device',
-                    cancelButtonText: 'Cancel',
-                    showCancelButton: true,
-                    preConfirm: () => {
-                        const Var_Host = Swal.getPopup().querySelector('#Var_Host').value;
-                        const Var_Ip = Swal.getPopup().querySelector('#Var_Ip').value;
-                        const Last_Day = Swal.getPopup().querySelector('#Last_Day').value;
-                        const Start_Date = Swal.getPopup().querySelector('#Start_Date').value;
-
-                        if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
-                            Swal.showValidationMessage('Please enter all fields: Device Hostname, Device IP Address, Days, and Date of Planting.');
-                            return false;
-                        }
-
-                        return { Var_Host, Var_Ip, Last_Day, Start_Date };
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const { Var_Host, Var_Ip, Last_Day, Start_Date } = result.value;
-
-                        // Log data for debugging
-                        console.log('Sending data to server:', { Var_Host, Var_Ip, Last_Day, Start_Date });
-
-                        fetch('/api/update-bed', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                Var_Host,
-                                Var_Ip,
-                                Last_Day,
-                                Start_Date,
-                            })
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Failed to update data in the database.');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                // Optionally handle the success message
-                                Swal.fire('Success', 'Bed information updated successfully!', 'success');
-                                localStorage.removeItem('Last_Day');
-                                localStorage.removeItem('Var_Host');
-                                localStorage.removeItem('Var_Ip');
-                                localStorage.removeItem('Start_Date');
-
-                            })
-                            .catch(error => {
-                                Swal.fire('Error', 'There was an error updating the bed information.', 'error');
-                            });
-                    }
-                });
-            }); */
 
             newBedDiv.addEventListener('click', function () {
                 localStorage.setItem('Var_Host', JSON.stringify(deviceInfo.Var_Host));
