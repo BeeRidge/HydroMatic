@@ -973,6 +973,11 @@ app.get("/tables.html", (req, res) => {
 app.get("/admin-content", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-content.html"));
 });
+
+app.get("/admin-content1", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-content1.html"));
+});
+
 // Serve the home page
 app.get("/", (req, res) => {
   console.log("Serving landing.html");
