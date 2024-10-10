@@ -159,11 +159,40 @@
                         <div class="flex w-full justify-end">
                             <div style="border-color: #15cc15;" class="py-4 px-6 bg-gray-200 border-4 border-solid rounded-lg shadow-lg text-center aspect-square
                                  w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
-                                <p class="text-xl" style="color: #171817;"> Hydro Frame </p>
+                                <p class="text-xl" style="color: #171817;"> Total <br> Hydro Frame </p>
+                                <p id="totalBed"></p>
                             </div>
                         </div>
                     </div>
                     <div class="px-6 overflow-x-auto py-8">
+                        <!-- Top Bar with Pagination and Filters -->
+                        <div class="flex justify-between items-center mb-4">
+                            <!-- Filter Dropdown -->
+                            <div>
+                                <label for="filterDropdown" class="mr-2 text-lg">Sort By:</label>
+                                <select id="filterDropdown" class="px-3 py-2 border rounded bg-white">
+                                    <option value="name">Name (A-Z)</option>
+                                    <option value="harvestDateAsc">Harvest Date (Asc)</option>
+                                    <option value="harvestDateDesc">Harvest Date (Desc)</option>
+                                    <option value="startDateAsc">Start Date (Asc)</option>
+                                    <option value="startDateDesc">Start Date (Desc)</option>
+                                    <option value="daysAsc">Days (Asc)</option>
+                                    <option value="daysDesc">Days (Desc)</option>
+                                    <option value="statusOngoing">Still Ongoing</option>
+                                    <option value="statusHarvest">Ready to Harvest</option>
+                                </select>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            <div id="pagination" class="flex items-center space-x-2">
+                                <button id="prevBtn"
+                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded">Previous</button>
+                                <span id="pageIndicator" class="text-lg"></span>
+                                <button id="nextBtn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
                         <table id="auditTable" class="w-full divide-y divide-gray-200">
                             <thead class="bg-gray-100">
                                 <tr>
@@ -209,44 +238,160 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Display total bed -->
     <script>
+        function loadTotal() {
+            fetch('/api/TotalBed')
+                .then(response => response.json())
+                .then(data => {
+                    // Correctly access the total value
+                    document.getElementById("totalBed").textContent = data.total;
+                })
+                .catch(error => console.error('Error fetching total beds:', error));
+        }
 
+        // Call the function to load total beds
+        loadTotal();
     </script>
     <!-- Fetch initial data -->
     <script>
-        function load() {
-            // Fetch archived data and populate the table
+        let currentPage = 1;
+        const rowsPerPage = 4;  // Show 4 rows per page
+        let allData = [];       // Store fetched data
+        let filteredData = [];  // Store filtered data to display
+
+        function loadData() {
+            // Fetch the data and store it
             fetch('/api/Dashboard-Data')
                 .then(response => response.json())
                 .then(data => {
-                    const tableBody = document.getElementById('tableBody');
-                    tableBody.innerHTML = ''; // Clear any existing rows
-
-                    data.forEach((row) => {
-                        const statusClass = row.Status === 'HARVEST' ? 'text-green-500' : 'text-red-500';
-
-                        // Convert Dates to MM-DD-YYYY format
-                        const startDate = new Date(row.Start_Date);
-                        const formattedStartDate = `${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}-${startDate.getFullYear()}`;
-                        const harvestDate = new Date(row.Harvest_Date);
-                        const formattedHarvestDate = `${(harvestDate.getMonth() + 1).toString().padStart(2, '0')}-${harvestDate.getDate().toString().padStart(2, '0')}-${harvestDate.getFullYear()}`;
-                        const tableRow = `
-                            <tr>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.Last_Day}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
-                            </tr>
-                        `;
-
-                        tableBody.innerHTML += tableRow;
-                    });
+                    allData = data;
+                    filteredData = allData; // Initially, all data is displayed
+                    renderTable(currentPage);  // Render the first page
                 })
-                .catch(error => console.error('Error fetching archived data:', error));
+                .catch(error => console.error('Error fetching data:', error));
         }
 
-        load();
+        function renderTable(page) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Clear previous rows
+
+            // Calculate the start and end index for the current page
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = Math.min(startIndex + rowsPerPage, filteredData.length);
+
+            // Render the rows for the current page
+            for (let i = startIndex; i < endIndex; i++) {
+                const row = filteredData[i];
+                const statusClass = row.Status === 'HARVEST' ? 'text-green-500' : 'text-red-500';
+
+                // Convert Dates to MM-DD-YYYY format
+                const startDate = new Date(row.Start_Date);
+                const formattedStartDate = `${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}-${startDate.getFullYear()}`;
+                const harvestDate = new Date(row.Harvest_Date);
+                const formattedHarvestDate = `${(harvestDate.getMonth() + 1).toString().padStart(2, '0')}-${harvestDate.getDate().toString().padStart(2, '0')}-${harvestDate.getFullYear()}`;
+
+                const tableRow = `
+            <tr>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.Last_Day}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+            </tr>
+        `;
+                tableBody.innerHTML += tableRow;
+            }
+
+            // Update pagination indicator
+            document.getElementById('pageIndicator').textContent = `Page ${page} of ${Math.ceil(filteredData.length / rowsPerPage)}`;
+        }
+
+        function sortData(criteria) {
+            switch (criteria) {
+                case 'harvestDateAsc':
+                    filteredData.sort((a, b) => new Date(a.Harvest_Date) - new Date(b.Harvest_Date));
+                    break;
+                case 'harvestDateDesc':
+                    filteredData.sort((a, b) => new Date(b.Harvest_Date) - new Date(a.Harvest_Date));
+                    break;
+                case 'startDateAsc':
+                    filteredData.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
+                    break;
+                case 'startDateDesc':
+                    filteredData.sort((a, b) => new Date(b.Start_Date) - new Date(a.Start_Date));
+                    break;
+                case 'daysAsc':
+                    filteredData.sort((a, b) => new Date(a.Last_Day) - new Date(b.Last_Day));
+                    break;
+                case 'daysDesc':
+                    filteredData.sort((a, b) => new Date(b.Last_Day) - new Date(a.Last_Day));
+                    break;
+                case 'name':
+                    filteredData.sort((a, b) => a.Var_Host.localeCompare(b.Var_Host));
+                    break;
+                case 'statusOngoing':
+                    filteredData = allData.filter(row => row.Status === 'ONGOING');
+                    break;
+                case 'statusHarvest':
+                    filteredData = allData.filter(row => row.Status === 'HARVEST');
+                    break;
+                default:
+                    filteredData = allData;
+            }
+            currentPage = 1; // Reset to the first page after sorting/filtering
+            renderTable(currentPage);
+        }
+
+        document.getElementById('filterDropdown').addEventListener('change', (event) => {
+            const selectedFilter = event.target.value;
+            sortData(selectedFilter);
+        });
+
+        // Pagination buttons logic
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable(currentPage);
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentPage < Math.ceil(filteredData.length / rowsPerPage)) {
+                currentPage++;
+                renderTable(currentPage);
+            }
+        });
+
+        // Load data when the page is ready
+        loadData();
+    </script>
+    <!-- Check Harvest Notify -->
+    <script>
+        function loadData() {
+            // Get the phone number from localStorage
+            const phone = localStorage.getItem('userPhone');
+
+            if (!phone) {
+                console.error('Phone number not found in localStorage.');
+                return;
+            }
+
+            fetch('/api/notify-harvest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data loaded:', data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Immediately call loadData when the script is loaded
+        loadData();
     </script>
     <!-- Toggle mobile menu visibility -->
     <script>

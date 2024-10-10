@@ -159,71 +159,79 @@
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
                     <h1 class="text-4xl text-black pb-6 font-bold">Settings</h1>
-                    <div
-                        class="w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-3 gap-5 overflow-auto">
-                        <div id="account" style="border-color: #15cc15;"
-                            class="w-full bg-white border-4 border-solid rounded-lg shadow-lg p-6 aspect-square">
-                            <h1 class="text-3xl text-black py-8 font-bold uppercase">Account Information</h1>
-                            <h1 class="text-xl text-black py-6 px-6 font-bold uppercase">Phone Number:</h1><br>
-                            <h1 id="Acc_Pnumber" class="text-xl text-black py-6 px-6 font-bold uppercase text-center">
-                            </h1>
-                            <h1 class="text-xl text-black py-6 px-6 font-bold uppercase items-center justify-center">
-                                Password: </h1><br>
-                            <div class="text-center">
-                                <input type="password" id="Acc_Password"
-                                    class="w-1/2 text-xl text-black py-6 font-bold text-center" readonly>
-                                <button id="togglePassword" class="px-3 py-2 bg-gray-300 rounded">
-                                    Show
-                                </button>
+                    <div class="pb-16">
+                        <div
+                            class="w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-3 gap-5 overflow-auto">
+                            <div id="account" style="border-color: #15cc15;"
+                                class="w-full bg-white border-4 border-solid rounded-lg shadow-lg p-6 aspect-square">
+                                <h1 class="text-3xl text-black py-8 font-bold uppercase">Account Information</h1>
+                                <h1 class="text-xl text-black py-6 px-6 font-bold uppercase">Phone Number:</h1><br>
+                                <h1 id="Acc_Pnumber"
+                                    class="text-xl text-black py-6 px-6 font-bold uppercase text-center">
+                                </h1>
+                                <h1
+                                    class="text-xl text-black py-6 px-6 font-bold uppercase items-center justify-center">
+                                    Password: </h1><br>
+                                <div class="text-center">
+                                    <input type="password" id="Acc_Password"
+                                        class="w-1/2 text-xl text-black py-6 font-bold text-center" readonly>
+                                    <button id="togglePassword" class="px-3 py-2 bg-gray-300 rounded">
+                                        Show
+                                    </button>
+                                </div>
+                                <div class="col-span-3 text-xl text-right py-8 px-3">
+                                    <button id="accEditBttn"
+                                        class="py-2 px-5 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                        Edit
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col-span-3 text-xl text-right py-8 px-3">
-                                <button id="accEditBttn"
-                                    class="py-2 px-5 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                    Edit
-                                </button>
-                            </div>
-                        </div>
-                        <div id="device-info" style="border-color: #15cc15;"
-                            class="w-full bg-white border-4 border-black border-solid rounded-lg shadow-lg p-6 aspect-square xl:col-span-2">
-                            <h1 class="text-3xl text-black py-2 font-bold uppercase">Device Information</h1>
-                            <div class="px-6 overflow-x-auto">
-                                <table id="archivedTable" class="w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-100">
-                                        <tr>
-                                            <th
-                                                class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                Name</th>
-                                            <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
-                                            </th>
-                                            <th
-                                                class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                IP Address</th>
-                                            <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
-                                            </th>
-                                            <th class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                Status
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
-                                        <!-- Data will be inserted here by JavaScript -->
-                                    </tbody>
-                                </table>
+                            <div id="device-info" style="border-color: #15cc15;"
+                                class="w-full bg-white border-4 border-black border-solid rounded-lg shadow-lg p-6 aspect-square xl:col-span-2">
+                                <h1 class="text-3xl text-black py-2 font-bold uppercase">Device Information</h1>
+                                <div class="px-6 overflow-x-auto">
+                                    <table id="archivedTable" class="w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th
+                                                    class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                    Name</th>
+                                                <th
+                                                    class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
+                                                </th>
+                                                <th
+                                                    class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                    IP Address</th>
+                                                <th
+                                                    class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
+                                                </th>
+                                                <th
+                                                    class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                    Status
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                                            <!-- Data will be inserted here by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </main>
             </div>
         </div>
-    <!-- Footer -->
-    <footer class="w-full bg-sidebar py-4 px-6 text-white text-center">
-        <p>&copy; 2024 HydroMatic. All rights reserved.</p>
-    </footer>
+        <!-- Footer -->
+        <footer class="w-full bg-sidebar py-4 px-6 text-white text-center">
+            <p>&copy; 2024 HydroMatic. All rights reserved.</p>
+        </footer>
     </div>
     <!-- AlpineJS for interactivity -->
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
     <!-- Font Awesome for icons -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
     <!-- JavaScript to toggle mobile menu visibility -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- SweetAlert -->
@@ -474,19 +482,19 @@
     <!-- Function for Log Out -->
     <script>
         function isUserAuthenticated() {
-                return !!sessionStorage.getItem('authToken'); // Example check
-                        }
+            return !!sessionStorage.getItem('authToken'); // Example check
+        }
 
         if (!isUserAuthenticated()) {
-                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-                }
+            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+        }
 
         document.getElementById('logout-button').addEventListener('click', async () => {
             try {
                 // Clear all items from local storage and session storage
                 localStorage.clear();
                 sessionStorage.clear();
-    
+
                 // Show SweetAlert confirmation
                 await Swal.fire({
                     title: 'Logged Out',
@@ -494,12 +502,12 @@
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
-    
+
                 // Redirect to login page or home page
                 window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
             } catch (error) {
                 console.error('Error logging out:', error);
-    
+
                 // Show SweetAlert error message
                 Swal.fire({
                     title: 'Logout Failed',
@@ -509,9 +517,9 @@
                 });
             }
         });
-    
+
         // Optional: Prevent navigation back to the protected page
-        window.addEventListener('pageshow', function(event) {
+        window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
                 // Redirect to the login page if the user tries to go back
                 window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
@@ -603,4 +611,5 @@
         }
     </script>
 </body>
+
 </html>

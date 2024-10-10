@@ -43,6 +43,7 @@
         .bg-c {
             background: rgb(224, 224, 224);
         }
+
         .upgrade-btn:hover {
             background: #000000;
         }
@@ -163,14 +164,41 @@
                         <h1 class="text-4xl text-black pb-6 font-bold">Device Management</h1>
                         <div class="text-right w-full">
                             <button id="addBedBtn" style="border-color: #15cc15;" class="py-4 px-6 bg-gray-200 border-4 border-dashed rounded-lg shadow-lg text-center aspect-square
-                                 w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold"><p style="color: #171817;">  + Add Hydro Frame </p>
+                                 w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
+                                <p style="color: #171817;"> + Add <Br> Hydro Frame </p>
                             </button>
                         </div>
                     </div>
-                    <div id="bedsContainer"
-                        class="w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-1 lg:grid-rows-1 xl:grid-rows-2
+                    <div class="pb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <!-- Sort Dropdown -->
+                            <div class="flex items-center">
+                                <label for="sortSelect" class="mr-2">Sort By:</label>
+                                <select id="sortSelect" class="px-2 py-1 border rounded">
+                                    <option value="name_asc">Name A-Z</option>
+                                    <option value="name_desc">Name Z-A</option>
+                                    <option value="start_date_asc">Start Date Ascending</option>
+                                    <option value="start_date_desc">Start Date Descending</option>
+                                    <option value="harvest_date_asc">Harvest Date Ascending</option>
+                                    <option value="harvest_date_desc">Harvest Date Descending</option>
+                                </select>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            <div id="pagination" class="flex items-center">
+                                <button id="prevBtn"
+                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded mr-2">Previous</button>
+                                <span id="pageIndicator" class="text-lg"></span>
+                                <button id="nextBtn"
+                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded ml-2">Next</button>
+                            </div>
+                        </div>
+
+                        <div id="bedsContainer"
+                            class="w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-1 lg:grid-rows-1 xl:grid-rows-1
                             grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-auto">
-                        <!-- Bed items -->
+                            <!-- Bed items -->
+                        </div>
                     </div>
                 </main>
             </div>
@@ -295,14 +323,14 @@
             newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-white border-4  border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer';
             newBedDiv.style = 'border-color: #15cc15; ';
             newBedDiv.innerHTML = `
-                <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
-                <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
-                <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
-                <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
-                <div class="text-right">
-                    <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Delete Bed</button>
-                </div>
-            `;
+                    <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
+                    <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
+                    <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
+                    <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
+                    <div class="text-right">
+                        <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Delete Bed</button>
+                    </div>
+                `;
 
             bedsContainer.appendChild(newBedDiv);
 
@@ -356,17 +384,19 @@
             return imageUrl;
         }
 
+        let currentPage = 1;
+        const bedsPerPage = 4;  // Only show 4 beds per page
+        let allBeds = [];       // Store all fetched beds globally
+        let currentSort = 'default'; // Track the current sort option
+
         async function loadBedsFromDatabase() {
             try {
                 const response = await fetch('/api/display_bed');
                 if (!response.ok) {
                     throw new Error('Failed to fetch beds from the database.');
                 }
-                const beds = await response.json();
-                console.log('Fetched beds:', beds); // Debugging line
-
-                const bedsContainer = document.getElementById('bedsContainer');
-                bedsContainer.innerHTML = ''; // Clear any existing content
+                allBeds = await response.json(); // Store all beds
+                console.log('Fetched beds:', allBeds); // Debugging line
 
                 const imageResponse = await fetch('/api/growthtimeline');
                 if (!imageResponse.ok) {
@@ -375,14 +405,78 @@
                 const ImageData = await imageResponse.json();
                 console.log('ImageData:', ImageData); // Debugging line
 
-                beds.forEach(bed => {
-                    console.log('Adding bed with Start_Date:', bed.Start_Date); // Debugging line
-                    addBedToUI(bed, ImageData);
+                renderBeds(currentPage, ImageData); // Display the first page of beds
+
+                // Set up event listeners for pagination buttons
+                document.getElementById('prevBtn').addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderBeds(currentPage, ImageData);
+                    }
                 });
+
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    if (currentPage < Math.ceil(allBeds.length / bedsPerPage)) {
+                        currentPage++;
+                        renderBeds(currentPage, ImageData);
+                    }
+                });
+
+                // Set up event listener for sort dropdown
+                document.getElementById('sortSelect').addEventListener('change', (event) => {
+                    currentSort = event.target.value; // Update current sort option
+                    sortBeds(); // Call sort function
+                    renderBeds(currentPage, ImageData); // Render sorted beds
+                });
+
             } catch (error) {
                 console.error('Error fetching beds:', error);
             }
         }
+
+        function sortBeds() {
+            switch (currentSort) {
+                case 'name_asc':
+                    allBeds.sort((a, b) => a.Var_Host.localeCompare(b.Var_Host));
+                    break;
+                case 'name_desc':
+                    allBeds.sort((a, b) => b.Var_Host.localeCompare(a.Var_Host));
+                    break;
+                case 'start_date_asc':
+                    allBeds.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
+                    break;
+                case 'start_date_desc':
+                    allBeds.sort((a, b) => new Date(b.Start_Date) - new Date(a.Start_Date));
+                    break;
+                case 'harvest_date_asc':
+                    allBeds.sort((a, b) => new Date(a.Harvest_Date) - new Date(b.Harvest_Date));
+                    break;
+                case 'harvest_date_desc':
+                    allBeds.sort((a, b) => new Date(b.Harvest_Date) - new Date(a.Harvest_Date));
+                    break;
+                default:
+                    // No sorting or apply default behavior if needed
+                    break;
+            }
+        }
+
+        function renderBeds(page, ImageData) {
+            const bedsContainer = document.getElementById('bedsContainer');
+            bedsContainer.innerHTML = ''; // Clear previous beds
+
+            // Calculate start and end index for the current page
+            const startIndex = (page - 1) * bedsPerPage;
+            const endIndex = Math.min(startIndex + bedsPerPage, allBeds.length);
+
+            // Render the beds for the current page
+            for (let i = startIndex; i < endIndex; i++) {
+                addBedToUI(allBeds[i], ImageData);
+            }
+
+            // Update pagination indicator
+            document.getElementById('pageIndicator').textContent = `Page ${page} of ${Math.ceil(allBeds.length / bedsPerPage)}`;
+        }
+
 
         function isDeviceDuplicate(hostname, ipAddress, beds) {
             return beds.some(bed => bed.Var_Host === hostname || bed.Var_Ip === ipAddress);
@@ -519,7 +613,7 @@
                     };
 
                     // Log the values to check the data being destructured
-                    console.log('Data received for bed:', {data});
+                    console.log('Data received for bed:', { data });
 
                     try {
                         const result = await fetch('/api/notify-anomaly', {
@@ -561,19 +655,19 @@
     <!-- Logout Button -->
     <script>
         function isUserAuthenticated() {
-                return !!sessionStorage.getItem('authToken'); // Example check
-                        }
+            return !!sessionStorage.getItem('authToken'); // Example check
+        }
 
         if (!isUserAuthenticated()) {
-                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-                }
+            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+        }
 
         document.getElementById('logout-button').addEventListener('click', async () => {
             try {
                 // Clear all items from local storage and session storage
                 localStorage.clear();
                 sessionStorage.clear();
-    
+
                 // Show SweetAlert confirmation
                 await Swal.fire({
                     title: 'Logged Out',
@@ -581,12 +675,12 @@
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
-    
+
                 // Redirect to login page or home page
                 window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
             } catch (error) {
                 console.error('Error logging out:', error);
-    
+
                 // Show SweetAlert error message
                 Swal.fire({
                     title: 'Logout Failed',
@@ -596,9 +690,9 @@
                 });
             }
         });
-    
+
         // Optional: Prevent navigation back to the protected page
-        window.addEventListener('pageshow', function(event) {
+        window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
                 // Redirect to the login page if the user tries to go back
                 window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
@@ -683,4 +777,5 @@
         }
     </script>
 </body>
+
 </html>

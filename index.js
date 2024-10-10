@@ -279,7 +279,7 @@ app.post("/api/add-bed-database", async (req, res) => {
 
     // Insert new bed
     await db.query(
-      `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status) VALUES (?, ?, ?, ?, ?, ?, "ONGOING")`,
       [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date]
     );
 
@@ -448,7 +448,7 @@ app.post('/api/notify-harvest', async (req, res) => {
         });
 
         // Update the date of the last SMS sent
-        const updateQuery = 'UPDATE display_bed SET Last_SMS_Date = CURDATE() WHERE Var_Host = ? AND Var_Ip = ?';
+        const updateQuery = 'UPDATE display_bed SET Last_SMS_Date = CURDATE(), Status = "HARVEST"  WHERE Var_Host = ? AND Var_Ip = ?';
         await db.query(updateQuery, [crop.Var_Host, crop.Var_Ip]);
       }
 
@@ -476,13 +476,32 @@ app.get('/api/archived', async (req, res) => {
 // API to fetch all archived data
 app.get('/api/Dashboard-Data', async (req, res) => {
   try {
-    const selectAll = "SELECT * FROM display_bed ORDER BY Bed_Id ASC";
+    const selectAll = "SELECT * FROM display_bed ORDER BY Var_Host ASC";
     const [results] = await db.query(selectAll);
     res.json(results); // Send the results as JSON
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
   }
 });
+// API to get the total bed frames
+app.get('/api/TotalBed', async (req, res) => {
+  try {
+    const selectAll = "SELECT * FROM display_bed";
+    
+    // Execute the query
+    const [results] = await db.query(selectAll);
+    
+    // Get the total number of rows
+    const totalRows = results.length;
+
+    // Send the total as an object (key-value)
+    res.json({ total: totalRows });
+  } catch (err) {
+    console.error('Database query error:', err);
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
+
 // API Update accounts
 app.post('/api/account', async (req, res) => {
   try {
@@ -735,8 +754,15 @@ app.post('/api/recover', async (req, res) => {
 
       if (archivedResult.length === 1) {
         const resultData = archivedResult[0];
+        const lday = resultData.Last_Day;
+        let status;
+        if(lday >= 60){
+          status = "HARVEST";
+        } else {
+          status = "ONGOING";
+        }
 
-        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date) VALUES (?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date]);
+        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status) VALUES (?, ?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date, status]);
 
         const [deleteResult] = await db.query("DELETE FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?", [id, varHost, varIp, formattedDate]);
 
