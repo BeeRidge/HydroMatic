@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYDROMATIC</title>
+    <meta name="author" content="David Grzyb">
+    <meta name="description" content="Tailwind Admin Template for managing beds and tracking growth stages.">
+    <!-- Tailwind CSS for styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 for alerts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #06641b;
+        }
+
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            color: #15cc15;
+        }
+
+        .nav-item:hover {
+            color: #15cc15;
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 8px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b
+        }
+
+        .text1 {
+            color: #15cc15;
+            /* Green color for "Matic" */
+        }
+
+        .text2 {
+            color: #FFFF;
+            /* Black color for "Hydro" */
+        }
+
+        .text-combined {
+            display: inline-block;
+
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class=" font-family-karla flex bg-c">
+    <div class="w-full flex flex-col h-screen overflow-y-hidden">
+        <!-- Header -->
+        <header class="w-full bg-sidebar py-5 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo and Branding -->
+                <a href="index"
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+                <!-- Navigation for Desktop -->
+                <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                    <a href="dashboard" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Device Management
+                    </a>
+                    <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-folder mr-3"></i>
+                        Archive
+                    </a>
+                    <a href="settings" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-cog mr-3"></i>
+                        Settings
+                    </a>
+                    <button id="logout-button" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </nav>
+                <!-- Navigation for Mobile -->
+                <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none"
+                    onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars fa-2x"></i>
+                </button>
+            </div>
+            <!-- Mobile Navigation Menu -->
+            <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
+                <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Device Management
+                </a>
+                <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-folder mr-3"></i>
+                    Archive
+                </a>
+                <a href="settings" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                <button id="mobile-logout" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                    Logout
+                </button>
+            </nav>
+        </header>
+        <!-- Body -->
+        <div class="flex-grow overflow-hidden">
+            <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
+                <main class="w-full h-full p-6">
+                    <div class="py-4 grid sm:grid-cols-1 md:grid-cols-2">
+                        <h1 class="text-4xl text-black pb-6 font-bold">Dashboard</h1>
+                        <div class="flex w-full justify-end">
+                            <div style="border-color: #15cc15;" class="py-4 px-6 bg-gray-200 border-4 border-solid rounded-lg shadow-lg text-center aspect-square
+                                 w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
+                                <p class="text-xl" style="color: #171817;"> Hydro Frame </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 overflow-x-auto py-8">
+                        <table id="auditTable" class="w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        Name</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        IP Address</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                                        Start Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                                        Days</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                                        Harvest Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="w-full bg-sidebar py-4 px-6 text-white text-center">
+            <p>&copy; 2024 HydroMatic. All rights reserved.</p>
+        </footer>
+    </div>
+    <!-- AlpineJS -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Display total bed -->
+    <script>
+
+    </script>
+    <!-- Fetch initial data -->
+    <script>
+        function load() {
+            // Fetch archived data and populate the table
+            fetch('/api/Dashboard-Data')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('tableBody');
+                    tableBody.innerHTML = ''; // Clear any existing rows
+
+                    data.forEach((row) => {
+                        const statusClass = row.Status === 'HARVEST' ? 'text-green-500' : 'text-red-500';
+
+                        // Convert Dates to MM-DD-YYYY format
+                        const startDate = new Date(row.Start_Date);
+                        const formattedStartDate = `${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}-${startDate.getFullYear()}`;
+                        const harvestDate = new Date(row.Harvest_Date);
+                        const formattedHarvestDate = `${(harvestDate.getMonth() + 1).toString().padStart(2, '0')}-${harvestDate.getDate().toString().padStart(2, '0')}-${harvestDate.getFullYear()}`;
+                        const tableRow = `
+                            <tr>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.Last_Day}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                            </tr>
+                        `;
+
+                        tableBody.innerHTML += tableRow;
+                    });
+                })
+                .catch(error => console.error('Error fetching archived data:', error));
+        }
+
+        load();
+    </script>
+    <!-- Toggle mobile menu visibility -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+    <!-- Log out button -->
+    <script>
+        function isUserAuthenticated() {
+            return !!sessionStorage.getItem('authToken'); // Example check
+        }
+
+        if (!isUserAuthenticated()) {
+            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+        }
+
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+
+        // Optional: Prevent navigation back to the protected page
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                // Redirect to the login page if the user tries to go back
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            }
+        });
+    </script>
+    <!-- mobile Log out button -->
+    <script>
+        document.getElementById('mobile-logout').addEventListener('click', async () => {
+            try {
+
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+    <!-- Check logged in user -->
+    <script>
+        // Function to check if there's a logged-in account
+        function checkLoginStatus() {
+            // Check sessionStorage for a logged-in user
+            let sessionUser = sessionStorage.getItem('userPhone');
+
+            // Check localStorage for a logged-in user
+            let localUser = localStorage.getItem('userPhone');
+
+            // If user exists in sessionStorage or localStorage, return the user's info
+            if (sessionUser) {
+                console.log('User is logged in via session storage:', sessionUser);
+                return sessionUser;
+            } else if (localUser) {
+                console.log('User is logged in via local storage:', localUser);
+                return localUser;
+            } else {
+                console.log('No user is logged in.');
+                return null;
+            }
+        }
+
+        // Example usage
+        let loggedInUser = checkLoginStatus();
+        if (loggedInUser) {
+            // User is logged in, proceed with logged-in logic
+            console.log('Logged in as:', loggedInUser);
+        } else {
+            // No user is logged in, show Swal alert and then redirect to login
+            Swal.fire({
+                icon: 'warning',
+                title: 'No user logged in',
+                text: 'You will be redirected to the login page.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear all items from local storage and session storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    // Redirect to login page after user clicks "OK"
+                    window.location.href = 'http://localhost:3000/';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
