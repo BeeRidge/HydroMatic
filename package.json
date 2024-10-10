@@ -39,7 +39,7 @@
     "eastasianwidth": "^0.2.0",
     "ejs": "^3.1.10",
     "emoji-regex": "^9.2.2",
-    "express": "^4.21.0",
+    "express": "^4.21.1",
     "fast-glob": "^3.3.2",
     "fastq": "^1.17.1",
     "fill-range": "^7.1.1",

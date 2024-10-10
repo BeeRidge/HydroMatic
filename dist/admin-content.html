@@ -61,7 +61,7 @@
             const authToken = localStorage.getItem('authToken');
             if (!authToken) {
                 // If no token found, redirect to login page
-                window.location.href = 'admin-login.html'; // Change this to your login page URL
+                window.location.href = 'admin-login'; // Change this to your login page URL
             } else {
                 fetchAdminContent(); // Fetch content if logged in
             }
