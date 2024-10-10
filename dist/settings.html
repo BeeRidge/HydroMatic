@@ -99,15 +99,19 @@
         <header class="w-full bg-sidebar py-5 px-6">
             <div class="container mx-auto flex justify-between items-center">
                 <!-- Logo and Branding -->
-                <a href="index"
+                <a href="dashboard"
                     class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
                     <span class="text2">Hydro</span><span class="text1">Matic</span>
                 </a>
                 <!-- Navigation for Desktop -->
                 <nav id="navbar-menu" class="hidden lg:flex space-x-8">
-                    <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
                         <i class="fas fa-tachometer-alt mr-3"></i>
                         Dashboard
+                    </a>
+                    <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Device Management
                     </a>
                     <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
                         <i class="fas fa-folder mr-3"></i>
@@ -129,9 +133,13 @@
             </div>
             <!-- Mobile Navigation Menu -->
             <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
-                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
+                </a>
+                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Device Management
                 </a>
                 <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-folder mr-3"></i>
@@ -192,9 +200,9 @@
                                                 IP Address</th>
                                             <th class="px-3 py-4 border-b-2 border-gray-300 bg-gray-50 tracking-wider">
                                             </th>
-                                            <!-- <th class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                            <th class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
                                                 Status
-                                            </th> -->
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
@@ -340,9 +348,9 @@
                   <td class="px-1 py-4 border-b border-gray-200 text-center">
                     <button class="editIp bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300" data-host="${row.Var_Host}" data-ip="${row.Var_Ip}">Edit IP</button>
                   </td>
+                  <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Status}</td>
                 </tr>
               `;
-                        //<td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Status}</td>
                         tableBody.innerHTML += tableRow;
                     });
 

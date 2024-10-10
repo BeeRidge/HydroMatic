@@ -95,15 +95,19 @@
         <header class="w-full bg-sidebar py-5 px-6">
             <div class="container mx-auto flex justify-between items-center">
                 <!-- Logo and Branding -->
-                <a href="index"
+                <a href="dashboard"
                     class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
                     <span class="text2">Hydro</span><span class="text1">Matic</span>
                 </a>
                 <!-- Navigation for Desktop -->
                 <nav id="navbar-menu" class="hidden lg:flex space-x-8">
-                    <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
                         <i class="fas fa-tachometer-alt mr-3"></i>
                         Dashboard
+                    </a>
+                    <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Device Management
                     </a>
                     <a href="archive" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
                         <i class="fas fa-folder mr-3"></i>
@@ -125,9 +129,13 @@
             </div>
             <!-- Mobile Navigation Menu -->
             <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
-                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
+                </a>
+                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Device Management
                 </a>
                 <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
                     <i class="fas fa-folder mr-3"></i>
@@ -156,7 +164,10 @@
                                         Name</th>
                                     <th
                                         class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                        IP Address</th>
+                                        Start Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        Harvest Date</th>
                                     <th
                                         class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                                         Date Archived</th>
@@ -208,26 +219,31 @@
 
                         // Conditionally hide the restore button if the status is FINISHED
                         const restoreButton = row.Status === 'FINISHED' ? '' : `
-        <button id="restoreBtn" class="restore bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300" data-id="${row.Archive_Id}">
-            Restore
-        </button>
-    `;
+                            <button id="restoreBtn" class="restore bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300" data-id="${row.Archive_Id}">
+                                Restore
+                            </button>
+                        `;
 
-                        // Convert Date_Archived to MM-DD-YYYY format
+                        // Convert Dates to MM-DD-YYYY format
                         const archivedDate = new Date(row.Date_Archived);
-                        const formattedDate = `${(archivedDate.getMonth() + 1).toString().padStart(2, '0')}-${archivedDate.getDate().toString().padStart(2, '0')}-${archivedDate.getFullYear()}`;
+                        const formattedArchivedDate = `${(archivedDate.getMonth() + 1).toString().padStart(2, '0')}-${archivedDate.getDate().toString().padStart(2, '0')}-${archivedDate.getFullYear()}`;
+                        const startDate = new Date(row.Start_Date);
+                        const formattedStartDate = `${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}-${startDate.getFullYear()}`;
+                        const harvestDate = new Date(row.Harvest_Date);
+                        const formattedHarvestDate = `${(harvestDate.getMonth() + 1).toString().padStart(2, '0')}-${harvestDate.getDate().toString().padStart(2, '0')}-${harvestDate.getFullYear()}`;
 
                         const tableRow = `
-        <tr>
-            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
-            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedDate}</td>
-            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
-            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">
-                ${restoreButton} <!-- Add the button or leave empty based on status -->
-            </td>
-        </tr>
-    `;
+                            <tr>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedArchivedDate}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">
+                                    ${restoreButton} <!-- Add the button or leave empty based on status -->
+                                </td>
+                            </tr>
+                        `;
 
                         tableBody.innerHTML += tableRow;
                     });

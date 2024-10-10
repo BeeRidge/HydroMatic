@@ -473,6 +473,16 @@ app.get('/api/archived', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
+// API to fetch all archived data
+app.get('/api/Dashboard-Data', async (req, res) => {
+  try {
+    const selectAll = "SELECT * FROM display_bed ORDER BY Bed_Id ASC";
+    const [results] = await db.query(selectAll);
+    res.json(results); // Send the results as JSON
+  } catch (err) {
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
 // API Update accounts
 app.post('/api/account', async (req, res) => {
   try {
@@ -977,6 +987,10 @@ app.get("/admin-login", (req, res) => {
 // Handle index.html
 app.get("/index", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+// Handle dashboard.html
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "dashboard.html"));
 });
 // Handle settings.html
 app.get("/settings", (req, res) => {
