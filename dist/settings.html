@@ -161,44 +161,77 @@
                     <h1 class="text-4xl text-black pb-6 font-bold">Settings</h1>
                     <div class="pb-16">
                         <div
-                            class="w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-3 gap-5 overflow-auto">
+                            class="w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5 overflow-auto">
+                            <!-- Account Information -->
                             <div id="account" style="border-color: #15cc15;"
-                                class="w-full bg-white border-4 border-solid rounded-lg shadow-lg p-6 aspect-square">
-                                <h1 class="text-3xl text-black py-8 font-bold uppercase">Account Information</h1>
-                                <h1 class="text-xl text-black py-6 px-6 font-bold uppercase">Phone Number:</h1><br>
-                                <h1 id="Acc_Pnumber"
-                                    class="text-xl text-black py-6 px-6 font-bold uppercase text-center">
-                                </h1>
-                                <h1
-                                    class="text-xl text-black py-6 px-6 font-bold uppercase items-center justify-center">
-                                    Password: </h1><br>
-                                <div class="text-center">
-                                    <input type="password" id="Acc_Password"
-                                        class="w-1/2 text-xl text-black py-6 font-bold text-center" readonly>
-                                    <button id="togglePassword" class="px-3 py-2 bg-gray-300 rounded">
-                                        Show
-                                    </button>
+                                class="w-full bg-white border-4 border-solid rounded-lg shadow-lg p-6 aspect-square grid grid-cols-2 gap-4">
+                                <h1 class="text-3xl col-span-2 text-black py-8 font-bold uppercase text-center">Account
+                                    Information</h1>
+
+                                <!-- First Name -->
+                                <h1 class="text-black py-2 px-6 font-bold uppercase">First Name:</h1>
+                                <div class="flex items-center">
+                                    <input type="text" id="Acc_Fname"
+                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
+                                        readonly>
+                                    <button id="editFnameBtn"
+                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
                                 </div>
-                                <div class="col-span-3 text-xl text-right py-8 px-3">
-                                    <button id="accEditBttn"
-                                        class="py-2 px-5 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                        Edit
-                                    </button>
+
+                                <!-- Last Name -->
+                                <h1 class="text-black py-2 px-6 font-bold uppercase">Last Name:</h1>
+                                <div class="flex items-center">
+                                    <input type="text" id="Acc_Lname"
+                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
+                                        readonly>
+                                    <button id="editLnameBtn"
+                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                                </div>
+
+                                <!-- Phone Number -->
+                                <h1 class="text-black py-2 px-6 font-bold uppercase">Phone Number:</h1>
+                                <div class="flex items-center">
+                                    <input type="text" id="Acc_Pnumber"
+                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
+                                        readonly>
+                                    <button id="editPhoneBtn"
+                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                                </div>
+
+                                <!-- Password -->
+                                <h1 class="text-black py-2 px-6 font-bold uppercase">Password:</h1>
+                                <div class="flex items-center">
+                                    <input type="password" id="Acc_Password"
+                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
+                                        readonly>
+                                    <button id="togglePassword" class="ml-3 px-3 py-2 bg-gray-300 rounded">Show</button>
+                                    <button id="editPasswordBtn"
+                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
                                 </div>
                             </div>
+
                             <div id="device-info" style="border-color: #15cc15;"
-                                class="w-full bg-white border-4 border-black border-solid rounded-lg shadow-lg p-6 aspect-square xl:col-span-2">
+                                class="w-full bg-white border-4 border-black border-solid rounded-lg shadow-lg p-6 aspect-square">
                                 <h1 class="text-3xl text-black py-2 font-bold uppercase">Device Information</h1>
+
+                                <!-- Div for showing no devices paired -->
+                                <div id="noDevicesMessage"
+                                    class="px-6 text-center justify-center text-lg text-gray-700 font-bold uppercase py-4 hidden">
+                                    No HydroMatic Device Paired
+                                </div>
+
                                 <div class="px-6 overflow-x-auto">
-                                    <table id="archivedTable" class="w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-100">
+                                    <table id="deviceTable" class="w-full divide-y divide-gray-200">
+                                        <thead id="tableHead" class="bg-gray-100">
                                             <tr>
                                                 <th
                                                     class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                    Name</th>
+                                                    Name
+                                                </th>
                                                 <th
                                                     class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                    IP Address</th>
+                                                    IP Address
+                                                </th>
                                                 <th
                                                     class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
                                                     Status
@@ -230,131 +263,221 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Account Information -->
     <script>
-        document.getElementById('accEditBttn').addEventListener('click', function () {
-            Swal.fire({
-                title: 'Update Account Info',
-                html: `
-                    <label>Phone Number</label><br>
-                    <input type="text" id="swal_Acc_Pnumber" class="swal2-input" placeholder="Enter Phone Number"><br>
-                    <label>Password</label><br>
-                    <input type="text" id="swal_Acc_Password" class="swal2-input" placeholder="Enter Password"><br>
-                `,
-                confirmButtonText: 'Update Account',
-                cancelButtonText: 'Cancel',
-                showCancelButton: true,
-                preConfirm: () => {
-                    const Acc_Pnumber = Swal.getPopup().querySelector('#swal_Acc_Pnumber').value;
-                    const Acc_Password = Swal.getPopup().querySelector('#swal_Acc_Password').value;
+        // Function to fetch user account details from the backend and populate the form
+        async function load() {
+            try {
+                const response = await fetch('/api/account/details', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
 
-                    if (!Acc_Pnumber || !Acc_Password) {
-                        Swal.showValidationMessage('Please enter both phone number and password.');
+                if (!response.ok) {
+                    throw new Error('Failed to load account details');
+                }
+
+                const data = await response.json();
+                // Populate form fields with fetched data
+                document.getElementById("Acc_Fname").value = data.fname || '';
+                document.getElementById("Acc_Lname").value = data.lname || '';
+                document.getElementById("Acc_Pnumber").value = data.phone || '';
+                document.getElementById("Acc_Password").value = data.password || '';
+            } catch (err) {
+                console.error('Error fetching account details:', err);
+                Swal.fire('Error', 'Failed to load account details', 'error');
+            }
+        }
+
+        load();
+
+        // Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('Acc_Password');
+            const toggleButton = document.getElementById('togglePassword');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+            toggleButton.textContent = toggleButton.textContent === 'Show' ? 'Hide' : 'Show';
+        });
+
+        // First Name Edit
+        document.getElementById('editFnameBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Update First Name',
+                input: 'text',
+                inputValue: document.getElementById('Acc_Fname').value,
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                preConfirm: (fname) => {
+                    if (!fname) {
+                        Swal.showValidationMessage('Please enter your first name.');
                         return false;
                     }
-
-                    return {
-                        Acc_Pnumber,
-                        Acc_Password
-                    };
+                    return { fname };
                 }
             }).then(result => {
                 if (result.isConfirmed) {
-                    const { Acc_Pnumber, Acc_Password } = result.value; // Destructure the returned values
-                    const pnum = localStorage.getItem('userPhone');
-                    const pass = localStorage.getItem('userPassword');
-
-                    // Ensure the fields match those expected by the server
-                    fetch('/api/account', {
+                    fetch('/api/account/update-fname', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            Acc_Pnumber,  // New phone number
-                            Acc_Password,  // New password
-                            old_Pnum: pnum,  // Old phone number (from localStorage)
-                            old_Pass: pass,  // Old password (from localStorage)
-                        })
-                    })
-                        .then(response => response.json())
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ newFname: result.value.fname })
+                    }).then(res => res.json())
                         .then(data => {
                             if (data.message) {
-                                console.log('Account updated:', data.message);
-                                // Store new account details in localStorage
-                                localStorage.setItem('userPhone', Acc_Pnumber);
-                                localStorage.setItem('userPassword', Acc_Password);
-                                Swal.fire('Success', 'Account information updated successfully', 'success');
-                                // Update the account info display
-                                load();
+                                Swal.fire('Success', 'First name updated successfully', 'success');
+                                load(); // Reload the form to reflect updated data
                             } else {
                                 Swal.fire('Error', data.error, 'error');
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire('Error', 'Something went wrong, please try again.', 'error');
-                        });
+                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
                 }
             });
         });
 
-
-        document.getElementById('togglePassword').addEventListener('click', function () {
-            const passwordInput = document.getElementById('Acc_Password');
-            const toggleButton = document.getElementById('togglePassword');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleButton.textContent = 'Hide';
-            } else {
-                passwordInput.type = 'password';
-                toggleButton.textContent = 'Show';
-            }
+        // Last Name Edit
+        document.getElementById('editLnameBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Update Last Name',
+                input: 'text',
+                inputValue: document.getElementById('Acc_Lname').value,
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                preConfirm: (lname) => {
+                    if (!lname) {
+                        Swal.showValidationMessage('Please enter your last name.');
+                        return false;
+                    }
+                    return { lname };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/api/account/update-lname', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ newLname: result.value.lname })
+                    }).then(res => res.json())
+                        .then(data => {
+                            if (data.message) {
+                                Swal.fire('Success', 'Last name updated successfully', 'success');
+                                load(); // Reload the form to reflect updated data
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                }
+            });
         });
 
-        function load() {
-            const pnum = localStorage.getItem('userPhone');
-            const pass = localStorage.getItem('userPassword');
+        // Phone Number Edit
+        document.getElementById('editPhoneBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Update Phone Number',
+                input: 'text',
+                inputValue: document.getElementById('Acc_Pnumber').value,
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                preConfirm: (pnumber) => {
+                    if (!pnumber) {
+                        Swal.showValidationMessage('Please enter a phone number.');
+                        return false;
+                    }
+                    return { pnumber };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/api/account/update-phone', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ newPnumber: result.value.pnumber })
+                    }).then(res => res.json())
+                        .then(data => {
+                            if (data.message) {
+                                Swal.fire('Success', 'Phone number updated successfully', 'success');
+                                load(); // Reload the form to reflect updated data
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                }
+            });
+        });
 
-            document.getElementById("Acc_Pnumber").textContent = `${pnum}`;
-            document.getElementById("Acc_Password").value = `${pass}`;
-        }
-
-        load();
+        // Password Edit
+        document.getElementById('editPasswordBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Update Password',
+                input: 'password',
+                inputValue: document.getElementById('Acc_Password').value,
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Please enter a password.');
+                        return false;
+                    }
+                    return { password };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/api/account/update-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ newPassword: result.value.password })
+                    }).then(res => res.json())
+                        .then(data => {
+                            if (data.message) {
+                                Swal.fire('Success', 'Password updated successfully', 'success');
+                                load(); // Reload the form to reflect updated data
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                }
+            });
+        });
     </script>
+
     <!-- Device Information and Connection -->
     <script>
         function reload() {
-            // Variable to hold the current row data
-            let currentRowData = {
-                host: '',
-                ip: ''
-            };
-
             // Fetch archived data and populate the table
             fetch('/api/device_info')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('tableBody');
+                    const tableHead = document.getElementById('tableHead');
+                    const noDevicesMessage = document.getElementById('noDevicesMessage');
+                    const deviceTable = document.getElementById('deviceTable');
+    
                     tableBody.innerHTML = ''; // Clear any existing rows
-
-                    data.forEach(row => {
-                        const tableRow = `
-                        <tr>
-                            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
-                            <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Status}</td>
-                        </tr>
-                        `;
-                        tableBody.innerHTML += tableRow;
-                    });
+    
+                    if (data.length > 0) {
+                        // Show the table if there are devices
+                        tableHead.style.display = 'table-header-group';
+                        noDevicesMessage.classList.add('hidden');
+                        deviceTable.classList.remove('hidden');
+    
+                        data.forEach(row => {
+                            const tableRow = `
+                            <tr>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Status}</td>
+                            </tr>
+                            `;
+                            tableBody.innerHTML += tableRow;
+                        });
+                    } else {
+                        // Hide the table and show the message if no devices are paired
+                        tableHead.style.display = 'none';
+                        deviceTable.classList.add('hidden');
+                        noDevicesMessage.classList.remove('hidden');
+                    }
                 })
-                .catch(error => console.error('Error fetching archived data:', error));
+                .catch(error => console.error('Error fetching device data:', error));
         }
-
+    
         reload();
     </script>
+    <!-- Check Device -->
     <script>
         async function checkDevice() {
             try {

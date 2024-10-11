@@ -378,23 +378,23 @@
                         <label for="lastName" class="text-sm text-gray-700">Last Name</label>
                         <input id="firstName" type="text" placeholder="First Name"
                             class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            pattern="[a-zA-Z]" title="characters only" required>
+                            pattern="[A-Za-z]+" title="First name should contain only letters" required>
                         <input id="lastName" type="text" placeholder="Last Name"
                             class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            pattern="[a-zA-Z]{6}" title="characters only" required>
+                            pattern="[A-Za-z]+" title="Last name should contain only letters" required>
                     </div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label for="signupPhone" class="text-sm text-gray-700">Phone Number</label>
                     <input id="signupPhone" type="text" placeholder="Phone Number"
                         class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+                        pattern="\d{11}" title="Phone number must be exactly 11 digits" required>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label for="signupPassword" class="text-sm text-gray-700">Password</label>
                     <input id="signupPassword" type="password" placeholder="Password"
                         class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        pattern="^[a-zA-Z0-9]{6,}"
+                        pattern="[A-Za-z0-9]{6,}"
                         title="Password must be at least 6 characters long and contain only letters and numbers"
                         required>
                 </div>
@@ -403,7 +403,7 @@
                     <div class="grid grid-cols-2 gap-5">
                         <input id="signupCode" type="text" placeholder="Code"
                             class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            pattern="[0-9]{6}" title="Code must be 6 digits" required>
+                            pattern="\d{6}" title="Code must be exactly 6 digits" required>
                         <button id="send" type="button"
                             class=" bg-green-600 hover:bg-green-700 text-white p-3 rounded-md transition duration-300 ease-in-out">Send
                             Code</button>
@@ -452,7 +452,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <!-- load heading roulet -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const headings = document.querySelectorAll('#headings-container h1');
@@ -473,11 +473,8 @@
 
             showNextHeading();
         });
-
-
     </script>
     <!-- JavaScript -->
-
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             try {
@@ -535,9 +532,7 @@
             }
         });
     </script>
-
-
-
+    <!-- Intersection -->
     <script>
         (function (document) {
             const markers = [...document.querySelectorAll('mark')];
@@ -558,17 +553,14 @@
             });
         })(document);
     </script>
-
-
-
+    <!-- toggle Mobile -->
     <script>
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
         }
     </script>
-
-
+    <!-- handle scroll -->
     <script>
         // Add this script at the bottom of your body or in a separate JS file
 
@@ -655,23 +647,19 @@
         // Handle sign-up form submission
         async function handleSignUp(event) {
             event.preventDefault();
-
+            const fname = document.getElementById('firstName').value;
+            const lname = document.getElementById('lastName').value;
             const phone = document.getElementById('signupPhone').value;
             const password = document.getElementById('signupPassword').value;
             const otp = document.getElementById('signupCode').value;
 
             // Basic validation
-            if (!phone || !password || !otp) {
-                Swal.fire('Error', 'All fields are required.', 'error');
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exactly 11 digits.', 'error');
                 return;
             }
 
-            if (!/^\d{10,15}$/.test(phone)) {
-                Swal.fire('Error', 'Phone number must be exact 11 digits.', 'error');
-                return;
-            }
-
-            if (!/^[a-zA-Z0-9]{6,}$/.test(password)) {
+            if (!/^[A-Za-z0-9]{6,}$/.test(password)) {
                 Swal.fire('Error', 'Password must be at least 6 characters long and contain only letters and numbers.', 'error');
                 return;
             }
@@ -681,19 +669,19 @@
                 return;
             }
 
+            // Proceed with form submission
             try {
                 const response = await fetch('/api/verify-otp', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ phone, otp, password }),
+                    body: JSON.stringify({ fname, lname, phone, password, otp }),
                 });
                 const data = await response.json();
 
                 if (data.success) {
                     Swal.fire('Success', 'Account created successfully!', 'success').then(() => {
-                        // Reload the page after account creation
                         window.location.reload();
                     });
                 } else {
@@ -744,7 +732,6 @@
                 if (data.success) {
                     // Save user data to localStorage and sessionStorage
                     localStorage.setItem('userPhone', phone);
-                    localStorage.setItem('userPassword', password);
                     sessionStorage.setItem('authToken', data.token); // Assuming you get a token on success
 
                     Swal.fire('Success', 'Login successful!', 'success').then(() => {

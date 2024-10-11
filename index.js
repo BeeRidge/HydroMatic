@@ -59,6 +59,9 @@ const otpStorage = {};
 // Generate a random OTP
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
 
+// Variable store the signed in account
+let signedAcc;
+
 // API to send OTP
 app.post("/api/send-otp", async (req, res) => {
   const { phone } = req.body;
@@ -91,9 +94,9 @@ app.post("/api/send-otp", async (req, res) => {
     res.status(500).json({ error: "Failed to send OTP" });
   }
 });
-// API to verify OTP and create an account if OTP is valid
+// API to Sign Up
 app.post("/api/verify-otp", async (req, res) => {
-  const { phone, otp, password } = req.body;
+  const { fname, lname, phone, password, otp } = req.body;
 
   if (!phone || !otp || !password) {
     return res.status(400).json({ error: "Phone number, Password, and OTP are required" });
@@ -107,7 +110,7 @@ app.post("/api/verify-otp", async (req, res) => {
 
       if (results.length === 0) {
         // User doesn't exist, insert into database
-        const [insertResults] = await db.query("INSERT INTO account (Acc_Pnumber, Acc_Password, Acc_OTP) VALUES (?, ?, ?)", [phone, password, otp]);
+        const [insertResults] = await db.query("INSERT INTO account (Acc_Fname, Acc_Lname, Acc_Pnumber, Acc_Password) VALUES (?, ?, ?, ?)", [fname, lname, phone, password]);
         res.status(200).json({ success: true, message: "Account created successfully!" });
       } else {
         res.status(400).json({ error: "You've already created an account." });
@@ -134,7 +137,7 @@ app.post('/api/login', async (req, res) => {
     if (results.length === 0) {
       return res.status(401).json({ error: 'Invalid phone number or password' });
     }
-
+    signedAcc = results[0].Acc_Pnumber;
     res.status(200).json({ success: true, message: 'Login successful', user: results[0] });
   } catch (err) {
     console.error('Database query error:', err);
@@ -158,7 +161,7 @@ app.get("/api/device_info", async (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({ error: "Table device_info not found" });
     }
-    const [data] = await db.query("SELECT * FROM device_info");
+    const [data] = await db.query("SELECT * FROM device_info WHERE Pnum = ?", [signedAcc]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -172,7 +175,7 @@ app.get("/api/display_bed", async (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({ error: "Table display_bed not found" });
     }
-    const [data] = await db.query("SELECT * FROM display_bed");
+    const [data] = await db.query("SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Start_Date Asc", [signedAcc]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -188,7 +191,7 @@ app.post("/api/display_table", async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?', [Var_Host, Var_Ip]);
+    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND = ?', [Var_Host, Var_Ip, signedAcc]);
     if (results.length === 0) {
       return res.status(404).json({ error: "No data found for the given Var_Host and Var_Ip" });
     }
@@ -201,14 +204,27 @@ app.post("/api/display_table", async (req, res) => {
 // Get the data from specific table Limit to 1
 app.post("/api/send-Data", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
-
   try {
     const [results] = await db.query("SHOW TABLES LIKE ?", [Var_Host]);
     if (results.length === 0) {
       return res.status(404).json({ error: "Table not found" });
     }
+    const [check] = await db.query("SELECT * FROM ?", [Var_Host]);
 
-    const [data] = await db.query("SELECT * FROM ?? WHERE Var_Ip = ? ORDER BY Num_Id DESC LIMIT 1", [Var_Host, Var_Ip]);
+    // Convert resultData.Date_Dev to Manila time (GMT+8)
+    const currentDate = convertToManilaTime(new Date().toISOString());
+    const resultDateDev = convertToManilaTime(check.Date_Dev);
+    const resultTimeDev = formatTime(check.Time_Dev); // Format to HH:MM
+    const currentManilaTime = getManilaTime(); // Format to HH:MM
+
+    if (currentDate === resultDateDev && currentTime === resultTimeDev) {
+      // Fetch the latest record limited to 1
+      const [data] = await db.query(
+        "SELECT Var_Temp, Var_WLvl FROM ?? WHERE Var_Ip = ? AND Date_Dev = ? Date_Dev = ? ORDER BY Num_Id DESC LIMIT 1",
+        [Var_Host, Var_Ip]
+      );
+    }
+
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -331,8 +347,8 @@ app.post("/api/add-bed-database", async (req, res) => {
 
     // Insert new bed
     await db.query(
-      `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status) VALUES (?, ?, ?, ?, ?, ?, "ONGOING")`,
-      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date]
+      `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, "ONGOING", ?)`,
+      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, signedAcc]
     );
 
     console.log("Bed inserted successfully!");
@@ -373,9 +389,9 @@ app.post("/api/delete-device", async (req, res) => {
 
     // Insert into archived
     await db.query(
-      `INSERT INTO archived (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Date_Archived, Status) 
-      VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?)`,
-      [name, ip, sDay, lDay, sDate, hDate, stat]
+      `INSERT INTO archived (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Date_Archived, Status, Pnum) 
+      VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?, ?)`,
+      [name, ip, sDay, lDay, sDate, hDate, stat, signedAcc]
     );
 
     console.log("Insert Successful to archived");
@@ -391,7 +407,7 @@ app.post("/api/update-last-day", async (req, res) => {
 
   try {
     // SQL query to select Last_Day from the database
-    const [results] = await db.query('SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?', [Var_Host, Var_Ip]);
+    const [results] = await db.query('SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, signedAcc]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found" });
@@ -423,7 +439,7 @@ app.post("/api/dates", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
 
   try {
-    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [Var_Host, Var_Ip, signedAcc]);
     console.log("Fetched results:", results);
     res.json(results);
   } catch (err) {
@@ -453,16 +469,14 @@ app.get("/api/growth-stages", async (req, res) => {
 // API notify
 app.post('/api/notify-harvest', async (req, res) => {
   try {
-    const { phone } = req.body;
-
     // Query to find crops that have Last_Day between 60 and 70 and have not received an SMS today
     const query = `
       SELECT * FROM display_bed 
       WHERE Last_Day >= 60 AND Last_Day <= 70 
-        AND (Last_SMS_Date IS NULL OR Last_SMS_Date < CURDATE())
+        AND (Last_SMS_Date IS NULL OR Last_SMS_Date < CURDATE()) AND Pnum = ?
     `;
 
-    const [crops] = await db.query(query);
+    const [crops] = await db.query(query, [signedAcc]);
 
     // Log the result to check if crops are found
     console.log('Crops found with Last_Day between 60 and 70:', crops);
@@ -485,13 +499,13 @@ app.post('/api/notify-harvest', async (req, res) => {
         const message = `Dear Farmer, your crop from "${cropName}" is ready to harvest. It has been growing for ${lastDay} days. Please harvest the crops until ${formattedHarvestDate}.`;
 
         // Log SMS details for debugging
-        console.log('Sending SMS to:', phone);
+        console.log('Sending SMS to:', signedAcc);
         console.log('Message:', message);
 
         // Send SMS using Semaphore API
         await axios.post('https://api.semaphore.co/api/v4/messages', {
           apikey: SEMAPHORE_API_KEY,
-          number: phone,
+          number: signedAcc,
           message: message,
           sendername: "HydroMatic", // Replace with your actual sender name
         }).catch(smsError => {
@@ -518,8 +532,8 @@ app.post('/api/notify-harvest', async (req, res) => {
 // API to fetch all archived data
 app.get('/api/archived', async (req, res) => {
   try {
-    const selectArchived = "SELECT * FROM archived ORDER BY Archive_Id DESC";
-    const [results] = await db.query(selectArchived);
+    const selectArchived = "SELECT * FROM archived WHERE Pnum = ? ORDER BY Archive_Id DESC";
+    const [results] = await db.query(selectArchived, [signedAcc]);
     res.json(results); // Send the results as JSON
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
@@ -528,8 +542,8 @@ app.get('/api/archived', async (req, res) => {
 // API to fetch all archived data
 app.get('/api/Dashboard-Data', async (req, res) => {
   try {
-    const selectAll = "SELECT * FROM display_bed ORDER BY Var_Host ASC";
-    const [results] = await db.query(selectAll);
+    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Var_Host ASC";
+    const [results] = await db.query(selectAll, [signedAcc]);
     res.json(results); // Send the results as JSON
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
@@ -538,10 +552,10 @@ app.get('/api/Dashboard-Data', async (req, res) => {
 // API to get the total bed frames
 app.get('/api/TotalBed', async (req, res) => {
   try {
-    const selectAll = "SELECT * FROM display_bed";
+    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ?";
 
     // Execute the query
-    const [results] = await db.query(selectAll);
+    const [results] = await db.query(selectAll, [signedAcc]);
 
     // Get the total number of rows
     const totalRows = results.length;
@@ -553,229 +567,142 @@ app.get('/api/TotalBed', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// API Update accounts
-app.post('/api/account', async (req, res) => {
+// API to get the account details
+app.get('/api/account/details', async (req, res) => {
   try {
-    console.log("Request body:", req.body);
-    const { Acc_Pnumber, Acc_Password, old_Pnum, old_Pass } = req.body;
+    const query = `SELECT Acc_Fname as fname, Acc_Lname as lname, Acc_Pnumber as phone, Acc_Password as password FROM account WHERE Acc_Pnumber = ?`;
+    const [rows] = await db.query(query, [signedAcc]);
+
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (err) {
+    console.error('Error fetching account details:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// API to update the first name
+app.post('/api/account/update-fname', async (req, res) => {
+  try {
+    const { newFname } = req.body;
 
     // Validate input
-    if (!Acc_Pnumber || !Acc_Password || !old_Pnum || !old_Pass) {
+    if (!newFname) {
+      return res.status(400).send({ error: 'All fields are required.' });
+    }
+
+    // SQL query to update the first name
+    const updateFnameQuery = `
+            UPDATE account 
+            SET Acc_Fname = ? 
+            WHERE Acc_Pnumber = ?
+        `;
+    const [updateResult] = await db.query(updateFnameQuery, [newFname, signedAcc]);
+
+    if (updateResult.affectedRows === 0) {
+      return res.status(404).send({ error: 'Old account information is incorrect.' });
+    }
+
+    res.send({ message: 'First name updated successfully.' });
+  } catch (err) {
+    console.error('Error updating first name:', err);
+    res.status(500).send({ error: 'Error updating first name.' });
+  }
+});
+// API to update the last name
+app.post('/api/account/update-lname', async (req, res) => {
+  try {
+    const {newLname} = req.body;
+
+    // Validate input
+    if (!newLname) {
+      return res.status(400).send({ error: 'All fields are required.' });
+    }
+
+    // SQL query to update the last name
+    const updateLnameQuery = `
+            UPDATE account 
+            SET Acc_Lname = ? 
+            WHERE Acc_Pnumber = ?
+        `;
+    const [updateResult] = await db.query(updateLnameQuery, [newLname, signedAcc]);
+
+    if (updateResult.affectedRows === 0) {
+      return res.status(404).send({ error: 'Old account information is incorrect.' });
+    }
+
+    res.send({ message: 'Last name updated successfully.' });
+  } catch (err) {
+    console.error('Error updating last name:', err);
+    res.status(500).send({ error: 'Error updating last name.' });
+  }
+});
+// API to update the phone number
+app.post('/api/account/update-phone', async (req, res) => {
+  try {
+    const { newPnumber } = req.body;
+
+    // Validate input
+    if (!newPnumber) {
       return res.status(400).send({ error: 'All fields are required.' });
     }
 
     // SQL query to check if the new phone number already exists
     const checkPhoneNumberQuery = `SELECT * FROM account WHERE Acc_Pnumber = ?`;
-    const [phoneResults] = await db.query(checkPhoneNumberQuery, [Acc_Pnumber]);
+    const [phoneResults] = await db.query(checkPhoneNumberQuery, [signedAcc]);
 
     if (phoneResults.length > 0) {
-      // If the phone number already exists, send an error response
       return res.status(409).send({ error: 'Phone number already exists.' });
     }
 
-    // SQL query to update account where old phone number and old password match
-    const updateAccountQuery = `
-      UPDATE account 
-      SET Acc_Pnumber = ?, Acc_Password = ? 
-      WHERE Acc_Pnumber = ? AND Acc_Password = ?
-    `;
-    const [updateResult] = await db.query(updateAccountQuery, [Acc_Pnumber, Acc_Password, old_Pnum, old_Pass]);
+    // SQL query to update the phone number
+    const updatePhoneQuery = `
+            UPDATE account 
+            SET Acc_Pnumber = ? 
+            WHERE Acc_Pnumber = ?
+        `;
+    const [updateResult] = await db.query(updatePhoneQuery, [newPnumber, signedAcc]);
 
     if (updateResult.affectedRows === 0) {
-      // If no rows were updated, it means the old phone number and password didn't match any record
+      return res.status(404).send({ error: 'Old account information is incorrect.' });
+    } else {
+      signedAcc = newPnumber;
+    }
+    
+    res.send({ message: 'Phone number updated successfully.' });
+  } catch (err) {
+    console.error('Error updating phone number:', err);
+    res.status(500).send({ error: 'Error updating phone number.' });
+  }
+});
+// API to update the password
+app.post('/api/account/update-password', async (req, res) => {
+  try {
+    const { newPassword} = req.body;
+
+    // Validate input
+    if (!newPassword) {
+      return res.status(400).send({ error: 'All fields are required.' });
+    }
+
+    // SQL query to update the password
+    const updatePasswordQuery = `
+            UPDATE account 
+            SET Acc_Password = ? 
+            WHERE Acc_Pnumber = ?
+        `;
+    const [updateResult] = await db.query(updatePasswordQuery, [newPassword, signedAcc]);
+
+    if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
     }
 
-    // Send a success response
-    res.send({ message: 'Account information updated successfully.' });
+    res.send({ message: 'Password updated successfully.' });
   } catch (err) {
-    console.error('Error updating account:', err);
-    res.status(500).send({ error: 'Error updating account information.' });
-  }
-});
-// API edit device name
-app.post('/api/edit-name', async (req, res) => {
-  try {
-    console.log("Request body:", req.body);
-    const { newName, oldName } = req.body;
-
-    if (!newName || !oldName) {
-      return res.status(400).json({ error: "Both newName and oldName are required" });
-    }
-
-    // Check if a table with the new name already exists
-    const checkNewNameQuery = 'SHOW TABLES LIKE ?';
-    const [newNameResults] = await db.query(checkNewNameQuery, [newName]);
-
-    if (newNameResults.length > 0) {
-      return res.status(409).json({ error: "A table with the new name already exists" }); // Conflict error
-    }
-
-    // Check if the old table exists
-    const checkOldNameQuery = 'SHOW TABLES LIKE ?';
-    const [oldNameResults] = await db.query(checkOldNameQuery, [oldName]);
-
-    if (oldNameResults.length === 0) {
-      return res.status(404).json({ error: "Old table not found" });
-    }
-
-    // Check if the old table exists
-    const checkOldBedQuery = 'SELECT * FROM display_bed WHERE Var_Host = ?';
-    const [oldBedResults] = await db.query(checkOldBedQuery, [oldName]);
-
-    if (oldBedResults.length === 0) {
-      return res.status(404).json({ error: "No 'BED' with same device info found" });
-    }
-
-    // Check if a record with newName already exists in device_info
-    const checkDeviceInfoQuery = 'SELECT * FROM device_info WHERE Var_Host = ?';
-    const [deviceInfoResults] = await db.query(checkDeviceInfoQuery, [newName]);
-
-    if (deviceInfoResults.length > 0) {
-      return res.status(409).json({ error: "A device with the new name already exists in device_info" }); // Conflict error
-    }
-
-    // Rename the table
-    const renameTableQuery = `RENAME TABLE \`${oldName}\` TO \`${newName}\``;
-    await db.query(renameTableQuery);
-
-    // Update Var_Host in device_info
-    const updateDeviceInfoQuery = 'UPDATE device_info SET Var_Host = ? WHERE Var_Host = ?';
-    await db.query(updateDeviceInfoQuery, [newName, oldName]);
-
-    const updateDisplayBedQuery = 'UPDATE display_bed SET Var_Host = ? WHERE Var_Host = ?';
-    await db.query(updateDisplayBedQuery, [newName, oldName]);
-
-    console.log("Update successfully");
-    res.status(200).json({ message: "Device name updated successfully" });
-  } catch (err) {
-    console.error("Error updating device name:", err);
-    res.status(500).json({ error: "Error updating device name" });
-  }
-});
-// API to edit device IP address
-app.post('/api/edit-ip', async (req, res) => {
-  try {
-    console.log("Request body:", req.body);
-    const { newip, oldip, hostname } = req.body;
-
-    if (!newip || !oldip || !hostname) {
-      return res.status(400).json({ error: "All data fields are required" });
-    }
-
-    const connection = await db.getConnection();
-
-    try {
-      // Check if the old IP exists in the hostname's table
-      const [oldIpResults] = await connection.query(`SELECT * FROM \`${hostname}\` WHERE Var_Ip = ?`, [oldip]);
-
-      if (oldIpResults.length === 0) {
-        return res.status(404).json({ error: "Old IP not found in the specified table" });
-      }
-
-      // Check if the new IP already exists in the hostname's table
-      const [newIpResults] = await connection.query(`SELECT * FROM \`${hostname}\` WHERE Var_Ip = ?`, [newip]);
-
-      if (newIpResults.length > 0) {
-        return res.status(409).json({ error: "New IP already exists in the specified table" });
-      }
-
-      // Check if the new IP exists in `device_info`
-      const [deviceInfoResults] = await connection.query('SELECT * FROM device_info WHERE Var_Ip = ?', [newip]);
-
-      if (deviceInfoResults.length > 0) {
-        return res.status(409).json({ error: "New IP already exists in device_info" });
-      }
-
-      // Check if the old IP exists in `display_bed`
-      const [oldBedIpResults] = await connection.query('SELECT * FROM display_bed WHERE Var_Ip = ?', [oldip]);
-
-      if (oldBedIpResults.length === 0) {
-        return res.status(404).json({ error: "Old IP not found in display_bed" });
-      }
-
-      // Check if the new IP exists in `display_bed`
-      const [newBedIpResults] = await connection.query('SELECT * FROM display_bed WHERE Var_Ip = ?', [newip]);
-
-      if (newBedIpResults.length > 0) {
-        return res.status(409).json({ error: "New IP already exists in display_bed" });
-      }
-
-      // Update IP in all tables
-      await connection.query(`UPDATE \`${hostname}\` SET Var_Ip = ? WHERE Var_Ip = ?`, [newip, oldip]);
-      await connection.query('UPDATE device_info SET Var_Ip = ? WHERE Var_Ip = ?', [newip, oldip]);
-      await connection.query('UPDATE display_bed SET Var_Ip = ? WHERE Var_Ip = ?', [newip, oldip]);
-
-      console.log("IP update successful across all tables");
-      return res.status(200).json({ message: "IP address updated successfully" });
-    } finally {
-      connection.release(); // Release the connection back to the pool
-    }
-  } catch (err) {
-    console.error("Error processing request:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-});
-// API update bed
-app.post('/api/update-bed', async (req, res) => {
-  try {
-    const { Var_Host, Var_Ip, Last_Day, Start_Date } = req.body;
-
-    console.log('Request body:', { Var_Host, Var_Ip, Last_Day, Start_Date });
-
-    if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
-      return res.status(400).json({ error: 'All fields (Var_Host, Var_Ip, Last_Day, Start_Date) are required.' });
-    }
-
-    const [result] = await db.query(`
-      UPDATE display_bed
-      SET Start_Day = ?, Start_Date = ?
-      WHERE Var_Host = ? AND Var_Ip = ?
-    `, [Last_Day, Start_Date, Var_Host, Var_Ip]);
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'No bed found with the specified Host and IP.' });
-    }
-
-    res.json({ message: 'Bed information updated successfully.' });
-  } catch (err) {
-    console.error('Error updating bed information:', err);
-    return res.status(500).json({ error: 'Error updating bed information.' });
-  }
-});
-// API removing from archive
-app.post('/api/remove', async (req, res) => {
-  try {
-    console.log("Request body:", req.body);
-    const { id, varHost, varIp, date } = req.body;
-
-    if (!id || !varHost || !varIp || !date) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const dateParts = date.split('-');
-    if (dateParts.length !== 3) {
-      return res.status(400).json({ error: 'Invalid date format. Use MM-DD-YYYY.' });
-    }
-
-    const formattedDate = `${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
-      return res.status(400).json({ error: 'Invalid date format. Use MM-DD-YYYY.' });
-    }
-
-    const [result] = await db.query(`
-      DELETE FROM archived 
-      WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?
-    `, [id, varHost, varIp, formattedDate]);
-
-    if (result.affectedRows > 0) {
-      res.status(200).json({ message: 'Record removed successfully' });
-    } else {
-      res.status(404).json({ error: 'Record not found' });
-    }
-  } catch (error) {
-    console.error('Error executing query:', error);
-    return res.status(500).json({ error: 'Database error' });
+    console.error('Error updating password:', err);
+    res.status(500).send({ error: 'Error updating password.' });
   }
 });
 // API recover from archive
@@ -798,7 +725,7 @@ app.post('/api/recover', async (req, res) => {
       return res.status(400).json({ error: 'Invalid date format. Use MM-DD-YYYY.' });
     }
 
-    const [checkResult] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?", [varHost, varIp]);
+    const [checkResult] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [varHost, varIp, signedAcc]);
 
     if (checkResult.length === 0) {
       const [archivedResult] = await db.query("SELECT * FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?", [id, varHost, varIp, formattedDate]);
@@ -850,8 +777,8 @@ app.post("/api/notify-anomaly", async (req, res) => {
     try {
       // SQL query to select Last_Day from the database
       const [rows] = await connection.query(
-        'SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?',
-        [Var_Host, Var_Ip]
+        'SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?',
+        [Var_Host, Var_Ip, signedAcc]
       );
 
       if (rows.length > 0) {
