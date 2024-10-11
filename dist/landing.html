@@ -373,6 +373,18 @@
             <!-- Sign Up Form -->
             <form id="signup-form" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
                 <div class="flex flex-col space-y-2">
+                    <div class="grid grid-cols-2 gap-5">
+                        <label for="firstName" class="text-sm text-gray-700">First Name</label>
+                        <label for="lastName" class="text-sm text-gray-700">Last Name</label>
+                        <input id="firstName" type="text" placeholder="First Name"
+                            class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            pattern="[a-zA-Z]" title="characters only" required>
+                        <input id="lastName" type="text" placeholder="Last Name"
+                            class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            pattern="[a-zA-Z]{6}" title="characters only" required>
+                    </div>
+                </div>
+                <div class="flex flex-col space-y-2">
                     <label for="signupPhone" class="text-sm text-gray-700">Phone Number</label>
                     <input id="signupPhone" type="text" placeholder="Phone Number"
                         class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
