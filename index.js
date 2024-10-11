@@ -239,6 +239,58 @@ app.post("/api/DataLogs", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
+// API to check device if inactive and active
+app.post('/api/checkDevice', async (req, res) => {
+  try {
+    // Get all devices from the device_info table
+    const selectDevices = "SELECT * FROM device_info";
+    const [devices] = await db.query(selectDevices);
+
+    if (devices.length === 0) {
+      return res.status(404).json({ error: "No devices found" });
+    }
+
+    // Loop through all devices and check their respective table for date/time comparison
+    for (const device of devices) {
+      const { Var_Host, Var_Ip } = device;
+
+      // Check if the table for the device exists
+      const [tables] = await db.query("SHOW TABLES LIKE ?", [Var_Host]);
+      if (tables.length === 0) {
+        // Update the device status to REPAIR if its table doesn't exist
+        await db.query("UPDATE device_info SET Status = 'REPAIR' WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+        continue; // Skip to the next device
+      }
+
+      // Get the latest record from the device-specific table
+      const [deviceData] = await db.query("SELECT * FROM ?? WHERE Var_Ip = ? ORDER BY Date_Dev DESC, Time_Dev DESC LIMIT 1", [Var_Host, Var_Ip]);
+
+      if (deviceData.length === 0) {
+        continue; // Skip this device if no records are found
+      }
+
+      const currentDate = convertToManilaTime(new Date().toISOString());
+      const latestDeviceDate = convertToManilaTime(deviceData[0].Date_Dev);
+      const latestDeviceTime = formatTime(deviceData[0].Time_Dev); // Format to HH:MM
+      const currentTime = getManilaTime(); // Format to HH:MM
+
+      // Compare the date and time
+      if (latestDeviceDate !== currentDate || latestDeviceTime !== currentTime) {
+        // If date/time mismatch, update the device_info status to INACTIVE
+        await db.query("UPDATE device_info SET Status = 'INACTIVE' WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+      } else {
+        await db.query("UPDATE device_info SET Status = 'ACTIVE' WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+      }
+    }
+
+    // If all checks are successful
+    res.status(200).json({ message: "Device statuses updated successfully" });
+
+  } catch (err) {
+    console.error("Database query error:", err);
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
 // Creating bed display
 app.post("/api/add-bed-database", async (req, res) => {
   console.log("Request received for /api/add-bed-database");
@@ -487,10 +539,10 @@ app.get('/api/Dashboard-Data', async (req, res) => {
 app.get('/api/TotalBed', async (req, res) => {
   try {
     const selectAll = "SELECT * FROM display_bed";
-    
+
     // Execute the query
     const [results] = await db.query(selectAll);
-    
+
     // Get the total number of rows
     const totalRows = results.length;
 
@@ -501,7 +553,6 @@ app.get('/api/TotalBed', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
-
 // API Update accounts
 app.post('/api/account', async (req, res) => {
   try {
@@ -756,7 +807,7 @@ app.post('/api/recover', async (req, res) => {
         const resultData = archivedResult[0];
         const lday = resultData.Last_Day;
         let status;
-        if(lday >= 60){
+        if (lday >= 60) {
           status = "HARVEST";
         } else {
           status = "ONGOING";
@@ -1098,7 +1149,7 @@ function formatTime(timeInput) {
 
   const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zero
   const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes and pad with zero
-  
+
   return `${hours}:${minutes}`; // Return time in HH:MM format
 }
 

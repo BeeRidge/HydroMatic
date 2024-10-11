@@ -327,62 +327,82 @@
             <a href="#device-info" class="nav-link text-white hover:text-green-100">Device Info</a>
             <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
             <a href="#support" class="nav-link text-white hover:text-green-100">Support</a>
-            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
+            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign
+                up</button>
         </nav>
     </header>
-   <!-- Modal Structure -->
-<div id="modal" class="fixed z-50 inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6 space-y-6">
-      <div class="flex justify-between items-center">
-        <h2 id="modal-title" class="text-4xl font-bold text-gray-700">Login</h2>
-        <button class="text-gray-500 hover:text-gray-700 transition duration-300 ease-in-out" onclick="closeModal()">✖</button>
-      </div>
-      <!-- Tabs for switching between Login and Sign Up -->
-      <div class="flex justify-center space-x-6 mb-4">
-        <button id="login-tab" class="py-2 px-4 border-b-2 border-blue-600 text-blue-600 hover:text-blue-700 transition duration-300 ease-in-out"
-          onclick="switchToLogin()">Login</button>
-        <button id="signup-tab" class="py-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition duration-300 ease-in-out" onclick="switchToSignUp()">Sign
-          Up</button>
-      </div>
-      <!-- Login Form -->
-      <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
-        <div class="flex flex-col space-y-2">
-          <label for="loginPhone" class="text-sm text-gray-700">Phone Number</label>
-          <input id="loginPhone" type="text" placeholder="Phone Number" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+    <!-- Modal Structure -->
+    <div id="modal" class="fixed z-50 inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6 space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 id="modal-title" class="text-4xl font-bold text-gray-700">Login</h2>
+                <button class="text-gray-500 hover:text-gray-700 transition duration-300 ease-in-out"
+                    onclick="closeModal()">✖</button>
+            </div>
+            <!-- Tabs for switching between Login and Sign Up -->
+            <div class="flex justify-center space-x-6 mb-4">
+                <button id="login-tab"
+                    class="py-2 px-4 border-b-2 border-blue-600 text-gray-500 hover:text-blue-700 transition duration-300 ease-in-out"
+                    onclick="switchToLogin()">Login</button>
+                <button id="signup-tab"
+                    class="py-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-green-700 transition duration-300 ease-in-out"
+                    onclick="switchToSignUp()">Sign
+                    Up</button>
+            </div>
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                <div class="flex flex-col space-y-2">
+                    <label for="loginPhone" class="text-sm text-gray-700">Phone Number</label>
+                    <input id="loginPhone" type="text" placeholder="Phone Number"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="loginPassword" class="text-sm text-gray-700">Password</label>
+                    <input id="loginPassword" type="password" placeholder="Password"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="^[a-zA-Z0-9]{6,}"
+                        title="Password must be at least 6 characters long and contain only letters and numbers"
+                        required>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Log
+                    In</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
+                <div class="flex flex-col space-y-2">
+                    <label for="signupPhone" class="text-sm text-gray-700">Phone Number</label>
+                    <input id="signupPhone" type="text" placeholder="Phone Number"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="signupPassword" class="text-sm text-gray-700">Password</label>
+                    <input id="signupPassword" type="password" placeholder="Password"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="^[a-zA-Z0-9]{6,}"
+                        title="Password must be at least 6 characters long and contain only letters and numbers"
+                        required>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="signupCode" class="text-sm text-gray-700">Code</label>
+                    <div class="grid grid-cols-2 gap-5">
+                        <input id="signupCode" type="text" placeholder="Code"
+                            class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            pattern="[0-9]{6}" title="Code must be 6 digits" required>
+                        <button id="send" type="button"
+                            class=" bg-green-600 hover:bg-green-700 text-white p-3 rounded-md transition duration-300 ease-in-out">Send
+                            Code</button>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Sign
+                    Up</button>
+            </form>
         </div>
-        <div class="flex flex-col space-y-2">
-          <label for="loginPassword" class="text-sm text-gray-700">Password</label>
-          <input id="loginPassword" type="password" placeholder="Password" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            pattern="^[a-zA-Z0-9]{6,}"
-            title="Password must be at least 6 characters long and contain only letters and numbers" required>
-        </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Log In</button>
-      </form>
-  
-      <!-- Sign Up Form -->
-      <form id="signup-form" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
-        <div class="flex flex-col space-y-2">
-          <label for="signupPhone" class="text-sm text-gray-700">Phone Number</label>
-          <input id="signupPhone" type="text" placeholder="Phone Number" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
-        </div>
-        <div class="flex flex-col space-y-2">
-          <label for="signupPassword" class="text-sm text-gray-700">Password</label>
-          <input id="signupPassword" type="password" placeholder="Password" class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            pattern="^[a-zA-Z0-9]{6,}"
-            title="Password must be at least 6 characters long and contain only letters and numbers" required>
-        </div>
-        <div class="flex flex-col space-y-2">
-          <label for="signupCode" class="text-sm text-gray-700">Code</label>
-          <input id="signupCode" type="text" placeholder="Code" class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            pattern="[0-9]{6}" title="Code must be 6 digits" required>
-        </div>
-        <button id="send" type="button" class=" bg-green-600 hover:bg-green-700 text-white p-3 rounded-md transition duration-300 ease-in-out">Send Code</button>
-        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Sign Up</button>
-      </form>
     </div>
-  </div>
     <section id="Home" class="bg-c w-full h-auto"></section>
     <section id="Features" class="bg-body"></section>
     <section id="Device Information" class="bg-c"></section>
@@ -677,26 +697,26 @@
     <script>
         async function handleLogin(event) {
             event.preventDefault();
-    
+
             const phone = document.getElementById('loginPhone').value;
             const password = document.getElementById('loginPassword').value;
-    
+
             // Basic validation
             if (!phone || !password) {
                 Swal.fire('Error', 'Both phone number and password are required.', 'error');
                 return;
             }
-    
+
             if (!/^\d{11}$/.test(phone)) {
                 Swal.fire('Error', 'Phone number must be exactly 11 digits.', 'error');
                 return;
             }
-    
+
             if (!/^[a-zA-Z0-9]{6,}$/.test(password)) {
                 Swal.fire('Error', 'Password must be at least 6 characters long and contain only letters and numbers.', 'error');
                 return;
             }
-    
+
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
@@ -705,16 +725,16 @@
                     },
                     body: JSON.stringify({ phone, password }),
                 });
-    
+
                 const data = await response.json();
                 console.log('Server response:', data); // Log the response data
-    
+
                 if (data.success) {
                     // Save user data to localStorage and sessionStorage
                     localStorage.setItem('userPhone', phone);
                     localStorage.setItem('userPassword', password);
                     sessionStorage.setItem('authToken', data.token); // Assuming you get a token on success
-    
+
                     Swal.fire('Success', 'Login successful!', 'success').then(() => {
                         // Redirect to the desired page after successful login
                         window.location.href = 'http://localhost:3000/dashboard';
@@ -728,6 +748,7 @@
             }
         }
     </script>
-    
+
 </body>
+
 </html>

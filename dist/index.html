@@ -195,7 +195,7 @@
                         </div>
 
                         <div id="bedsContainer"
-                            class="w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-1 lg:grid-rows-1 xl:grid-rows-1
+                            class="flex w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-1 lg:grid-rows-1 xl:grid-rows-1
                             grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-auto">
                             <!-- Bed items -->
                         </div>
@@ -328,7 +328,7 @@
                     <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
                     <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
                     <div class="text-right">
-                        <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Delete Bed</button>
+                        <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Remove Hydro Frame</button>
                     </div>
                 `;
 
@@ -338,16 +338,16 @@
                 event.stopPropagation();
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to recover this bed!",
+                    text: "You want to remove this Hydro Frame!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
+                    confirmButtonText: 'Yes, remove it!',
                     cancelButtonText: 'No, keep it'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         newBedDiv.remove();
-                        Swal.fire('Deleted!', 'The bed has been deleted.', 'success');
                         removeBedFromLocalStorage(bedId);
+
                         // Send data to the server to update the database
                         fetch('/api/delete-device', {
                             method: 'POST',
@@ -360,13 +360,29 @@
                         })
                             .then(response => {
                                 if (!response.ok) {
-                                    throw new Error('Failed to Delete Data in the database.');
+                                    throw new Error('Failed to remove data in the database.');
                                 }
                                 return response.json();
                             })
+                            .then(() => {
+                                Swal.fire({
+                                    title: 'Removed!',
+                                    text: 'The Hydro Frame has been removed successfully.',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    // Reload the page when the user clicks 'OK'
+                                    location.reload();
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
                     }
                 });
             });
+
+
 
             newBedDiv.addEventListener('click', function () {
                 localStorage.setItem('Var_Host', JSON.stringify(deviceInfo.Var_Host));
@@ -464,6 +480,13 @@
             const bedsContainer = document.getElementById('bedsContainer');
             bedsContainer.innerHTML = ''; // Clear previous beds
 
+            if (allBeds.length === 0) {
+                // Display a centered message when no beds are available
+                bedsContainer.innerHTML = '<div class="p-16 col-span-4 text-center font-bold text-4xl">No Hydro Frame Added</div>';
+                document.getElementById('pageIndicator').textContent = ''; // Clear pagination indicator
+                return;
+            }
+
             // Calculate start and end index for the current page
             const startIndex = (page - 1) * bedsPerPage;
             const endIndex = Math.min(startIndex + bedsPerPage, allBeds.length);
@@ -476,6 +499,8 @@
             // Update pagination indicator
             document.getElementById('pageIndicator').textContent = `Page ${page} of ${Math.ceil(allBeds.length / bedsPerPage)}`;
         }
+
+
 
 
         function isDeviceDuplicate(hostname, ipAddress, beds) {

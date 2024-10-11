@@ -153,9 +153,9 @@
         <!-- Body -->
         <div class="flex-grow overflow-hidden">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
-                <main class="w-full h-full p-6">
+                <main class="w-full h-full p-6">    
                     <h1 class="text-4xl text-black pb-6 font-bold">Archive</h1>
-                    <div class="px-6 overflow-x-auto">
+                    <div class="px-6 overflow-x-auto text-center">
                         <!-- Filter and Pagination Bar -->
                         <div class="flex justify-between items-center mb-4">
                             <div class="flex items-center">
@@ -323,7 +323,23 @@
 
         function renderTable(page) {
             const tableBody = document.getElementById('tableBody');
+            const tableHead = document.querySelector('#archivedTable thead');
+            const noDataMessage = '<div class="p-16 text-4xl font-bold">No Hydro Frame Removed or Finished</div>';
             tableBody.innerHTML = ''; // Clear previous rows
+
+            // Check if there is data to display
+            if (filteredData.length === 0) {
+                // Hide table head
+                tableHead.style.display = 'none';
+
+                // Display "No Hydro Frame" message
+                document.getElementById('archivedTable').insertAdjacentHTML('beforeend', noDataMessage);
+                document.getElementById('pageIndicator').textContent = ''; // Clear pagination indicator
+                return;
+            }
+
+            // Show table head if data is available
+            tableHead.style.display = '';
 
             // Calculate start and end index for the current page
             const startIndex = (page - 1) * rowsPerPage;
@@ -410,7 +426,10 @@
 
                             if (response.ok) {
                                 row.remove();
-                                Swal.fire('Restored!', 'The record has been recovered.', 'success');
+                                Swal.fire('Restored!', 'The record has been recovered.', 'success').then(() => {
+                                    // Reload the page when the user clicks 'OK'
+                                    location.reload();
+                                });
                             } else {
                                 Swal.fire('Error!', 'There was an existing bed with the same Name and Ip in the dashboard.', 'error');
                             }
