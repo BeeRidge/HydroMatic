@@ -417,7 +417,7 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="bg-c py-48 px-10 w-full h-auto">
+    <section class="bg-c pt-16 pb-20 px-10 w-full h-auto">
         <div class="container mx-auto flex flex-col md:flex-row items-center">
             <div id="headings-container" class=" space-y-6 text-center md:text-left">
                 <h1 id="heading1" class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Monitor
@@ -446,28 +446,20 @@
                     <div class="text-3xl text-d mb-4">
                         <i class="fas fa-water"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>Water-Level
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>Real-Time
                             Monitoring</mark></h3>
-                    <p class="text-gray-600 scroll-animation">Track the water levels in real-time to ensure optimal
-                        conditions for your plants.</p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-3xl text-d mb-4">
                         <i class="fas fa-thermometer-half"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>Temperature
-                            Monitoring</mark></h3>
-                    <p class="text-gray-600 scroll-animation">Monitor the water temperature to maintain the perfect
-                        environment for your crops.</p>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark></h3>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-3xl text-d mb-4">
                         <i class="fas fa-bullhorn"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>Automated Air
-                            Pumps</mark></h3>
-                    <p class="text-gray-600 scroll-animation">Ensure efficient aeration with automated air pumps that
-                        supply oxygen to the roots of the plants.</p>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>High Quality Crops</mark></h3>
                 </div>
             </div>
         </div>
@@ -477,7 +469,7 @@
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
             <div>
-                <h2 class="text-3xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">HydroMatic
+                <h2 class="text-3xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">HydroMatic    
                     Device</h2>
                 <p class="mt-4 text-black-200 scroll-animation">Description: We develop a device that utilizes sensors to
                     monitor and supply oxygen in hydroponic setup. It ensures optimal growing conditions and
@@ -707,64 +699,6 @@
             }
 
             showNextHeading();
-        });
-    </script>
-    <!-- JavaScript -->
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                console.log('Fetching content from API...');
-                const response = await fetch('/api/admin-content');
-                if (!response.ok) {
-                    throw new Error("Network response was not ok: ${response.statusText}");
-                }
-
-                const sections = await response.json();
-                console.log('API response:', sections);
-
-                const uniqueSections = {};
-
-                // Map unique sections based on section_name
-                sections.forEach(section => {
-                    if (section.section_name) {
-                        if (!uniqueSections[section.section_name]) {
-                            uniqueSections[section.section_name] = section.content;
-                        } else {
-                            console.warn("Duplicate section_name found in API response: ${section.section_name}");
-                        }
-                    } else {
-                        console.warn('Section name is missing in API response.');
-                    }
-                });
-
-                console.log('Unique sections to insert:', uniqueSections);
-
-                // Insert content into each unique section
-                Object.keys(uniqueSections).forEach(sectionName => {
-                    const sectionElement = document.getElementById(sectionName);
-                    if (sectionElement) {
-                        console.log("Inserting content into section: ${sectionName}");
-
-                        // Check current content
-                        console.log("Current content of section ${sectionName}:, sectionElement.innerHTML");
-
-                        // Insert content if it's empty
-                        if (sectionElement.innerHTML.trim() === '') {
-                            sectionElement.innerHTML = uniqueSections[sectionName];
-                        } else {
-                            console.warn("Section element with ID ${sectionName} already contains content.");
-                        }
-
-                        // Log the updated content
-                        console.log("Updated content of section ${sectionName}:, sectionElement.innerHTML");
-                    } else {
-                        console.warn("No element found with ID ${sectionName}.");
-                    }
-                });
-
-            } catch (error) {
-                console.error('Error fetching or processing data:', error);
-            }
         });
     </script>
     <!-- Intersection -->
