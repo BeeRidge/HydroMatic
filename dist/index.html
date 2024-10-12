@@ -223,30 +223,44 @@
                     Swal.fire({
                         title: 'Device Connection',
                         html: `
-                            <label>Device Hostname</label><br>
-                            <input type="text" id="Var_Host" class="swal2-input" placeholder="Enter Hostname"><br>
-                            <label>Device IP Address</label><br>
-                            <input type="text" id="Var_Ip" class="swal2-input" placeholder="Enter IP Address"><br>
-                            <label>How many days ago was lettuce planted?</label><br>
-                            <input type="number" id="Last_Day" class="swal2-input" placeholder="Number of days" min="1"><br>
-                            <label>Date of Planting</label><br>
-                            <input type="date" id="Start_Date" class="swal2-input" placeholder="Select Date"><br>
-                            <p>Note!<br> Make sure that the Name and IP are the same as the device Name and IP.</p>
-                        `,
+                <label>Device Hostname</label><br>
+                <input type="text" id="Var_Host" class="swal2-input" placeholder="Enter Hostname"><br>
+                <label>Device IP Address</label><br>
+                <input type="text" id="Var_Ip" class="swal2-input" placeholder="Enter IP Address"><br>
+                <label>How many days ago was lettuce planted?</label><br>
+                <input type="number" id="Last_Day" class="swal2-input" placeholder="Number of days" min="1" max="365"><br>
+                <label>Date of Planting</label><br>
+                <input type="date" id="Start_Date" class="swal2-input" placeholder="Select Date"><br>
+                <p>Note!<br> Make sure that the Name and IP are the same as the device Name and IP.</p>
+            `,
                         confirmButtonText: 'Add Device',
                         cancelButtonText: 'Cancel',
                         showCancelButton: true,
                         preConfirm: () => {
-                            const Var_Host = Swal.getPopup().querySelector('#Var_Host').value;
-                            const Var_Ip = Swal.getPopup().querySelector('#Var_Ip').value;
-                            const Last_Day = Swal.getPopup().querySelector('#Last_Day').value;
-                            const Start_Date = Swal.getPopup().querySelector('#Start_Date').value;
+                            const Var_Host = Swal.getPopup().querySelector('#Var_Host').value.trim();
+                            const Var_Ip = Swal.getPopup().querySelector('#Var_Ip').value.trim();
+                            const Last_Day = Swal.getPopup().querySelector('#Last_Day').value.trim();
+                            const Start_Date = Swal.getPopup().querySelector('#Start_Date').value.trim();
 
-                            if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
-                                Swal.showValidationMessage('Please enter all fields: Device Hostname, Device IP Address, Days, and Date of Planting.');
+                            // Input validation on the client side
+                            if (!Var_Host || !/^[a-zA-Z0-9-_]+$/.test(Var_Host)) {
+                                Swal.showValidationMessage('Invalid Hostname. Only letters, numbers, hyphen, and underscore are allowed.');
+                                return false;
+                            }
+                            if (!Var_Ip || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(Var_Ip)) {
+                                Swal.showValidationMessage('Invalid IP Address format.');
+                                return false;
+                            }
+                            if (!Last_Day || Last_Day < 1 || Last_Day > 70) {
+                                Swal.showValidationMessage('Invalid number of days. Must be between 1 and 365.');
+                                return false;
+                            }
+                            if (!Start_Date) {
+                                Swal.showValidationMessage('Please enter a valid planting date.');
                                 return false;
                             }
 
+                            // Further validation on server-side
                             return fetch('/api/display_bed')
                                 .then(response => response.json())
                                 .then(beds => {
@@ -275,7 +289,6 @@
                                         Start_Date: Start_Date
                                     })
                                 })
-
                                     .then(response => {
                                         if (!response.ok) {
                                             throw new Error('Failed to insert data in the database.');
@@ -298,6 +311,7 @@
                         });
                 });
         });
+
 
         function formatDate(dateString) {
             const date = new Date(dateString);

@@ -8,6 +8,9 @@ const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const app = express();
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // The salt rounds for bcrypt
+const { body, validationResult } = require('express-validator');
 const PORT = process.env.PORT || 3000;
 
 // Configure multer for file upload with original filename preservation
@@ -60,7 +63,7 @@ const otpStorage = {};
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
 
 // Variable store the signed in account
-let signedAcc;
+let signedAcc = null;
 
 // API to send OTP
 app.post("/api/send-otp", async (req, res) => {
@@ -94,6 +97,28 @@ app.post("/api/send-otp", async (req, res) => {
     res.status(500).json({ error: "Failed to send OTP" });
   }
 });
+// API to verify OTP
+app.post("/api/otp-verify", async (req, res) => {
+  const { phone, otp } = req.body;
+
+  // Validate the input
+  if (!phone || !otp) {
+    return res.status(400).json({ error: "Phone number and OTP are required" });
+  }
+
+  // Check if OTP exists for the provided phone number
+  const storedOtp = otpStorage[phone];
+
+  // Check if the OTP matches
+  if (storedOtp && storedOtp === Number(otp)) {
+    // OTP verified successfully
+    delete otpStorage[phone]; // Clear the OTP after successful verification
+    return res.status(200).json({ success: true, message: "OTP verified successfully" });
+  } else {
+    // OTP verification failed
+    return res.status(400).json({ error: "Invalid OTP" });
+  }
+});
 // API to Sign Up
 app.post("/api/verify-otp", async (req, res) => {
   const { fname, lname, phone, password, otp } = req.body;
@@ -106,11 +131,17 @@ app.post("/api/verify-otp", async (req, res) => {
     delete otpStorage[phone]; // Clear OTP after successful verification
 
     try {
-      const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ? AND Acc_Password = ?', [phone, password]);
+      const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ?', [phone]);
 
       if (results.length === 0) {
-        // User doesn't exist, insert into database
-        const [insertResults] = await db.query("INSERT INTO account (Acc_Fname, Acc_Lname, Acc_Pnumber, Acc_Password) VALUES (?, ?, ?, ?)", [fname, lname, phone, password]);
+        // **Correctly hash the password before storing it**
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        console.log('Generated hashed password:', hashedPassword); // During sign-up
+
+
+        // Insert the new user with the hashed password
+        const [insertResults] = await db.query("INSERT INTO account (Acc_Fname, Acc_Lname, Acc_Pnumber, Acc_Password) VALUES (?, ?, ?, ?)", [fname, lname, phone, hashedPassword]);
+
         res.status(200).json({ success: true, message: "Account created successfully!" });
       } else {
         res.status(400).json({ error: "You've already created an account." });
@@ -132,13 +163,29 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ? AND Acc_Password = ?', [phone, password]);
+    // Query the database for the account with the provided phone number
+    const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ?', [phone]);
 
     if (results.length === 0) {
       return res.status(401).json({ error: 'Invalid phone number or password' });
     }
+
+    // Extract the hashed password from the database
+    const hashedPassword = results[0].Acc_Password;
+    console.log('Stored hashed password:', hashedPassword); // During login
+
+    // Compare the provided password with the hashed password stored in the database
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid phone number or password' });
+    }
+
+    // If the password matches, log the user in
     signedAcc = results[0].Acc_Pnumber;
+    console.log(`Number: ${signedAcc}`);
     res.status(200).json({ success: true, message: 'Login successful', user: results[0] });
+
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -317,6 +364,20 @@ app.post("/api/add-bed-database", async (req, res) => {
   if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
     console.error("Missing required fields");
     return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  // Input validation and sanitization
+  if (!Var_Host || !/^[a-zA-Z0-9-_]+$/.test(Var_Host)) {
+    return res.status(400).json({ error: "Invalid Hostname format." });
+  }
+  if (!Var_Ip || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(Var_Ip)) {
+    return res.status(400).json({ error: "Invalid IP Address format." });
+  }
+  if (!Last_Day || Last_Day < 1 || Last_Day > 70) {
+    return res.status(400).json({ error: "Invalid number of days." });
+  }
+  if (!Start_Date || isNaN(new Date(Start_Date).getTime())) {
+    return res.status(400).json({ error: "Invalid date format." });
   }
 
   // Convert Start_Date to a JavaScript Date object
@@ -567,10 +628,10 @@ app.get('/api/TotalBed', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// API to get the account details
-app.get('/api/account/details', async (req, res) => {
+app.get('/api/account-details', async (req, res) => {
   try {
-    const query = `SELECT Acc_Fname as fname, Acc_Lname as lname, Acc_Pnumber as phone, Acc_Password as password FROM account WHERE Acc_Pnumber = ?`;
+    console.log('Current signedAcc:', signedAcc); // Debugging line
+    const query = `SELECT Acc_Fname as fname, Acc_Lname as lname, Acc_Pnumber as phone FROM account WHERE Acc_Pnumber = ? LIMIT 1`;
     const [rows] = await db.query(query, [signedAcc]);
 
     if (rows.length > 0) {
@@ -584,22 +645,25 @@ app.get('/api/account/details', async (req, res) => {
   }
 });
 // API to update the first name
-app.post('/api/account/update-fname', async (req, res) => {
+app.post('/api/account/update-fname', [
+  body('newFname').isAlpha().escape().trim() // Validate input (only alphabets)
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { newFname } = req.body;
-
-    // Validate input
-    if (!newFname) {
-      return res.status(400).send({ error: 'All fields are required.' });
-    }
+    const signedAcc = req.signedAcc;
 
     // SQL query to update the first name
     const updateFnameQuery = `
-            UPDATE account 
-            SET Acc_Fname = ? 
-            WHERE Acc_Pnumber = ?
-        `;
-    const [updateResult] = await db.query(updateFnameQuery, [newFname, signedAcc]);
+          UPDATE account 
+          SET Acc_Fname = ? 
+          WHERE Acc_Pnumber = ?
+      `;
+    const [updateResult] = await db.query(updateFnameQuery, [sanitizeInput(newFname), signedAcc]);
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
@@ -612,22 +676,24 @@ app.post('/api/account/update-fname', async (req, res) => {
   }
 });
 // API to update the last name
-app.post('/api/account/update-lname', async (req, res) => {
+app.post('/api/account/update-lname', [
+  body('newLname').isAlpha().escape().trim()
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
-    const {newLname} = req.body;
+    const { newLname } = req.body;
+    const signedAcc = req.signedAcc;
 
-    // Validate input
-    if (!newLname) {
-      return res.status(400).send({ error: 'All fields are required.' });
-    }
-
-    // SQL query to update the last name
     const updateLnameQuery = `
-            UPDATE account 
-            SET Acc_Lname = ? 
-            WHERE Acc_Pnumber = ?
-        `;
-    const [updateResult] = await db.query(updateLnameQuery, [newLname, signedAcc]);
+          UPDATE account 
+          SET Acc_Lname = ? 
+          WHERE Acc_Pnumber = ?
+      `;
+    const [updateResult] = await db.query(updateLnameQuery, [sanitizeInput(newLname), signedAcc]);
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
@@ -639,70 +705,63 @@ app.post('/api/account/update-lname', async (req, res) => {
     res.status(500).send({ error: 'Error updating last name.' });
   }
 });
+// Function to sanitize input
+function sanitizeInput(input) {
+  return input.replace(/[^\w\s]/gi, ''); // Remove non-alphanumeric characters (except spaces)
+}
 // API to update the phone number
-app.post('/api/account/update-phone', async (req, res) => {
-  try {
-    const { newPnumber } = req.body;
+app.post('/api/account/update-phone', [
+body('newPnumber').isMobilePhone().escape().trim()
+], async (req, res) => {
+const errors = validationResult(req);
+if (!errors.isEmpty()) {
+  return res.status(400).json({ errors: errors.array() });
+}
 
-    // Validate input
-    if (!newPnumber) {
-      return res.status(400).send({ error: 'All fields are required.' });
-    }
+try {
+  const { newPnumber } = req.body;
 
-    // SQL query to check if the new phone number already exists
-    const checkPhoneNumberQuery = `SELECT * FROM account WHERE Acc_Pnumber = ?`;
-    const [phoneResults] = await db.query(checkPhoneNumberQuery, [signedAcc]);
+  const checkPhoneNumberQuery = `
+        SELECT * FROM account WHERE Acc_Pnumber = ?
+    `;
+  const [phoneResults] = await db.query(checkPhoneNumberQuery, [newPnumber]);
 
-    if (phoneResults.length > 0) {
-      return res.status(409).send({ error: 'Phone number already exists.' });
-    }
-
-    // SQL query to update the phone number
-    const updatePhoneQuery = `
-            UPDATE account 
-            SET Acc_Pnumber = ? 
-            WHERE Acc_Pnumber = ?
-        `;
-    const [updateResult] = await db.query(updatePhoneQuery, [newPnumber, signedAcc]);
-
-    if (updateResult.affectedRows === 0) {
-      return res.status(404).send({ error: 'Old account information is incorrect.' });
-    } else {
-      signedAcc = newPnumber;
-    }
-    
-    res.send({ message: 'Phone number updated successfully.' });
-  } catch (err) {
-    console.error('Error updating phone number:', err);
-    res.status(500).send({ error: 'Error updating phone number.' });
+  if (phoneResults.length > 0) {
+    return res.status(409).send({ error: 'Phone number already exists.' });
   }
+
+  const updatePhoneQuery = `
+        UPDATE account 
+        SET Acc_Pnumber = ? 
+        WHERE Acc_Pnumber = ?
+    `;
+  const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), signedAcc]);
+
+  if (updateResult.affectedRows === 0) {
+    return res.status(404).send({ error: 'Old account information is incorrect.' });
+  }
+
+  const [select] = await db.query("SELECT * FROM account WHERE Acc_Pnumber = ?", [sanitizeInput(newPnumber)]);
+  signedAcc = select[0].Acc_Pnumber;
+  console.log(`Number: ${signedAcc}`);
+
+  res.send({ message: 'Phone number updated successfully.' });
+} catch (err) {
+  console.error('Error updating phone number:', err);
+  res.status(500).send({ error: 'Error updating phone number.' });
+}
 });
-// API to update the password
+// API to update password
 app.post('/api/account/update-password', async (req, res) => {
+  const { newPassword } = req.body;
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   try {
-    const { newPassword} = req.body;
-
-    // Validate input
-    if (!newPassword) {
-      return res.status(400).send({ error: 'All fields are required.' });
-    }
-
-    // SQL query to update the password
-    const updatePasswordQuery = `
-            UPDATE account 
-            SET Acc_Password = ? 
-            WHERE Acc_Pnumber = ?
-        `;
-    const [updateResult] = await db.query(updatePasswordQuery, [newPassword, signedAcc]);
-
-    if (updateResult.affectedRows === 0) {
-      return res.status(404).send({ error: 'Old account information is incorrect.' });
-    }
-
-    res.send({ message: 'Password updated successfully.' });
+      const query = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
+      await db.query(query, [hashedPassword, signedAcc]); // Assuming signedAcc is the authenticated user's phone number
+      res.json({ message: 'Password updated successfully' });
   } catch (err) {
-    console.error('Error updating password:', err);
-    res.status(500).send({ error: 'Error updating password.' });
+      console.error('Error updating password:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 // API recover from archive
@@ -740,7 +799,7 @@ app.post('/api/recover', async (req, res) => {
           status = "ONGOING";
         }
 
-        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status) VALUES (?, ?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date, status]);
+        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date, status, signedAcc]);
 
         const [deleteResult] = await db.query("DELETE FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?", [id, varHost, varIp, formattedDate]);
 

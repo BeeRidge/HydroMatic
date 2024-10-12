@@ -198,18 +198,14 @@
                                         class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
                                 </div>
 
-                                <!-- Password -->
-                                <h1 class="text-black py-2 px-6 font-bold uppercase">Password:</h1>
-                                <div class="flex items-center">
-                                    <input type="password" id="Acc_Password"
-                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
-                                        readonly>
-                                    <button id="togglePassword" class="ml-3 px-3 py-2 bg-gray-300 rounded">Show</button>
-                                    <button id="editPasswordBtn"
-                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                                <!-- Forgot Password -->
+                                <div class="col-span-2 text-right py-4">
+                                    <button id="forgotPasswordBtn"
+                                        class="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">Forgot
+                                        Password</button>
                                 </div>
                             </div>
-
+                            <!-- Device Information -->
                             <div id="device-info" style="border-color: #15cc15;"
                                 class="w-full bg-white border-4 border-black border-solid rounded-lg shadow-lg p-6 aspect-square">
                                 <h1 class="text-3xl text-black py-2 font-bold uppercase">Device Information</h1>
@@ -263,11 +259,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Account Information -->
     <script>
-        // Function to fetch user account details from the backend and populate the form
         async function load() {
             try {
-                const response = await fetch('/api/account/details', {
+                const response = await fetch('/api/account-details', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -277,11 +273,10 @@
                 }
 
                 const data = await response.json();
-                // Populate form fields with fetched data
-                document.getElementById("Acc_Fname").value = data.fname || '';
-                document.getElementById("Acc_Lname").value = data.lname || '';
-                document.getElementById("Acc_Pnumber").value = data.phone || '';
-                document.getElementById("Acc_Password").value = data.password || '';
+                // Sanitize and populate form fields with fetched data
+                document.getElementById("Acc_Fname").value = data.fname ? escapeHTML(data.fname) : '';
+                document.getElementById("Acc_Lname").value = data.lname ? escapeHTML(data.lname) : '';
+                document.getElementById("Acc_Pnumber").value = data.phone ? escapeHTML(data.phone) : '';
             } catch (err) {
                 console.error('Error fetching account details:', err);
                 Swal.fire('Error', 'Failed to load account details', 'error');
@@ -290,13 +285,13 @@
 
         load();
 
-        // Toggle Password Visibility
-        document.getElementById('togglePassword').addEventListener('click', function () {
-            const passwordInput = document.getElementById('Acc_Password');
-            const toggleButton = document.getElementById('togglePassword');
-            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-            toggleButton.textContent = toggleButton.textContent === 'Show' ? 'Hide' : 'Show';
-        });
+        function escapeHTML(str) {
+            return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
         // First Name Edit
         document.getElementById('editFnameBtn').addEventListener('click', function () {
@@ -318,7 +313,7 @@
                     fetch('/api/account/update-fname', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ newFname: result.value.fname })
+                        body: JSON.stringify({ newFname: escapeHTML(result.value.fname) })
                     }).then(res => res.json())
                         .then(data => {
                             if (data.message) {
@@ -352,7 +347,7 @@
                     fetch('/api/account/update-lname', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ newLname: result.value.lname })
+                        body: JSON.stringify({ newLname: escapeHTML(result.value.lname) })
                     }).then(res => res.json())
                         .then(data => {
                             if (data.message) {
@@ -368,73 +363,166 @@
 
         // Phone Number Edit
         document.getElementById('editPhoneBtn').addEventListener('click', function () {
+            // First, prompt for the new phone number
             Swal.fire({
                 title: 'Update Phone Number',
                 input: 'text',
                 inputValue: document.getElementById('Acc_Pnumber').value,
                 showCancelButton: true,
-                confirmButtonText: 'Update',
-                preConfirm: (pnumber) => {
-                    if (!pnumber) {
-                        Swal.showValidationMessage('Please enter a phone number.');
+                confirmButtonText: 'Send OTP',
+                preConfirm: (newPnumber) => {
+                    if (!newPnumber) {
+                        Swal.showValidationMessage('Please enter a new phone number.');
                         return false;
                     }
-                    return { pnumber };
+                    return { newPnumber };
                 }
             }).then(result => {
                 if (result.isConfirmed) {
-                    fetch('/api/account/update-phone', {
+                    const newPnumber = escapeHTML(result.value.newPnumber);
+
+                    // Send OTP to the new phone number
+                    fetch('/api/send-otp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ newPnumber: result.value.pnumber })
+                        body: JSON.stringify({ phone: newPnumber })
                     }).then(res => res.json())
                         .then(data => {
-                            if (data.message) {
-                                Swal.fire('Success', 'Phone number updated successfully', 'success');
-                                load(); // Reload the form to reflect updated data
+                            if (data.success) {
+                                // If OTP sent successfully, prompt for the OTP
+                                Swal.fire({
+                                    title: 'Enter OTP',
+                                    input: 'text',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Verify',
+                                    preConfirm: (otp) => {
+                                        if (!otp) {
+                                            Swal.showValidationMessage('Please enter the OTP.');
+                                            return false;
+                                        }
+                                        return { otp };
+                                    }
+                                }).then(otpResult => {
+                                    if (otpResult.isConfirmed) {
+                                        // Verify OTP
+                                        fetch('/api/otp-verify', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ phone: newPnumber, otp: escapeHTML(otpResult.value.otp) })
+                                        }).then(verifyRes => verifyRes.json())
+                                            .then(verifyData => {
+                                                if (verifyData.success) {
+                                                    // OTP verified, now update the phone number
+                                                    fetch('/api/account/update-phone', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({ newPnumber })
+                                                    }).then(updateRes => updateRes.json())
+                                                        .then(updateData => {
+                                                            if (updateData.message) {
+                                                                Swal.fire('Success', 'Phone number updated successfully', 'success');
+                                                                load(); // Reload the form to reflect updated data
+                                                            } else {
+                                                                Swal.fire('Error', updateData.error, 'error');
+                                                            }
+                                                        }).catch(err => Swal.fire('Error', 'Something went wrong while updating phone number', 'error'));
+                                                } else {
+                                                    Swal.fire('Error', verifyData.error, 'error');
+                                                }
+                                            }).catch(err => Swal.fire('Error', 'Failed to verify OTP', 'error'));
+                                    }
+                                });
                             } else {
                                 Swal.fire('Error', data.error, 'error');
                             }
-                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                        }).catch(err => Swal.fire('Error', 'Something went wrong while sending OTP', 'error'));
                 }
             });
         });
 
-        // Password Edit
-        document.getElementById('editPasswordBtn').addEventListener('click', function () {
-            Swal.fire({
-                title: 'Update Password',
-                input: 'password',
-                inputValue: document.getElementById('Acc_Password').value,
-                showCancelButton: true,
-                confirmButtonText: 'Update',
-                preConfirm: (password) => {
-                    if (!password) {
-                        Swal.showValidationMessage('Please enter a password.');
-                        return false;
+/* 
+        // Forgot Password
+        document.getElementById('forgotPasswordBtn').addEventListener('click', function () {
+            const phone = document.getElementById('Acc_Pnumber').value;
+
+            // Request OTP
+            fetch('/api/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            }).then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Success', 'OTP sent to your phone number', 'success').then(() => {
+                            // Prompt user to enter OTP
+                            Swal.fire({
+                                title: 'Enter OTP',
+                                input: 'text',
+                                showCancelButton: true,
+                                confirmButtonText: 'Verify',
+                                preConfirm: (otp) => {
+                                    if (!otp) {
+                                        Swal.showValidationMessage('Please enter the OTP.');
+                                        return false;
+                                    }
+                                    return { otp };
+                                }
+                            }).then(result => {
+                                if (result.isConfirmed) {
+                                    // Verify OTP
+                                    fetch('/api/otp-verify', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ phone, otp: result.value.otp })
+                                    }).then(res => res.json())
+                                        .then(verifyData => {
+                                            if (verifyData.success) {
+                                                Swal.fire('Success', 'OTP verified, please enter your new password.', 'success').then(() => {
+                                                    // Prompt for new password
+                                                    Swal.fire({
+                                                        title: 'New Password',
+                                                        input: 'password',
+                                                        showCancelButton: true,
+                                                        confirmButtonText: 'Update',
+                                                        preConfirm: (newPassword) => {
+                                                            if (!newPassword) {
+                                                                Swal.showValidationMessage('Please enter a new password.');
+                                                                return false;
+                                                            }
+                                                            return { newPassword };
+                                                        }
+                                                    }).then(newPasswordResult => {
+                                                        if (newPasswordResult.isConfirmed) {
+                                                            // Update password
+                                                            fetch('/api/account/update-password', {
+                                                                method: 'POST',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ newPassword: escapeHTML(newPasswordResult.value.newPassword) })
+                                                            }).then(res => res.json())
+                                                                .then(updateData => {
+                                                                    if (updateData.message) {
+                                                                        Swal.fire('Success', 'Password updated successfully', 'success');
+                                                                        load(); // Reload the form to reflect updated data
+                                                                    } else {
+                                                                        Swal.fire('Error', updateData.error, 'error');
+                                                                    }
+                                                                }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                                                        }
+                                                    });
+                                                });
+                                            } else {
+                                                Swal.fire('Error', verifyData.error, 'error');
+                                            }
+                                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                                }
+                            });
+                        });
+                    } else {
+                        Swal.fire('Error', data.error, 'error');
                     }
-                    return { password };
-                }
-            }).then(result => {
-                if (result.isConfirmed) {
-                    fetch('/api/account/update-password', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ newPassword: result.value.password })
-                    }).then(res => res.json())
-                        .then(data => {
-                            if (data.message) {
-                                Swal.fire('Success', 'Password updated successfully', 'success');
-                                load(); // Reload the form to reflect updated data
-                            } else {
-                                Swal.fire('Error', data.error, 'error');
-                            }
-                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
-                }
-            });
-        });
+                }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+        }); */
     </script>
-
     <!-- Device Information and Connection -->
     <script>
         function reload() {
@@ -446,15 +534,15 @@
                     const tableHead = document.getElementById('tableHead');
                     const noDevicesMessage = document.getElementById('noDevicesMessage');
                     const deviceTable = document.getElementById('deviceTable');
-    
+
                     tableBody.innerHTML = ''; // Clear any existing rows
-    
+
                     if (data.length > 0) {
                         // Show the table if there are devices
                         tableHead.style.display = 'table-header-group';
                         noDevicesMessage.classList.add('hidden');
                         deviceTable.classList.remove('hidden');
-    
+
                         data.forEach(row => {
                             const tableRow = `
                             <tr>
@@ -474,7 +562,7 @@
                 })
                 .catch(error => console.error('Error fetching device data:', error));
         }
-    
+
         reload();
     </script>
     <!-- Check Device -->

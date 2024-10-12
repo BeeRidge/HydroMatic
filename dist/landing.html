@@ -644,14 +644,26 @@
             }
         });
 
-        // Handle sign-up form submission
+        // Sanitize user inputs to prevent XSS
+        function sanitizeInput(input) {
+            return input
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#x27;")
+                .replace(/\//g, "&#x2F;");
+        }
+
         async function handleSignUp(event) {
             event.preventDefault();
-            const fname = document.getElementById('firstName').value;
-            const lname = document.getElementById('lastName').value;
-            const phone = document.getElementById('signupPhone').value;
-            const password = document.getElementById('signupPassword').value;
-            const otp = document.getElementById('signupCode').value;
+
+            // Sanitize inputs before using them
+            const fname = sanitizeInput(document.getElementById('firstName').value);
+            const lname = sanitizeInput(document.getElementById('lastName').value);
+            const phone = sanitizeInput(document.getElementById('signupPhone').value);
+            const password = sanitizeInput(document.getElementById('signupPassword').value);
+            const otp = sanitizeInput(document.getElementById('signupCode').value);
 
             // Basic validation
             if (!/^\d{11}$/.test(phone)) {
@@ -698,8 +710,13 @@
         async function handleLogin(event) {
             event.preventDefault();
 
-            const phone = document.getElementById('loginPhone').value;
-            const password = document.getElementById('loginPassword').value;
+            // Get the raw input values
+            let phone = document.getElementById('loginPhone').value;
+            let password = document.getElementById('loginPassword').value;
+
+            // Sanitize the inputs
+            phone = sanitizeInput(phone);
+            password = sanitizeInput(password);
 
             // Basic validation
             if (!phone || !password) {
@@ -727,15 +744,13 @@
                 });
 
                 const data = await response.json();
-                console.log('Server response:', data); // Log the response data
+                console.log('Server response:', data);
 
                 if (data.success) {
-                    // Save user data to localStorage and sessionStorage
                     localStorage.setItem('userPhone', phone);
-                    sessionStorage.setItem('authToken', data.token); // Assuming you get a token on success
+                    sessionStorage.setItem('authToken', data.token);
 
                     Swal.fire('Success', 'Login successful!', 'success').then(() => {
-                        // Redirect to the desired page after successful login
                         window.location.href = 'http://localhost:3000/dashboard';
                     });
                 } else {
@@ -745,6 +760,17 @@
                 console.error('Error logging in:', error);
                 Swal.fire('Error', 'Login failed. Please try again.', 'error');
             }
+        }
+
+        // Sanitization function to prevent XSS
+        function sanitizeInput(input) {
+            return input
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#x27;")
+                .replace(/\//g, "&#x2F;");
         }
     </script>
 

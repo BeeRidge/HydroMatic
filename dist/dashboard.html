@@ -264,7 +264,7 @@
                 .then(response => response.json())
                 .then(data => {
                     allData = data;
-                    filteredData = allData; // Initially, all data is displayed
+                    filteredData = [...allData]; // Initially, all data is displayed
                     renderTable(currentPage);  // Render the first page
                 })
                 .catch(error => console.error('Error fetching data:', error));
@@ -324,6 +324,9 @@
 
 
         function sortData(criteria) {
+            // Start with all data
+            filteredData = [...allData];
+
             switch (criteria) {
                 case 'harvestDateAsc':
                     filteredData.sort((a, b) => new Date(a.Harvest_Date) - new Date(b.Harvest_Date));
@@ -353,7 +356,7 @@
                     filteredData = allData.filter(row => row.Status === 'HARVEST');
                     break;
                 default:
-                    filteredData = allData;
+                    filteredData = [...allData];
             }
             currentPage = 1; // Reset to the first page after sorting/filtering
             renderTable(currentPage);
