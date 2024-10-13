@@ -111,7 +111,7 @@
                         Dashboard
                     </a>
                     <a href="index" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <i class="fas fa-microchip mr-3"></i>
                         Device Management
                     </a>
                     <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -139,7 +139,7 @@
                     Dashboard
                 </a>
                 <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <i class="fas fa-microchip mr-3"></i>
                     Device Management
                 </a>
                 <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -163,7 +163,7 @@
                     <div class="py-4 grid sm:grid-cols-1 md:grid-cols-2">
                         <h1 class="text-4xl text-black pb-6 font-bold">Device Management</h1>
                         <div class="text-right w-full">
-                            <button id="addBedBtn" class="py-4 px-6 bg-gray-200 border-4 border-solid rounded-lg shadow-lg text-center aspect-square
+                            <button id="addBedBtn" class="py-4 px-6 bg-gray-200 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
                                  w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
                                 <p style="color: #171817;"> + Add <Br> Hydro Frame </p>
                             </button>
@@ -174,7 +174,7 @@
                             <!-- Sort Dropdown -->
                             <div class="flex items-center">
                                 <label for="sortSelect" class="mr-2">Sort By:</label>
-                                <select id="sortSelect" class="px-2 py-1 border rounded">
+                                <select id="sortSelect" class="px-2 py-1 border rounded rounded-lg shadow-lg">
                                     <option value="name_asc">Name A-Z</option>
                                     <option value="name_desc">Name Z-A</option>
                                     <option value="start_date_asc">Start Date Ascending</option>
@@ -187,15 +187,15 @@
                             <!-- Pagination Controls -->
                             <div id="pagination" class="flex items-center">
                                 <button id="prevBtn"
-                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded mr-2">Previous</button>
+                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded mr-2 rounded-lg shadow-lg">Previous</button>
                                 <span id="pageIndicator" class="text-lg"></span>
                                 <button id="nextBtn"
-                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded ml-2">Next</button>
+                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded ml-2 rounded-lg shadow-lg">Next</button>
                             </div>
                         </div>
 
                         <div id="bedsContainer"
-                            class="flex w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-1 lg:grid-rows-1 xl:grid-rows-1
+                            class="p-4 flex w-full h-full grid grid-rows-1 sm:grid-rows-1 md:grid-rows-1 lg:grid-rows-1 xl:grid-rows-1
                             grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-auto">
                             <!-- Bed items -->
                         </div>
@@ -334,15 +334,14 @@
             const newBedDiv = document.createElement('div');
             const bedId = deviceInfo.Var_Host; // Unique ID for each bed
 
-            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-white border-4  border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer';
-            newBedDiv.style = 'border-color: #15cc15; ';
+            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-white border-4 border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer border-gray-500 border-solid';
             newBedDiv.innerHTML = `
                     <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
                     <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
                     <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
                     <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
                     <div class="text-right">
-                        <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right">Remove Hydro Frame</button>
+                        <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right"><i class="fas fa-trash-alt mr-3"></i>Remove</button>
                     </div>
                 `;
 

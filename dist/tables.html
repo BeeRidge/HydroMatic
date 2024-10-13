@@ -42,9 +42,6 @@
             background: #000000;
         }
 
-        .b {
-            border-color: #15cc15;
-        }
         .active-nav-link {
             color: #15cc15;
         }
@@ -96,7 +93,7 @@
     <div class="w-full flex flex-col h-screen overflow-y-hidden">
         <!-- Header -->
         <header class="w-full bg-sidebar py-5 px-6">
-            <div class="container mx-auto flex justify-between items-center">
+            <div class="container mx-auto flex justify-between items-center ">
                 <!-- Logo and Branding -->
                 <a href="dashboard"
                     class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
@@ -109,7 +106,7 @@
                         Dashboard
                     </a>
                     <a href="index" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <i class="fas fa-microchip mr-3"></i>
                         Device Management
                     </a>
                     <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -137,7 +134,7 @@
                     Dashboard
                 </a>
                 <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <i class="fas fa-microchip mr-3"></i>
                     Device Management
                 </a>
                 <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -155,15 +152,15 @@
         </header>
         <!-- Body Content -->
         <div class="flex-grow overflow-hidden">
-            <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
+            <div class="w-full h-full md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
                     <h1 id="hostname" class="text-4xl text-black pb-6 font-bold uppercase"></h1>
                     <!-- Placeholder for table, days, weather, harvest information, and water level -->
                     <div id="itemContainer"
-                        class="w-full h-full grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-5 overflow-auto">
+                        class="w-full h-full grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-5 overflow-auto pb-16">
                         <!-- Days -->
                         <div
-                            class="w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square">
+                            class="w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square border-gray-500 border-solid">
                             <h1 class="font-bold uppercase text-lg">Days to harvest</h1>
                             <h1 id="days"></h1>
                             <div id="showImage" class="w-full flex flex-col items-center">
@@ -177,7 +174,7 @@
                         </div>
                         <!-- Water Status -->
                         <div
-                            class="w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square">
+                            class="w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square border-gray-500 border-solid">
                             <div class="w-full h-full grid grid-rows-2 items-center justify-center text-center">
                                 <div class="space-x-2">
                                     <h1 class="font-bold uppercase text-lg">Water Temperature</h1>
@@ -194,12 +191,12 @@
                         </div>
                         <!-- Weather -->
                         <div id="weather"
-                            class="w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square">
+                            class="w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square border-gray-500 border-solid">
                             <!-- Current weather will be injected here -->
                         </div>
                         <!-- Calendar -->
                         <div id="calendar"
-                            class="md:col-span-3 lg:col-span-3 xl:col-span-2 w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square">
+                            class="md:col-span-3 lg:col-span-3 xl:col-span-2 w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square border-gray-500 border-solid">
                             <div class="grid grid-cols-2 items-center justify-center">
                                 <h1 class="font-bold uppercase text-lg pl-6">Calendar</h1>
                                 <h3 id="current-year" class="font-bold text-right text-xl pr-6"></h3>
@@ -224,7 +221,7 @@
                         </div>
                         <!-- Display Table -->
                         <div id="sensorLogs"
-                            class="md:col-span-3 lg:col-span-3 xl:col-span-5 w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square">
+                            class="md:col-span-3 lg:col-span-3 xl:col-span-5 w-full bg-white border-4 b border-solid rounded-lg shadow-lg p-6 aspect-square border-gray-500 border-solid">
                             <!-- table -->
                             <div class="bg-white shadow-md rounded-lg mb-4">
                                 <div class="px-6 py-3 border-b border-gray-200 bg-gray-50">
@@ -252,7 +249,7 @@
                                 </div>
                                 <div class="p-6">
                                     <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200">
+                                        <table class="min-w-full divide-y divide-gray-200 border-gray-500 border-solid">
                                             <thead class="bg-gray-100">
                                                 <tr>
                                                     <th

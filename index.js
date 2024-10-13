@@ -238,7 +238,7 @@ app.post("/api/display_table", async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND = ?', [Var_Host, Var_Ip, signedAcc]);
+    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, signedAcc]);
     if (results.length === 0) {
       return res.status(404).json({ error: "No data found for the given Var_Host and Var_Ip" });
     }
@@ -256,23 +256,25 @@ app.post("/api/send-Data", async (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({ error: "Table not found" });
     }
-    const [check] = await db.query("SELECT * FROM ?", [Var_Host]);
+
+    // Use ?? for table names
+    const [check] = await db.query("SELECT * FROM ??", [Var_Host]);
 
     // Convert resultData.Date_Dev to Manila time (GMT+8)
     const currentDate = convertToManilaTime(new Date().toISOString());
-    const resultDateDev = convertToManilaTime(check.Date_Dev);
-    const resultTimeDev = formatTime(check.Time_Dev); // Format to HH:MM
-    const currentManilaTime = getManilaTime(); // Format to HH:MM
+    const resultDateDev = convertToManilaTime(check[0].Date_Dev); // Make sure to access the first result
 
-    if (currentDate === resultDateDev && currentTime === resultTimeDev) {
+    if (currentDate === resultDateDev) {
       // Fetch the latest record limited to 1
       const [data] = await db.query(
-        "SELECT Var_Temp, Var_WLvl FROM ?? WHERE Var_Ip = ? AND Date_Dev = ? Date_Dev = ? ORDER BY Num_Id DESC LIMIT 1",
-        [Var_Host, Var_Ip]
+        "SELECT Var_Temp, Var_WLvl FROM ?? WHERE Var_Ip = ? AND Date_Dev = ? ORDER BY Num_Id DESC LIMIT 1",
+        [Var_Host, Var_Ip, currentDate]
       );
-    }
 
-    res.json(data);
+      return res.json(data);
+    } else {
+      return res.status(404).json({ error: "No records found for today's date." });
+    }
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data from database" });
@@ -422,7 +424,7 @@ app.post("/api/add-bed-database", async (req, res) => {
 // POST endpoint to remove a bed
 app.post("/api/delete-device", async (req, res) => {
   const { Var_Host } = req.body;
-
+  console.log(`Number: ${signedAcc}`);
   if (!Var_Host) {
     return res.status(400).json({ message: "No hostname provided." });
   }
@@ -778,6 +780,29 @@ app.post('/api/account/update-phone', [
       return res.status(404).send({ error: 'Old account information is incorrect.' });
     }
 
+    // Update the phone number in related tables
+    const updateArchiveQuery = `
+        UPDATE archive 
+        SET Pnum = ? 
+        WHERE Pnum = ?
+    `;
+    await db.query(updateArchiveQuery, [sanitizeInput(newPnumber), sanitizeInput(signedAcc)]);
+
+    const updateDeviceInfoQuery = `
+        UPDATE device_info 
+        SET Pnum = ? 
+        WHERE Pnum = ?
+    `;
+    await db.query(updateDeviceInfoQuery, [sanitizeInput(newPnumber), sanitizeInput(signedAcc)]);
+
+    const updateDisplayBedQuery = `
+        UPDATE display_bed 
+        SET Pnum = ? 
+        WHERE Pnum = ?
+    `;
+    await db.query(updateDisplayBedQuery, [sanitizeInput(newPnumber), sanitizeInput(signedAcc)]);
+
+    // Update the signedAcc variable
     const [select] = await db.query("SELECT * FROM account WHERE Acc_Pnumber = ?", [sanitizeInput(newPnumber)]);
     signedAcc = select[0].Acc_Pnumber;
     console.log(`Number: ${signedAcc}`);
@@ -995,6 +1020,93 @@ app.post("/api/notify-anomaly", async (req, res) => {
   } catch (err) {
     console.error('Error processing request:', err);
     return res.status(500).json({ error: "Server error" });
+  }
+});
+// POST route to insert or check device info
+app.post('/api/save_device_info', async (req, res) => {
+  const { hostname = '', ip_address = '', fname = '', lname = '', pnum = '' } = req.body;
+
+  // Validate input
+  if (!hostname || !ip_address || !fname || !lname || !pnum) {
+      return res.status(400).send('Hostname, IP address, first name, last name, and phone number are required.');
+  }
+
+  try {
+      // Check if the record exists
+      const [result] = await db.query(
+          `SELECT * FROM device_info WHERE Var_Host = ? AND Var_Ip = ?`,
+          [hostname, ip_address]
+      );
+
+      if (result.length === 0) {
+          // Insert new record if it does not exist
+          await db.query(
+              `INSERT INTO device_info (Var_Host, Var_Ip, fname, lname, pnum, Status) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
+              [hostname, ip_address, fname, lname, pnum]
+          );
+          res.send('New record created successfully.');
+      } else {
+          res.send('Record already exists.');
+      }
+  } catch (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error checking or saving the device info.');
+  }
+});
+// POST route for inserting sensor data
+app.post('/api/insert_data', async (req, res) => {
+  const { temperature, water_level, ip_address, hostname } = req.body;
+
+  if (!temperature || !water_level || !ip_address) {
+      return res.status(400).send('Missing required data');
+  }
+
+  try {
+      // Check if the IP address exists in the device_info table and get the Var_Host
+      const [deviceInfo] = await db.query(
+          `SELECT Var_Host FROM device_info WHERE Var_Ip = ?`,
+          [ip_address]
+      );
+
+      let varHost;
+
+      if (deviceInfo.length > 0) {
+          // If the IP address is found, use the corresponding Var_Host
+          varHost = deviceInfo[0].Var_Host;
+      } else {
+          // If the IP address is not found, use the hostname from the request
+          varHost = hostname; 
+      }
+
+      // Check if the table exists for the given varHost
+      const [tableCheck] = await db.query(`SHOW TABLES LIKE ?`, [varHost]);
+
+      if (tableCheck.length === 0) {
+          // If table does not exist, create it
+          await db.query(`
+              CREATE TABLE ${varHost} (
+                  Num_Id INT(255) NOT NULL AUTO_INCREMENT,
+                  Var_Ip VARCHAR(50) NOT NULL,
+                  Var_Temp VARCHAR(50) NOT NULL,
+                  Var_WLvl VARCHAR(50) NOT NULL,
+                  Date_Dev DATE NOT NULL,
+                  Time_Dev TIME NOT NULL,
+                  PRIMARY KEY (Num_Id)
+              );
+          `);
+          console.log(`Table ${varHost} created successfully`);
+      }
+
+      // Insert the sensor data into the table
+      await db.query(
+          `INSERT INTO ${varHost} (Var_Ip, Var_Temp, Var_WLvl, Date_Dev, Time_Dev)
+           VALUES (?, ?, ?, CURDATE(), CURTIME())`,
+          [ip_address, temperature, water_level]
+      );
+      res.send('New record created successfully');
+  } catch (err) {
+      console.error('Error inserting data:', err);
+      res.status(500).send('Error inserting data');
   }
 });
 // Fetch all admin content

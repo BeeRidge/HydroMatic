@@ -311,8 +311,8 @@
             <!-- Desktop Navigation -->
             <nav id="navbar-menu" class="hidden lg:flex space-x-8">
                 <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
-                <a href="#device-info" class="nav-link text-white hover:text-green-100">Device Info</a>
-                <a href="#steps" class="nav-link text-white hover:text-green-100">Steps</a>
+                <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
+                <a href="#steps" class="nav-link text-white hover:text-green-100">Connect to WiFi</a>
                 <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
                 <button class="nav-link text-white hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
             </nav>
@@ -324,11 +324,10 @@
         <!-- Mobile Navigation Menu -->
         <nav id="mobile-menu" class="hidden flex flex-col space-y-4 mt-4">
             <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
-            <a href="#device-info" class="nav-link text-white hover:text-green-100">Device Info</a>
+            <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
+            <a href="#steps" class="nav-link text-white hover:text-green-100">How to</a>
             <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
-            <a href="#support" class="nav-link text-white hover:text-green-100">Support</a>
-            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign
-                up</button>
+            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
         </nav>
     </header>
     <!-- Modal Structure -->
@@ -451,7 +450,7 @@
         </div>
     </section>
     <!-- Features Section -->
-    <section id="features" class="bg-body  py-44 ">
+    <section id="features" class="bg-body py-44 ">
         <div class="container mx-auto text-center p-6 ">
             <h2 class="text-5xl font-bold text-gray-200 mb-8 scroll-animation">Key Features</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -480,7 +479,7 @@
         </div>
     </section>
     <!-- Device Info -->
-    <section id="device-info" class="bg-c  pb-24">
+    <section id="device-info" class="bg-c py-24">
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
             <div>
@@ -512,7 +511,7 @@
         </div>
     </section>
     <!-- About Us Section -->
-    <section id="about-us" class="bg-gray-100 py-44 ">
+    <section id="about-us" class="bg-gray-100 py-16 ">
         <div class="container mx-auto px-4">
             <!-- About Us Heading -->
             <div class="text-center mb-12">
@@ -611,7 +610,35 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <!-- Smooth scrolling for navigation links -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+    
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+    
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobile-menu");
+            mobileMenu.classList.toggle("hidden");
+        }
+    
+        // Example function to open modal (define it as per your requirements)
+        function openModal() {
+            // Your modal opening logic here
+        }
+    </script>
     <!-- Forgot password -->
     <script>
         document.getElementById('forgotPassword').addEventListener('click', function () {

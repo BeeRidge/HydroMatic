@@ -106,7 +106,7 @@
                         Dashboard
                     </a>
                     <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <i class="fas fa-microchip mr-3"></i>
                         Device Management
                     </a>
                     <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -134,7 +134,7 @@
                     Dashboard
                 </a>
                 <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <i class="fas fa-microchip mr-3"></i>
                     Device Management
                 </a>
                 <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -155,18 +155,18 @@
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
                     <h1 class="text-4xl text-black pb-6 font-bold">Dashboard</h1>
-                    <div class="flex w-full text-center justify-center gap-5 py-4 grid sm:grid-cols-1 md:grid-cols-3">
-                        <div class="py-4 px-6 bg-gray-200 border-4 border-solid rounded-lg shadow-lg text-center aspect-square
+                    <div class="px-6 flex w-full text-center justify-center gap-5 py-4 grid sm:grid-cols-1 md:grid-cols-3">
+                        <div class="py-4 px-6 bg-gray-200 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
                                  w-full font-bold">
                             <p class="text-xl" style="color: #171817;"> Total Hydro Frame</p>
                             <p id="totalBed"></p>
                         </div>
-                        <div class="py-4 px-6 bg-gray-200 border-4 border-solid rounded-lg shadow-lg text-center aspect-square
+                        <div class="py-4 px-6 bg-gray-200 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
                                  w-full font-bold">
                             <p class="text-xl" style="color: #171817;"> Raeady to Harvest </p>
                             <p id="totalHarvest"></p>
                         </div>
-                        <div class="py-4 px-6 bg-gray-200 border-4 border-solid rounded-lg shadow-lg text-center aspect-square
+                        <div class="py-4 px-6 bg-gray-200 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
                                  w-full font-bold">
                             <p class="text-xl" style="color: #171817;"> Still on Ongoing </p>
                             <p id="totalOngoing"></p>
@@ -178,7 +178,7 @@
                             <!-- Filter Dropdown -->
                             <div>
                                 <label for="filterDropdown" class="mr-2 text-lg">Sort By:</label>
-                                <select id="filterDropdown" class="px-3 py-2 border rounded bg-white">
+                                <select id="filterDropdown" class="px-3 py-2 border rounded bg-white rounded-lg shadow-lg">
                                     <option value="name">Name (A-Z)</option>
                                     <option value="harvestDateAsc">Harvest Date (Asc)</option>
                                     <option value="harvestDateDesc">Harvest Date (Desc)</option>
@@ -194,14 +194,14 @@
                             <!-- Pagination Controls -->
                             <div id="pagination" class="flex items-center space-x-2">
                                 <button id="prevBtn"
-                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded">Previous</button>
+                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg shadow-lg">Previous</button>
                                 <span id="pageIndicator" class="text-lg"></span>
-                                <button id="nextBtn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded">Next</button>
+                                <button id="nextBtn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg shadow-lg">Next</button>
                             </div>
                         </div>
 
                         <!-- Table -->
-                        <table id="auditTable" class="w-full divide-y divide-gray-200">
+                        <table id="auditTable" class="w-full divide-y divide-gray-200 bg-gray-200 rounded-lg shadow-lg">
                             <thead class="bg-gray-100">
                                 <tr>
                                     <th
