@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYDROMATIC</title>
+    <meta name="author" content="David Grzyb">
+    <meta name="description" content="Tailwind Admin Template for managing beds and tracking growth stages.">
+    <!-- Tailwind CSS for styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 for alerts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #06641b;
+        }
+
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            color: #15cc15;
+        }
+
+        .nav-item:hover {
+            color: #15cc15;
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 8px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b
+        }
+
+        .text1 {
+            color: #15cc15;
+            /* Green color for "Matic" */
+        }
+
+        .text2 {
+            color: #FFFF;
+            /* Black color for "Hydro" */
+        }
+
+        .text-combined {
+            display: inline-block;
+
+            font-weight: 700;
+        }
+
+        .background-image {
+            position: relative;
+            /* Needed for the pseudo-element */
+            overflow: hidden;
+            /* Ensures the pseudo-element doesn't overflow */
+        }
+
+        .background-image::before {
+            content: '';
+            /* Creates an empty pseudo-element */
+            position: absolute;
+            /* Position it absolutely within the parent */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('img/oakleaf.jpg');
+            /* Background image */
+            background-size: cover;
+            /* Cover the entire container */
+            background-position: center;
+            /* Opacity of the image */
+            z-index: 0;
+            /* Place it behind the content */
+        }
+
+        .background-image::after {
+            content: '';
+            /* Creates another empty pseudo-element */
+            position: absolute;
+            /* Position it absolutely within the parent */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            /* Dark overlay with 60% opacity */
+            z-index: 1;
+            /* Place it above the background image */
+        }
+
+        /* Ensure text and content are on top of the background */
+        .background-image>* {
+            position: relative;
+            /* Ensure children are positioned above the pseudo-elements */
+            z-index: 2;
+            /* Higher z-index to show on top */
+        }
+    </style>
+</head>
+
+<body class=" font-family-karla flex bg-c">
+    <div class="w-full flex flex-col h-screen overflow-y-hidden">
+        <!-- Header -->
+        <header class="w-full bg-sidebar py-5 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo and Branding -->
+                <a href="index"
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+                <!-- Navigation for Desktop -->
+                <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                    <a href="dashboard" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-microchip mr-3"></i>
+                        Device Management
+                    </a>
+                    <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-folder mr-3"></i>
+                        Archive
+                    </a>
+                    <a href="settings" class="flex items-center text-white py-2 pl-4 nav-item">
+                        <i class="fas fa-cog mr-3"></i>
+                        Settings
+                    </a>
+                    <button id="logout-button" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </nav>
+                <!-- Navigation for Mobile -->
+                <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none"
+                    onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars fa-2x"></i>
+                </button>
+            </div>
+            <!-- Mobile Navigation Menu -->
+            <nav id="mobile-menu" class="flex flex-col pt-4 hidden">
+                <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="index" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-microchip mr-3"></i>
+                    Device Management
+                </a>
+                <a href="archive" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-folder mr-3"></i>
+                    Archive
+                </a>
+                <a href="settings" class="flex items-center text-white py-2 pl-4 nav-item">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                <button id="mobile-logout" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                    Logout
+                </button>
+            </nav>
+        </header>
+        <!-- Body -->
+        <div class="flex-grow overflow-hidden background-image">
+            <div class="w-full h-full overflow-y-auto">
+                <!-- Hero Section -->
+                <section class="bg-c pt-16 pb-20 px-10 w-full h-auto">
+                    <div class="container mx-auto flex flex-col md:flex-row items-center">
+                        <div id="headings-container" class=" space-y-6 text-center md:text-left">
+                            <h1 id="heading1"
+                                class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Monitor
+                                Remotely with <br><span class="text1">HYDROMATIC</span></h1>
+                            <h1 id="heading2"
+                                class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Grow
+                                Lettuce with <br><span class="text1">HYDROMATIC</span></h1>
+                            <h1 id="heading3"
+                                class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Sample
+                                Dashboard of <br><span class="text1">HYDROMATIC</span> Site.</h1>
+                            <p class="text-gray-600 mx-5 lg:mr-11 text-justify">"Comprehensive Monitoring Solution for
+                                Kratky Hydroponics Farms.
+                                Leveraging IoT,
+                                our system integrates <mark>water-level sensors</mark>, <mark>water temperature
+                                    sensors</mark>, and
+                                <mark>air pumps</mark> to optimize and sustain your hydroponic system."
+                            </p>
+                        </div>
+                        <div class="zoom-container mx-auto">
+                            <img src="img/deviceframes.png" alt="App Image" class="w-full h-auto">
+                        </div>
+                    </div>
+                </section>
+                <!-- Features Section -->
+                <section id="features" class="bg-body py-44 ">
+                    <div class="container mx-auto text-center p-6 ">
+                        <h2 class="text-5xl font-bold text-gray-200 mb-8 scroll-animation">Key Features</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
+                                <div class="text-4xl text-d mb-4">
+                                    <i class="fas fa-calendar-days"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>Real-Time
+                                        Monitoring</mark></h3>
+                                <p class="text-lg text-gray-800 mb-2 scroll-animation">Monitor your hydroponic system's
+                                    status in real-time from anywhere.</p>
+                            </div>
+                            <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
+                                <div class="text-4xl text-d mb-4">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>SMS
+                                        Notification</mark></h3>
+                                <p class="text-lg text-gray-800 mb-2 scroll-animation">Receive instant SMS notifications
+                                    about your system’s status.</p>
+                            </div>
+                            <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
+                                <div class="text-4xl text-d mb-4">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>IoT
+                                        Integrated</mark></h3>
+                                <p class="text-lg text-gray-800 mb-2 scroll-animation">Seamlessly integrate IoT devices
+                                    for automated monitoring.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Device Info -->
+                <section id="device-info" class="bg-c py-8">
+                    <div
+                        class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
+                        <div>
+                            <h2 class="text-3xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">
+                                What
+                                <span class="text1">HydroMatic</span> can do?
+                            </h2>
+                            <p class="mt-4 text-black-200 scroll-animation text-justify">The HydroMatic is a smart
+                                system designed for
+                                easy management of hydroponic setups. It monitors water levels and temperature to ensure
+                                optimal
+                                conditions for plant growth, while the air pump keeps roots oxygenated. With built-in
+                                Wi-Fi, you can
+                                control and check the system remotely, and its design allows for easy upgrades. The
+                                device also
+                                automates tasks like turning the air pump on and off, making it a hassle-free way to
+                                maintain a
+                                healthy hydroponic environment.</p>
+                        </div>
+                        <img src="img\How.png" class="scroll-animation">
+                    </div>
+            </div>
+            </section>
+            <!-- Steps to Connect the esp8266 to the WiFi -->
+            <section id="steps" class="bg-body pt-16">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">How to connect
+                        <span class="text1">HydroMatic</span> in WiFi?
+                    </h2>
+                    <div class="grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
+                        <img src="img\step1.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                        <img src="img\step3.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                        <img src="img\step4.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                        <img src="img\step5.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                    </div>
+                </div>
+            </section>
+            <!-- About Us Section -->
+            <section id="about-us" class="bg-gray-100 py-16 ">
+                <div class="container mx-auto px-4">
+                    <!-- About Us Heading -->
+                    <div class="text-center mb-12">
+                        <h2 class="text-5xl font-bold text-gray-800 scroll-animation">About Us</h2>
+                        <p class="text-gray-600 mt-4 scroll-animation">We are a passionate team dedicated to innovating
+                            and
+                            revolutionizing the hydroponic industry.</p>
+                    </div>
+
+                    <!-- Mission Statement -->
+                    <div class="flex flex-col md:flex-row items-center mb-12 scroll-animation">
+                        <!-- Image Section -->
+                        <div class="md:w-1/2 mb-8 md:mb-0 scroll-animation">
+                            <img src="img\lett.jpg" alt="Our Team" class="w-full h-auto rounded-lg shadow-lg">
+                        </div>
+                        <!-- Text Section -->
+                        <div class="md:w-1/2 md:pl-12">
+                            <h3 class="text-3xl font-semibold text-gray-800 scroll-animation">Our Mission</h3>
+                            <p class="text-gray-600 mt-4 scroll-animation text-justify">
+                                At HydroMatic, our mission is to make sustainable farming accessible to everyone through
+                                cutting-edge technology.
+                                We aim to empower farmers, hobbyists, and businesses with the tools they need to grow
+                                plants
+                                efficiently and sustainably.
+                            </p>
+                            <p class="text-gray-600 mt-4 scroll-animation text-justify">
+                                Our team of experts brings together a wealth of experience in agriculture, engineering,
+                                and
+                                technology to deliver
+                                innovative hydroponic solutions. We believe in the power of hydroponics to transform the
+                                future
+                                of farming and are committed
+                                to making this vision a reality.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Team Introduction -->
+                    <div class="text-center mb-12 ">
+                        <h3 class="text-4xl font-semibold text-gray-800 scroll-animation">Meet Our Team</h3>
+                        <p class="text-gray-600 mt-4 scroll-animation">A group of dedicated professionals with diverse
+                            expertise.</p>
+                    </div>
+                    <div class=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 scroll-animation">
+                        <!-- Team Member 1 -->
+                        <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
+                            <img src="img\KURT.jpg" alt="Team Member 1" class="w-32 h-32 mx-auto rounded-full mb-4">
+                            <h4 class="text-xl font-bold text-gray-800">Kurt Russel C. Pablo</h4>
+                            <p class="text-gray-600">Website Developer</p>
+                        </div>
+
+                        <!-- Team Member 2 -->
+                        <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
+                            <img src="img\BRIGGS.jpg" alt="Team Member 2" class="w-32 h-32 mx-auto rounded-full mb-4">
+                            <h4 class="text-xl font-bold text-gray-800">Briggs V. Reyes</h4>
+                            <p class="text-gray-600">Full Stack Developer</p>
+                        </div>
+
+                        <!-- Team Member 3 -->
+                        <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
+                            <img src="img\SHEIK.jpg" alt="Team Member 3" class="w-32 h-32 mx-auto rounded-full mb-4">
+                            <h4 class="text-xl font-bold text-gray-800">Earl Sheik G. Mateo</h4>
+                            <p class="text-gray-600">Documentation</p>
+                        </div>
+
+                        <!-- Team Member 4 -->
+                        <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
+                            <img src="img\JEAN.jpg" alt="Team Member 4" class="w-32 h-32 mx-auto rounded-full mb-4">
+                            <h4 class="text-xl font-bold text-gray-800">Jean Micaell Yabot</h4>
+                            <p class="text-gray-600">Presentation</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Footer -->
+            <footer class="w-full bg-sidebar py-4 px-6 text-white text-center">
+                <p>&copy; 2024 HydroMatic. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+    <!-- AlpineJS -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Toggle mobile menu visibility -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+    <!-- Log out button -->
+    <script>
+        function isUserAuthenticated() {
+            return !!sessionStorage.getItem('authToken'); // Example check
+        }
+
+        if (!isUserAuthenticated()) {
+            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+        }
+
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+
+        // Optional: Prevent navigation back to the protected page
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                // Redirect to the login page if the user tries to go back
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            }
+        });
+    </script>
+    <!-- mobile Log out button -->
+    <script>
+        document.getElementById('mobile-logout').addEventListener('click', async () => {
+            try {
+
+                // Clear all items from local storage and session storage
+                localStorage.clear();
+                sessionStorage.clear();
+                // Show SweetAlert confirmation
+                await Swal.fire({
+                    title: 'Logged Out',
+                    text: 'You have been successfully logged out.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Redirect to login page or home page
+                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
+            } catch (error) {
+                console.error('Error logging out:', error);
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+    <!-- Check logged in user -->
+    <script>
+        // Function to check if there's a logged-in account
+        function checkLoginStatus() {
+            // Check sessionStorage for a logged-in user
+            let sessionUser = sessionStorage.getItem('userPhone');
+
+            // Check localStorage for a logged-in user
+            let localUser = localStorage.getItem('userPhone');
+
+            // If user exists in sessionStorage or localStorage, return the user's info
+            if (sessionUser) {
+                console.log('User is logged in via session storage:', sessionUser);
+                return sessionUser;
+            } else if (localUser) {
+                console.log('User is logged in via local storage:', localUser);
+                return localUser;
+            } else {
+                console.log('No user is logged in.');
+                return null;
+            }
+        }
+
+        // Example usage
+        let loggedInUser = checkLoginStatus();
+        if (loggedInUser) {
+            // User is logged in, proceed with logged-in logic
+            console.log('Logged in as:', loggedInUser);
+        } else {
+            // No user is logged in, show Swal alert and then redirect to login
+            Swal.fire({
+                icon: 'warning',
+                title: 'No user logged in',
+                text: 'You will be redirected to the login page.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear all items from local storage and session storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    // Redirect to login page after user clicks "OK"
+                    window.location.href = 'http://localhost:3000/';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HYDROMATIC</title>
+    <link rel="icon" href="/img/HydroMatic.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -304,10 +305,15 @@
     <!-- Header -->
     <header class="bg-body py-4 p-6 sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
-            <a href=""
-                class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
-                <span class="text2">Hydro</span><span class="text1">Matic</span>
-            </a>
+            <div class="flex items-center space-x-2">
+                <div class="w-16 h-16 p-1 rounded-full bg-white">
+                    <img src="/img/HydroMatic.png" alt="HydroMatic Logo">
+                </div>
+                <a href=""
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+            </div>
             <!-- Desktop Navigation -->
             <nav id="navbar-menu" class="hidden lg:flex space-x-8">
                 <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
@@ -327,7 +333,8 @@
             <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
             <a href="#steps" class="nav-link text-white hover:text-green-100">How to</a>
             <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
-            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
+            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign
+                up</button>
         </nav>
     </header>
     <!-- Modal Structure -->
@@ -438,7 +445,8 @@
                     Lettuce with <br><span class="text1">HYDROMATIC</span></h1>
                 <h1 id="heading3" class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Sample
                     Dashboard of <br><span class="text1">HYDROMATIC</span> Site.</h1>
-                <p class="text-gray-600 mx-5 lg:mr-11 text-justify">"Comprehensive Monitoring Solution for Kratky Hydroponics Farms.
+                <p class="text-gray-600 mx-5 lg:mr-11 text-justify">"Comprehensive Monitoring Solution for Kratky
+                    Hydroponics Farms.
                     Leveraging IoT,
                     our system integrates <mark>water-level sensors</mark>, <mark>water temperature sensors</mark>, and
                     <mark>air pumps</mark> to optimize and sustain your hydroponic system."
@@ -455,38 +463,44 @@
             <h2 class="text-5xl font-bold text-gray-200 mb-8 scroll-animation">Key Features</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
-                    <div class="text-3xl text-d mb-4">
+                    <div class="text-4xl text-d mb-4">
                         <i class="fas fa-calendar-days"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>Real-Time
-                            Monitoring</mark></h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>Real-Time Monitoring</mark>
+                    </h3>
+                    <p class="text-lg text-gray-800 mb-2 scroll-animation">Monitor your hydroponic system's status in
+                        real-time from anywhere.</p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
-                    <div class="text-3xl text-d mb-4">
+                    <div class="text-4xl text-d mb-4">
                         <i class="fas fa-bell"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark>
                     </h3>
+                    <p class="text-lg text-gray-800 mb-2 scroll-animation">Receive instant SMS notifications about your
+                        system’s status.</p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
-                    <div class="text-3xl text-d mb-4">
+                    <div class="text-4xl text-d mb-4">
                         <i class="fas fa-seedling"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>High Quality
-                            Crops</mark></h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>IoT Integrated</mark></h3>
+                    <p class="text-lg text-gray-800 mb-2 scroll-animation">Seamlessly integrate IoT devices for
+                        automated monitoring.</p>
                 </div>
             </div>
         </div>
     </section>
     <!-- Device Info -->
-    <section id="device-info" class="bg-c py-24">
+    <section id="device-info" class="bg-c py-8">
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
             <div>
-                <h2 class="text-3xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">What
-                    <span class="text1">HydroMatic</span> can do?
+                <h2 class="text-2xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">What is
+                    <span class="text1">HydroMatic</span> all about?
                 </h2>
-                <p class="mt-4 text-black-200 scroll-animation text-justify">The HydroMatic is a smart system designed for
+                <p class="mt-4 text-black-200 scroll-animation text-justify">The HydroMatic is a smart system designed
+                    for
                     easy management of hydroponic setups. It monitors water levels and temperature to ensure optimal
                     conditions for plant growth, while the air pump keeps roots oxygenated. With built-in Wi-Fi, you can
                     control and check the system remotely, and its design allows for easy upgrades. The device also
@@ -498,11 +512,12 @@
         </div>
     </section>
     <!-- Steps to Connect the esp8266 to the WiFi -->
-    <section id="steps" class="bg-body py-24">
+    <section id="steps" class="bg-body pt-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">How to connect
-                <span class="text1">HydroMatic</span> in WiFi?</h2>
-            <div class=" py-6 grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
+            <h2 class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">How can I set up
+                <span class="text1">HydroMatic</span> with WiFi?
+            </h2>
+            <div class="grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
                 <img src="img\step1.jpg" class="h-4/5 rounded-lg bg-gray-100">
                 <img src="img\step3.jpg" class="h-4/5 rounded-lg bg-gray-100">
                 <img src="img\step4.jpg" class="h-4/5 rounded-lg bg-gray-100">
@@ -544,44 +559,95 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Team Introduction -->
-            <div class="text-center mb-12 ">
-                <h3 class="text-4xl font-semibold text-gray-800 scroll-animation">Meet Our Team</h3>
-                <p class="text-gray-600 mt-4 scroll-animation">A group of dedicated professionals with diverse
-                    expertise.</p>
+        </div>
+    </section>
+    <!-- FAQ Section -->
+    <section id="faq" class="bg-gray-100 py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-5xl font-bold text-gray-800">Frequently Asked Questions</h2>
+                <p class="text-gray-600 mt-4">Answers to your common queries about HydroMatic.</p>
             </div>
-            <div class=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 scroll-animation">
-                <!-- Team Member 1 -->
-                <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
-                    <img src="img\KURT.jpg" alt="Team Member 1" class="w-32 h-32 mx-auto rounded-full mb-4">
-                    <h4 class="text-xl font-bold text-gray-800">Kurt Russel C. Pablo</h4>
-                    <p class="text-gray-600">Website Developer</p>
+
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer1', this)">
+                        <h3 class="text-lg font-semibold text-gray-200">What is HydroMatic?</h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer1" class="hidden mt-2 text-center text-gray-300">
+                        HydroMatic is a web-based monitoring system designed for hydroponics farming, utilizing IoT
+                        devices to optimize plant growth.
+                    </div>
                 </div>
 
-                <!-- Team Member 2 -->
-                <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
-                    <img src="img\BRIGGS.jpg" alt="Team Member 2" class="w-32 h-32 mx-auto rounded-full mb-4">
-                    <h4 class="text-xl font-bold text-gray-800">Briggs V. Reyes</h4>
-                    <p class="text-gray-600">Full Stack Developer</p>
+                <!-- FAQ Item 2 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer2', this)">
+                        <h3 class="text-lg font-semibold text-gray-200">How does HydroMatic work?</h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer2" class="hidden mt-2 text-center text-gray-300">
+                        HydroMatic works by collecting data from various sensors to monitor environmental conditions,
+                        allowing users to make informed decisions about their plants.
+                    </div>
                 </div>
 
-                <!-- Team Member 3 -->
-                <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
-                    <img src="img\SHEIK.jpg" alt="Team Member 3" class="w-32 h-32 mx-auto rounded-full mb-4">
-                    <h4 class="text-xl font-bold text-gray-800">Earl Sheik G. Mateo</h4>
-                    <p class="text-gray-600">Documentation</p>
+                <!-- FAQ Item 3 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer3', this)">
+                        <h3 class="text-lg font-semibold text-gray-200">What sensors are included?</h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer3" class="hidden mt-2 text-center text-gray-300">
+                        The system includes temperature sensors, humidity sensors, and water level sensors to provide
+                        comprehensive monitoring.
+                    </div>
                 </div>
 
-                <!-- Team Member 4 -->
-                <div class="team-member bg-white p-6 rounded-lg shadow-lg text-center">
-                    <img src="img\JEAN.jpg" alt="Team Member 4" class="w-32 h-32 mx-auto rounded-full mb-4">
-                    <h4 class="text-xl font-bold text-gray-800">Jean Micaell Yabot</h4>
-                    <p class="text-gray-600">Presentation</p>
+                <!-- FAQ Item 4 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer4', this)">
+                        <h3 class="text-lg font-semibold text-gray-200">How can I get support?</h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer4" class="hidden mt-2 text-center text-gray-300">
+                        You can reach out to our support team via email or through our website's contact form for
+                        assistance.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 5 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer5', this)">
+                        <h3 class="text-lg font-semibold text-gray-200">Is HydroMatic easy to set up?</h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer5" class="hidden mt-2 text-center text-gray-300">
+                        Yes, HydroMatic is designed for easy setup, with detailed instructions provided for each
+                        component.
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
     <!-- Footer Section -->
     <footer class="bg-body custom-shadow text-gray-200 py-8">
         <div class="container mx-auto px-4">
@@ -600,25 +666,41 @@
                 <!-- Contact Info -->
                 <div class="text-center md:text-right">
                     <p>&copy; 2024 HydroMatic. All rights reserved.</p>
-                    <p>123 Hydroponic Way, Green City, GA 12345</p>
-                    <p>Email: <a href="mailto:info@hydromatic.com" class="hover:text-gray-400">info@hydromatic.com</a>
+                    <p>Email: <a href="mailto:info@hydromatic.com" class="hover:text-gray-400">HydroMatic@gmail.com</a>
                     </p>
-                    <p>Phone: <a href="tel:+1234567890" class="hover:text-gray-400">+1 (234) 567-890</a></p>
+                    <p>Phone: <a href="tel:+1234567890" class="hover:text-gray-400">+63 (976) 312-0382</a></p>
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- JavaScript to toggle answers -->
+    <script>
+        function toggleAnswer(answerId, element) {
+            const answer = document.getElementById(answerId);
+            const arrowIcon = element.querySelector('.arrow-icon');
+
+            // Toggle the answer's visibility
+            answer.classList.toggle('hidden');
+
+            // Change the arrow direction
+            if (answer.classList.contains('hidden')) {
+                arrowIcon.innerHTML = '<i class="fas fa-chevron-down text-2xl font-bold"></i>'; // Downward Arrow
+            } else {
+                arrowIcon.innerHTML = '<i class="fas fa-chevron-up text-2xl font-bold"></i>'; // Upward Arrow
+            }
+        }
+    </script>
     <!-- Smooth scrolling for navigation links -->
     <script>
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-    
+
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
-    
+
                 if (targetElement) {
                     targetElement.scrollIntoView({
                         behavior: 'smooth',
@@ -627,13 +709,12 @@
                 }
             });
         });
-    
         // Mobile menu toggle
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById("mobile-menu");
             mobileMenu.classList.toggle("hidden");
         }
-    
+
         // Example function to open modal (define it as per your requirements)
         function openModal() {
             // Your modal opening logic here
@@ -903,7 +984,7 @@
                 Swal.fire('Error', 'Failed to send OTP.', 'error');
             }
         });
-        
+
 
         async function handleSignUp(event) {
             event.preventDefault();

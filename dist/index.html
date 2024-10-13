@@ -7,8 +7,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-
     <title>HYDROMATIC</title>
+    <link rel="icon" href="/img/HydroMatic.png" type="image/x-icon">
     <!-- Tailwind CSS for styling -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
     <!-- SweetAlert2 for alerts -->
@@ -91,19 +91,73 @@
 
             font-weight: 700;
         }
+
+        .background-image {
+            position: relative;
+            /* Needed for the pseudo-element */
+            overflow: hidden;
+            /* Ensures the pseudo-element doesn't overflow */
+        }
+
+        .background-image::before {
+            content: '';
+            /* Creates an empty pseudo-element */
+            position: absolute;
+            /* Position it absolutely within the parent */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('img/oakleaf.jpg');
+            /* Background image */
+            background-size: cover;
+            /* Cover the entire container */
+            background-position: center;
+            /* Opacity of the image */
+            z-index: 0;
+            /* Place it behind the content */
+        }
+
+        .background-image::after {
+            content: '';
+            /* Creates another empty pseudo-element */
+            position: absolute;
+            /* Position it absolutely within the parent */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.55);
+            /* Dark overlay with 60% opacity */
+            z-index: 1;
+            /* Place it above the background image */
+        }
+
+        /* Ensure text and content are on top of the background */
+        .background-image>* {
+            position: relative;
+            /* Ensure children are positioned above the pseudo-elements */
+            z-index: 2;
+            /* Higher z-index to show on top */
+        }
     </style>
 </head>
 
 <body class="font-family-karla flex flex-col bg-c h-screen">
     <div class="w-full flex flex-col h-screen overflow-y-hidden">
         <!-- Header -->
-        <header class="w-full bg-sidebar py-5 px-6">
+        <header class="bg-body py-4 p-6 sticky top-0 z-40">
             <div class="container mx-auto flex justify-between items-center">
                 <!-- Logo and Branding -->
-                <a href="dashboard"
-                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
-                    <span class="text2">Hydro</span><span class="text1">Matic</span>
-                </a>
+                <div class="flex items-center space-x-2">
+                    <div class="w-16 h-16 p-1 rounded-full bg-white">
+                        <img src="/img/HydroMatic.png" alt="HydroMatic Logo">
+                    </div>
+                    <a href=""
+                        class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                        <span class="text2">Hydro</span><span class="text1">Matic</span>
+                    </a>
+                </div>
                 <!-- Navigation for Desktop -->
                 <nav id="navbar-menu" class="hidden lg:flex space-x-8">
                     <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -156,16 +210,16 @@
             </nav>
         </header>
         <!-- Body -->
-        <div class="flex-grow overflow-hidden">
+        <div class="flex-grow overflow-hidden background-image">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
                     <!-- Container for bed fields -->
                     <div class="py-4 grid sm:grid-cols-1 md:grid-cols-2">
-                        <h1 class="text-4xl text-black pb-6 font-bold">Device Management</h1>
+                        <h1 class="text-4xl text-gray-300 pb-6 font-bold">Device Management</h1>
                         <div class="text-right w-full">
-                            <button id="addBedBtn" class="py-4 px-6 bg-gray-200 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
+                            <button id="addBedBtn" class="py-4 px-6 bg-gray-300 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
                                  w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
-                                <p style="color: #171817;"> + Add <Br> Hydro Frame </p>
+                                <p style="color: #171817;"> + Add <br> Hydro Frame </p>
                             </button>
                         </div>
                     </div>
@@ -173,8 +227,8 @@
                         <div class="flex justify-between items-center mb-4">
                             <!-- Sort Dropdown -->
                             <div class="flex items-center">
-                                <label for="sortSelect" class="mr-2">Sort By:</label>
-                                <select id="sortSelect" class="px-2 py-1 border rounded rounded-lg shadow-lg">
+                                <label for="sortSelect" class="mr-2 text-lg text-gray-300">Sort By:</label>
+                                <select id="sortSelect" class="px-2 py-1 text-lg border rounded rounded-lg shadow-lg">
                                     <option value="name_asc">Name A-Z</option>
                                     <option value="name_desc">Name Z-A</option>
                                     <option value="start_date_asc">Start Date Ascending</option>
@@ -187,10 +241,10 @@
                             <!-- Pagination Controls -->
                             <div id="pagination" class="flex items-center">
                                 <button id="prevBtn"
-                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded mr-2 rounded-lg shadow-lg">Previous</button>
-                                <span id="pageIndicator" class="text-lg"></span>
+                                    class="px-4 py-2 text-lg bg-gray-300 rounded mr-2 rounded-lg shadow-lg">Previous</button>
+                                <span id="pageIndicator" class="text-lg text-gray-300"></span>
                                 <button id="nextBtn"
-                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded ml-2 rounded-lg shadow-lg">Next</button>
+                                    class="px-4 py-2 text-lg bg-gray-300 rounded ml-2 rounded-lg shadow-lg">Next</button>
                             </div>
                         </div>
 
@@ -334,7 +388,7 @@
             const newBedDiv = document.createElement('div');
             const bedId = deviceInfo.Var_Host; // Unique ID for each bed
 
-            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-white border-4 border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer border-gray-500 border-solid';
+            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-gray-300 border-4 border-solid bg-d rounded-lg custom-shadow p-6 cursor-pointer border-gray-500 border-solid';
             newBedDiv.innerHTML = `
                     <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
                     <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
@@ -495,7 +549,7 @@
 
             if (allBeds.length === 0) {
                 // Display a centered message when no beds are available
-                bedsContainer.innerHTML = '<div class="p-16 col-span-4 text-center font-bold text-4xl">No Hydro Frame Added</div>';
+                bedsContainer.innerHTML = '<div class="p-16 col-span-4 text-center font-bold text-4xl text-gray-300 ">No Hydro Frame Added</div>';
                 document.getElementById('pageIndicator').textContent = ''; // Clear pagination indicator
                 return;
             }

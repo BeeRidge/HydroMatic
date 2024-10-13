@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HYDROMATIC</title>
+    <link rel="icon" href="/img/HydroMatic.png" type="image/x-icon">
     <meta name="author" content="David Grzyb">
     <meta name="description" content="Tailwind Admin Template for managing beds and tracking growth stages.">
 
@@ -87,6 +88,55 @@
 
             font-weight: 700;
         }
+
+        .background-image {
+            position: relative;
+            /* Needed for the pseudo-element */
+            overflow: hidden;
+            /* Ensures the pseudo-element doesn't overflow */
+        }
+
+        .background-image::before {
+            content: '';
+            /* Creates an empty pseudo-element */
+            position: absolute;
+            /* Position it absolutely within the parent */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('img/oakleaf.jpg');
+            /* Background image */
+            background-size: cover;
+            /* Cover the entire container */
+            background-position: center;
+            /* Opacity of the image */
+            z-index: 0;
+            /* Place it behind the content */
+        }
+
+        .background-image::after {
+            content: '';
+            /* Creates another empty pseudo-element */
+            position: absolute;
+            /* Position it absolutely within the parent */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.55);
+            /* Dark overlay with 60% opacity */
+            z-index: 1;
+            /* Place it above the background image */
+        }
+
+        /* Ensure text and content are on top of the background */
+        .background-image>* {
+            position: relative;
+            /* Ensure children are positioned above the pseudo-elements */
+            z-index: 2;
+            /* Higher z-index to show on top */
+        }
     </style>
 </head>
 
@@ -96,13 +146,18 @@
 <body class="bg-c font-family-karla flex bg-gray-300">
     <div class="w-full flex flex-col h-screen overflow-y-hidden">
         <!-- Header -->
-        <header class="w-full bg-sidebar py-5 px-6">
+        <header class="bg-body py-4 p-6 sticky top-0 z-40">
             <div class="container mx-auto flex justify-between items-center">
                 <!-- Logo and Branding -->
-                <a href="dashboard"
-                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
-                    <span class="text2">Hydro</span><span class="text1">Matic</span>
-                </a>
+                <div class="flex items-center space-x-2">
+                    <div class="w-16 h-16 p-1 rounded-full bg-white">
+                        <img src="/img/HydroMatic.png" alt="HydroMatic Logo">
+                    </div>
+                    <a href=""
+                        class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                        <span class="text2">Hydro</span><span class="text1">Matic</span>
+                    </a>
+                </div>
                 <!-- Navigation for Desktop -->
                 <nav id="navbar-menu" class="hidden lg:flex space-x-8">
                     <a href="dashboard" class="flex items-center text-white py-2 pl-4 nav-item">
@@ -155,10 +210,10 @@
             </nav>
         </header>
         <!-- Body -->
-        <div class="flex-grow overflow-hidden">
+        <div class="flex-grow overflow-hidden background-image">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
-                    <h1 class="text-4xl text-black pb-6 font-bold">Settings</h1>
+                    <h1 class="text-4xl text-gray-300 pb-6 font-bold">Settings</h1>
                     <div class="pb-16">
                         <div
                             class="p-6 w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5 overflow-auto">

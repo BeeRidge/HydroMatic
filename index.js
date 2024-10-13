@@ -1256,6 +1256,10 @@ app.get("/admin-content1", (req, res) => {
 app.get("/admin-main", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
 });
+// Handle admin-main.html
+app.get("/home", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "home.html"));
+});
 // Serve the home page
 app.get("/", (req, res) => {
   console.log("Serving landing.html");
