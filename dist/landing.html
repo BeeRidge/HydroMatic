@@ -365,9 +365,16 @@
                         title="Password must be at least 6 characters long and contain only letters and numbers"
                         required>
                 </div>
+                <div class="flex justify-end">
+                    <a id="forgotPassword"
+                        class="text-red-500 cursor-pointer hover:text-red-700 transition duration-300 ease-in-out">
+                        Forgot Password
+                    </a>
+                </div>
                 <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Log
-                    In</button>
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-300 ease-in-out">
+                    Log In
+                </button>
             </form>
 
             <!-- Sign Up Form -->
@@ -394,9 +401,15 @@
                     <label for="signupPassword" class="text-sm text-gray-700">Password</label>
                     <input id="signupPassword" type="password" placeholder="Password"
                         class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        pattern="[A-Za-z0-9]{6,}"
-                        title="Password must be at least 6 characters long and contain only letters and numbers"
+                        pattern="[A-Za-z0-9]{8,}"
+                        title="Password must be at least 8 characters long and contain only letters and numbers"
                         required>
+                    <input id="confirmPassword" type="password" placeholder="Confirm Password"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="[A-Za-z0-9]{8,}"
+                        title="Password must be at least 8 characters long and contain only letters and numbers"
+                        required>
+                    <p class="text-xs text-gray-500 text-center">Password contains a-z, A-Z, and 0-9 characters only</p>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label for="signupCode" class="text-sm text-gray-700">Code</label>
@@ -444,22 +457,24 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-3xl text-d mb-4">
-                        <i class="fas fa-water"></i>
+                        <i class="fas fa-calendar-days"></i>
                     </div>
                     <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>Real-Time
                             Monitoring</mark></h3>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-3xl text-d mb-4">
-                        <i class="fas fa-thermometer-half"></i>
+                        <i class="fas fa-bell"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark></h3>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark>
+                    </h3>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-3xl text-d mb-4">
-                        <i class="fas fa-bullhorn"></i>
+                        <i class="fas fa-seedling"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>High Quality Crops</mark></h3>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2 scroll-animation"><mark>High Quality
+                            Crops</mark></h3>
                 </div>
             </div>
         </div>
@@ -469,109 +484,30 @@
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
             <div>
-                <h2 class="text-3xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">HydroMatic    
-                    Device</h2>
-                <p class="mt-4 text-black-200 scroll-animation">Description: We develop a device that utilizes sensors to
-                    monitor and supply oxygen in hydroponic setup. It ensures optimal growing conditions and
-                    facitlitates oxygen delivery to aerate water for growth efficiency.</p>
-
-                <dl class="mt-16 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
-                    <div class="border-t border-black-800 pt-4">
-                        <dt class="font-medium text-black-200 scroll-animation">1. Water Level Sensor</dt>
-                        <dd class="mt-2 text-sm text-black-200 scroll-animation">Description: A device that measures the
-                            level of water in a container, providing real-time data for applications.</dd>
-                    </div>
-                    <div class="border-t border-black-800 pt-4">
-                        <dt class="font-medium text-black-200 scroll-animation">2. DS18B20 Temperature Sensor</dt>
-                        <dd class="mt-2 text-sm text-black-200 scroll-animation">Description: A digital temperature
-                            sensor capable of measuring temperatures ranging from -55°C to +125°C.</dd>
-                    </div>
-                    <div class="border-t border-black-800 pt-4">
-                        <dt class="font-medium text-black-200 scroll-animation">3. Air Pump</dt>
-                        <dd class="mt-2 text-sm text-black-200 scroll-animation">Description: An electric or manual
-                            device that moves air from one location to another, typically used to aerate water in
-                            hydroponic system, ensuring oxygen for plant roots.</dd>
-                    </div>
-                    <div class="border-t border-black-800 pt-4">
-                        <dt class="font-medium text-black-200 scroll-animation">4.ESP8266 NodeMCU v1.0 (ESP-12E)</dt>
-                        <dd class="mt-2 text-sm text-black-200 scroll-animation">Description: A low-cost Wi-Fi microchip
-                            with full TCP/IP stack and microcontroller capabilities, often used in IoT projects for
-                            wireless connectivity and control of devices.</dd>
-                    </div>
-                    <div class="border-t border-black-800 pt-4">
-                        <dt class="font-medium text-black-200 scroll-animation">5. NodeMCU Baseboard</dt>
-                        <dd class="mt-2 text-sm text-black-200 scroll-animation">Description: A development board
-                            designed for the ESP8266, providing easy access to GPIO pins, power supply, and programming
-                            interfaces, facilitating rapid prototyping of IoT applications.</dd>
-                    </div>
-                    <div class="border-t border-black-800 pt-4">
-                        <dt class="font-medium text-black-200 scroll-animation">6.Relay Module</dt>
-                        <dd class="mt-2 text-sm text-black-200 scroll-animation">Description: An electronic component
-                            that allows a low-power signal to control a high-power circuit, it is used to control the
-                            Air Pump.</dd>
-                    </div>
-                </dl>
+                <h2 class="text-3xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">What
+                    <span class="text1">HydroMatic</span> can do?
+                </h2>
+                <p class="mt-4 text-black-200 scroll-animation">The HydroMatic Device is a smart system designed for
+                    easy management of hydroponic setups. It monitors water levels and temperature to ensure optimal
+                    conditions for plant growth, while the air pump keeps roots oxygenated. With built-in Wi-Fi, you can
+                    control and check the system remotely, and its design allows for easy upgrades. The device also
+                    automates tasks like turning the air pump on and off, making it a hassle-free way to maintain a
+                    healthy hydroponic environment.</p>
             </div>
-            <div class="grid grid-cols-2 grid-rows-2 gap-4 sm:gap-6 lg:gap-8 scroll-animation">
-                <img src="img\water-level.jpg"
-                    alt="Walnut card tray with white powder coated steel divider and 3 punchout holes."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\water-temp.jpg"
-                    alt="Top down view of walnut card tray with embedded magnets and card groove."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\sensor.jpg" alt="Side of walnut card tray with card groove and recessed card area."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\wifi.jpg"
-                    alt="Walnut card tray filled with cards and card angled in dedicated groove."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\board.jpg" alt="Side of walnut card tray with card groove and recessed card area."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\relay.jpg"
-                    alt="Walnut card tray filled with cards and card angled in dedicated groove."
-                    class="rounded-lg bg-gray-100">
-
-            </div>
+            <img src="img\How.png" class="scroll-animation">
         </div>
         </div>
     </section>
     <!-- Steps to Connect the esp8266 to the WiFi -->
     <section id="steps" class="bg-body py-24">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-            <h2 class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">Steps to Use HydroMatic Device</h2>
-            <ol class="mt-8 space-y-4 text-gray-200">
-                <li class="flex items-start">
-                    <span class="font-bold text-lg">1.</span>
-                    <span class="ml-2">Go to the WiFi settings and connect to the "ESP8266_Config" network.</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="font-bold text-lg">2.</span>
-                    <span class="ml-2">Type 192.168.4.1 on your browser and input the username and password at the back
-                        of device.</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="font-bold text-lg">3.</span>
-                    <span class="ml-2">Input the bed number "bed_", also type the ssid/name and password of the WiFi
-                        network.</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="font-bold text-lg">4.</span>
-                    <span class="ml-2">Wait for the SUCCESS message to display and connect to your network to see the
-                        Dashboard.</span>
-                </li>
-
-            </ol>
-            <div class=" py-6 grid grid-cols-4  gap-4 sm:gap-2  scroll-animation">
-                <img src="img\step1.jpg"
-                    alt="Walnut card tray with white powder coated steel divider and 3 punchout holes."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\step3.jpg" alt="Side of walnut card tray with card groove and recessed card area."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\step4.jpg"
-                    alt="Walnut card tray filled with cards and card angled in dedicated groove."
-                    class="rounded-lg bg-gray-100">
-                <img src="img\step5.jpg" alt="Side of walnut card tray with card groove and recessed card area."
-                    class="rounded-lg bg-gray-100">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">How to connect
+                <span class="text1">HydroMatic</span> in WiFi?</h2>
+            <div class=" py-6 grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
+                <img src="img\step1.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img src="img\step3.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img src="img\step4.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img src="img\step5.jpg" class="h-4/5 rounded-lg bg-gray-100">
             </div>
         </div>
     </section>
@@ -647,15 +583,11 @@
             </div>
         </div>
     </section>
-
     <!-- Footer Section -->
     <footer class="bg-body custom-shadow text-gray-200 py-8">
         <div class="container mx-auto px-4">
             <!-- Footer Content -->
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <!-- Footer Links -->
-
-
                 <!-- Social Media Icons -->
                 <div class="mb-4 md:mb-0">
                     <ul class="flex space-x-6">
@@ -679,6 +611,128 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Forgot password -->
+    <script>
+        document.getElementById('forgotPassword').addEventListener('click', function () {
+            // Step 1: Prompt for phone number
+            Swal.fire({
+                title: 'Enter Phone Number',
+                input: 'text',
+                inputPlaceholder: 'Phone Number',
+                showCancelButton: true,
+                confirmButtonText: 'Send OTP',
+                preConfirm: (phone) => {
+                    // Basic validation for phone number (must be 11 digits)
+                    if (!/^\d{11}$/.test(phone)) {
+                        Swal.showValidationMessage('Please enter a valid 11-digit phone number.');
+                        return false;
+                    }
+                    return phone;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const phone = result.value;
+
+                    // Step 2: Send OTP to phone
+                    fetch('/api/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Success', 'OTP sent to your phone number', 'success').then(() => {
+                                    // Step 3: Prompt for OTP
+                                    Swal.fire({
+                                        title: 'Enter OTP',
+                                        input: 'text',
+                                        inputPlaceholder: 'OTP',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Verify OTP',
+                                        preConfirm: (otp) => {
+                                            if (!/^\d{6}$/.test(otp)) {
+                                                Swal.showValidationMessage('Please enter a valid 6-digit code.');
+                                                return false;
+                                            }
+                                            return otp;
+                                        }
+                                    }).then((otpResult) => {
+                                        if (otpResult.isConfirmed) {
+                                            const otp = otpResult.value;
+
+                                            // Step 4: Verify OTP
+                                            fetch('/api/otp-verify', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ phone, otp })
+                                            })
+                                                .then(res => res.json())
+                                                .then(verifyData => {
+                                                    if (verifyData.success) {
+                                                        Swal.fire('Success', 'OTP verified. Please enter your new password.', 'success').then(() => {
+                                                            // Step 5: Prompt for new password and confirm password
+                                                            Swal.fire({
+                                                                title: 'New Password',
+                                                                html:
+                                                                    '<input type="password" id="newPassword" class="swal2-input" placeholder="New Password">' +
+                                                                    '<input type="password" id="confirmPassword" class="swal2-input" placeholder="Confirm Password">',
+                                                                focusConfirm: false,
+                                                                showCancelButton: true,
+                                                                confirmButtonText: 'Update Password',
+                                                                preConfirm: () => {
+                                                                    const newPassword = Swal.getPopup().querySelector('#newPassword').value;
+                                                                    const confirmPassword = Swal.getPopup().querySelector('#confirmPassword').value;
+
+                                                                    if (!newPassword || !confirmPassword) {
+                                                                        Swal.showValidationMessage('Please enter both fields.');
+                                                                        return false;
+                                                                    }
+
+                                                                    if (newPassword !== confirmPassword) {
+                                                                        Swal.showValidationMessage('Passwords do not match.');
+                                                                        return false;
+                                                                    }
+
+                                                                    return newPassword;
+                                                                }
+                                                            }).then((passwordResult) => {
+                                                                if (passwordResult.isConfirmed) {
+                                                                    const newPassword = passwordResult.value;
+
+                                                                    // Step 6: Update the password
+                                                                    fetch('/api/account/forgot-password', {
+                                                                        method: 'POST',
+                                                                        headers: { 'Content-Type': 'application/json' },
+                                                                        body: JSON.stringify({ phone, newPassword: newPassword })
+                                                                    })
+                                                                        .then(res => res.json())
+                                                                        .then(updateData => {
+                                                                            if (updateData.success) {
+                                                                                Swal.fire('Success', 'Password updated successfully', 'success');
+                                                                            } else {
+                                                                                Swal.fire('Error', updateData.error, 'error');
+                                                                            }
+                                                                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                                                                }
+                                                            });
+                                                        });
+                                                    } else {
+                                                        Swal.fire('Error', verifyData.error, 'error');
+                                                    }
+                                                }).catch(err => Swal.fire('Error', 'Something went wrong during OTP verification.', 'error'));
+                                        }
+                                    });
+                                });
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        }).catch(err => Swal.fire('Error', 'Failed to send OTP.', 'error'));
+                }
+            });
+        });
+    </script>
     <!-- load heading roulet -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -777,42 +831,6 @@
     </script>
     <!-- Signup -->
     <script>
-        // Send OTP on button click
-        document.getElementById('send').addEventListener('click', async () => {
-            const phone = document.getElementById('signupPhone').value;
-
-            if (!phone) {
-                Swal.fire('Error', 'Please enter your phone number.', 'error');
-                return;
-            }
-
-            // Basic validation for phone number
-            if (!/^\d{11}$/.test(phone)) {
-                Swal.fire('Error', 'Phone number must be exact 11 digits.', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/send-otp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ phone }),
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    Swal.fire('Success', 'OTP sent successfully!', 'success');
-                } else {
-                    Swal.fire('Error', 'Failed to send OTP. ' + data.error, 'error');
-                }
-            } catch (error) {
-                console.error('Error sending OTP:', error);
-                Swal.fire('Error', 'Failed to send OTP.', 'error');
-            }
-        });
-
         // Sanitize user inputs to prevent XSS
         function sanitizeInput(input) {
             return input
@@ -832,6 +850,7 @@
             const lname = sanitizeInput(document.getElementById('lastName').value);
             const phone = sanitizeInput(document.getElementById('signupPhone').value);
             const password = sanitizeInput(document.getElementById('signupPassword').value);
+            const confirmPassword = sanitizeInput(document.getElementById('confirmPassword').value);
             const otp = sanitizeInput(document.getElementById('signupCode').value);
 
             // Basic validation
@@ -850,7 +869,13 @@
                 return;
             }
 
-            // Proceed with form submission
+            // Check if the password and confirm password match
+            if (password !== confirmPassword) {
+                Swal.fire('Error', 'Passwords do not match.', 'error');
+                return;
+            }
+
+            // Proceed with form submission if everything is valid
             try {
                 const response = await fetch('/api/verify-otp', {
                     method: 'POST',

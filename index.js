@@ -628,6 +628,43 @@ app.get('/api/TotalBed', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
+// API to get the total bed frames
+app.get('/api/TotalHarvest', async (req, res) => {
+  try {
+    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? AND Status = 'HARVEST'";
+
+    // Execute the query
+    const [results] = await db.query(selectAll, [signedAcc]);
+
+    // Get the total number of rows
+    const totalRows = results.length;
+
+    // Send the total as an object (key-value)
+    res.json({ total: totalRows });
+  } catch (err) {
+    console.error('Database query error:', err);
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
+// API to get the total bed frames
+app.get('/api/TotalOngoing', async (req, res) => {
+  try {
+    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? AND Status = 'ONGOING'";
+
+    // Execute the query
+    const [results] = await db.query(selectAll, [signedAcc]);
+
+    // Get the total number of rows
+    const totalRows = results.length;
+
+    // Send the total as an object (key-value)
+    res.json({ total: totalRows });
+  } catch (err) {
+    console.error('Database query error:', err);
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
+// API for account information
 app.get('/api/account-details', async (req, res) => {
   try {
     console.log('Current signedAcc:', signedAcc); // Debugging line
@@ -711,57 +748,81 @@ function sanitizeInput(input) {
 }
 // API to update the phone number
 app.post('/api/account/update-phone', [
-body('newPnumber').isMobilePhone().escape().trim()
+  body('newPnumber').isMobilePhone().escape().trim()
 ], async (req, res) => {
-const errors = validationResult(req);
-if (!errors.isEmpty()) {
-  return res.status(400).json({ errors: errors.array() });
-}
-
-try {
-  const { newPnumber } = req.body;
-
-  const checkPhoneNumberQuery = `
-        SELECT * FROM account WHERE Acc_Pnumber = ?
-    `;
-  const [phoneResults] = await db.query(checkPhoneNumberQuery, [newPnumber]);
-
-  if (phoneResults.length > 0) {
-    return res.status(409).send({ error: 'Phone number already exists.' });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
 
-  const updatePhoneQuery = `
+  try {
+    const { newPnumber } = req.body;
+
+    const checkPhoneNumberQuery = `
+        SELECT * FROM account WHERE Acc_Pnumber = ?
+    `;
+    const [phoneResults] = await db.query(checkPhoneNumberQuery, [newPnumber]);
+
+    if (phoneResults.length > 0) {
+      return res.status(409).send({ error: 'Phone number already exists.' });
+    }
+
+    const updatePhoneQuery = `
         UPDATE account 
         SET Acc_Pnumber = ? 
         WHERE Acc_Pnumber = ?
     `;
-  const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), signedAcc]);
+    const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), signedAcc]);
 
-  if (updateResult.affectedRows === 0) {
-    return res.status(404).send({ error: 'Old account information is incorrect.' });
+    if (updateResult.affectedRows === 0) {
+      return res.status(404).send({ error: 'Old account information is incorrect.' });
+    }
+
+    const [select] = await db.query("SELECT * FROM account WHERE Acc_Pnumber = ?", [sanitizeInput(newPnumber)]);
+    signedAcc = select[0].Acc_Pnumber;
+    console.log(`Number: ${signedAcc}`);
+
+    res.send({ message: 'Phone number updated successfully.' });
+  } catch (err) {
+    console.error('Error updating phone number:', err);
+    res.status(500).send({ error: 'Error updating phone number.' });
   }
-
-  const [select] = await db.query("SELECT * FROM account WHERE Acc_Pnumber = ?", [sanitizeInput(newPnumber)]);
-  signedAcc = select[0].Acc_Pnumber;
-  console.log(`Number: ${signedAcc}`);
-
-  res.send({ message: 'Phone number updated successfully.' });
-} catch (err) {
-  console.error('Error updating phone number:', err);
-  res.status(500).send({ error: 'Error updating phone number.' });
-}
 });
 // API to update password
 app.post('/api/account/update-password', async (req, res) => {
   const { newPassword } = req.body;
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   try {
-      const query = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
-      await db.query(query, [hashedPassword, signedAcc]); // Assuming signedAcc is the authenticated user's phone number
-      res.json({ message: 'Password updated successfully' });
+    const query = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
+    await db.query(query, [hashedPassword, signedAcc]); // Assuming signedAcc is the authenticated user's phone number
+    res.json({ message: 'Password updated successfully' });
   } catch (err) {
-      console.error('Error updating password:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error updating password:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// API for forgot password
+app.post('/api/account/forgot-password', async (req, res) => {
+  const { phone, newPassword } = req.body;
+
+  try {
+    // Check if the account exists
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [phone]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'No account found with the provided phone number.' });
+    }
+
+    // If account exists, proceed to update the password
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+    const updatePasswordQuery = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
+    await db.query(updatePasswordQuery, [hashedPassword, phone]);
+
+    return res.json({ success: true, message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Error updating password:', err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
 // API recover from archive
