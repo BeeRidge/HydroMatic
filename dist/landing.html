@@ -868,6 +868,42 @@
                 .replace(/'/g, "&#x27;")
                 .replace(/\//g, "&#x2F;");
         }
+        // Send OTP on button click
+        document.getElementById('send').addEventListener('click', async () => {
+            const phone = document.getElementById('signupPhone').value;
+
+            if (!phone) {
+                Swal.fire('Error', 'Please enter your phone number.', 'error');
+                return;
+            }
+
+            // Basic validation for phone number
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exact 11 digits.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone }),
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire('Success', 'OTP sent successfully!', 'success');
+                } else {
+                    Swal.fire('Error', 'Failed to send OTP. ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                Swal.fire('Error', 'Failed to send OTP.', 'error');
+            }
+        });
+        
 
         async function handleSignUp(event) {
             event.preventDefault();
