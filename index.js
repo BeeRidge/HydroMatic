@@ -187,7 +187,12 @@ app.post('/api/login', async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid phone number or password' });
     }
-
+    // select account logged in
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED IN")';
+    await db.query(activityQuery, [results[0].Acc_Fname, results[0].Acc_Lname, results[0].Acc_Pnumber]);
     // If the password matches, log the user in
     signedAcc = results[0].Acc_Pnumber;
     console.log(`Number: ${signedAcc}`);
@@ -420,6 +425,12 @@ app.post("/api/add-bed-database", async (req, res) => {
       `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, "ONGOING", ?)`,
       [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, signedAcc]
     );
+    // select account logged in
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "ADD HYDRO FRAME")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
     console.log("Bed inserted successfully!");
     return res.status(200).json({ message: "Bed inserted successfully!" });
@@ -463,6 +474,13 @@ app.post("/api/delete-device", async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?, ?)`,
       [name, ip, sDay, lDay, sDate, hDate, stat, signedAcc]
     );
+
+    // select account logged in
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "REMOVE HYDRO FRAME")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
     console.log("Insert Successful to archived");
     res.status(200).json({ message: "Bed successfully deleted." });
@@ -701,7 +719,6 @@ app.post('/api/account/update-fname', [
 
   try {
     const { newFname } = req.body;
-    const signedAcc = req.signedAcc;
 
     // SQL query to update the first name
     const updateFnameQuery = `
@@ -714,6 +731,13 @@ app.post('/api/account/update-fname', [
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
     }
+
+    // select account logged in
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE FIRST NAME")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
     res.send({ message: 'First name updated successfully.' });
   } catch (err) {
@@ -732,7 +756,6 @@ app.post('/api/account/update-lname', [
 
   try {
     const { newLname } = req.body;
-    const signedAcc = req.signedAcc;
 
     const updateLnameQuery = `
           UPDATE account 
@@ -744,6 +767,13 @@ app.post('/api/account/update-lname', [
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
     }
+
+    // select account logged in
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE LAST NAME")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
     res.send({ message: 'Last name updated successfully.' });
   } catch (err) {
@@ -813,7 +843,9 @@ app.post('/api/account/update-phone', [
     const [select] = await db.query("SELECT * FROM account WHERE Acc_Pnumber = ?", [sanitizeInput(newPnumber)]);
     signedAcc = select[0].Acc_Pnumber;
     console.log(`Number: ${signedAcc}`);
-
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE PHONE NUMBER")';
+    await db.query(activityQuery, [select[0].Acc_Fname, select[0].Acc_Lname, select[0].Acc_Pnumber]);
     res.send({ message: 'Phone number updated successfully.' });
   } catch (err) {
     console.error('Error updating phone number:', err);
@@ -827,6 +859,12 @@ app.post('/api/account/update-password', async (req, res) => {
   try {
     const query = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
     await db.query(query, [hashedPassword, signedAcc]); // Assuming signedAcc is the authenticated user's phone number
+    // select account logged in
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE PASSWORD")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
     res.json({ message: 'Password updated successfully' });
   } catch (err) {
     console.error('Error updating password:', err);
@@ -850,6 +888,10 @@ app.post('/api/account/forgot-password', async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
     const updatePasswordQuery = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
     await db.query(updatePasswordQuery, [hashedPassword, phone]);
+
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "FORGOT PASSWORD")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
     return res.json({ success: true, message: 'Password updated successfully' });
   } catch (err) {
@@ -897,6 +939,12 @@ app.post('/api/recover', async (req, res) => {
         const [deleteResult] = await db.query("DELETE FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?", [id, varHost, varIp, formattedDate]);
 
         if (deleteResult.affectedRows > 0) {
+          // select account logged in
+          const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+          const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+          // Insert the activity into the activities table
+          const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "RECOVER HYDRO FRAME")';
+          await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
           res.status(200).json({ message: 'Record recovered and inserted successfully' });
         } else {
           res.status(404).json({ error: 'Record not found for deletion' });
@@ -1132,8 +1180,7 @@ app.get('/api/Page-Content', async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve content' });
   }
 });
-
-// Route to save hero content
+// Route to save page content
 app.post('/api/Save-Content', async (req, res) => {
   const updates = req.body; // Expecting an array of objects with tagId and tagContent
 
@@ -1151,7 +1198,6 @@ app.post('/api/Save-Content', async (req, res) => {
     res.status(500).json({ error: 'Failed to update content' });
   }
 });
-
 // Route to get image content data from the database
 app.get('/api/Image-Content', async (req, res) => {
   const sql = 'SELECT * FROM pageimage'; // Adjust sectionId if needed
@@ -1168,32 +1214,33 @@ app.get('/api/Image-Content', async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve content' });
   }
 });
-
+// Route to Save Image
 app.post('/api/Save-Image', upload.single('imageUpload'), async (req, res) => {
   try {
-      const { sectionId, imageId } = req.body; // Get sectionId and imageId from request body
-      const imgData = req.file; // multer will add the uploaded file to req.file
+    const { sectionId, imageId } = req.body; // Get sectionId and imageId from request body
+    const imgData = req.file; // multer will add the uploaded file to req.file
 
-      if (!imgData) {
-          return res.status(400).json({ error: 'No file uploaded' });
-      }
+    if (!imgData) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
 
-      const src = `img/${imgData.filename}`;
-      // Here you can perform your database update operation
-      const sql = 'UPDATE pageimage SET filename = ?, src = ? WHERE imageId = ? AND sectionId = ?';
-      const result = await db.query(sql, [imgData.filename, src, imageId, sectionId]); // Perform your DB operation
-      
-      if (result.affectedRows === 0) {
-          return res.status(404).json({ error: 'Image not found or section ID invalid' });
-      }
+    const src = `img/${imgData.filename}`;
+    // Here you can perform your database update operation
+    const sql = 'UPDATE pageimage SET filename = ?, src = ? WHERE imageId = ? AND sectionId = ?';
+    const result = await db.query(sql, [imgData.filename, src, imageId, sectionId]); // Perform your DB operation
 
-      return res.json({ message: 'Image updated successfully' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Image not found or section ID invalid' });
+    }
+
+    return res.json({ message: 'Image updated successfully' });
   } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to update image', details: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update image', details: err.message });
   }
 });
 
+/*------------------------------------------------- ADMIN ------------------------------------------- */
 
 // Function to Log in admin
 const adminEmail = 'admin@gmail.com';
@@ -1219,6 +1266,82 @@ app.post('/admin-login', (req, res) => {
     res.status(401).json({ error: 'Invalid email or password' });
   }
 });
+
+// API to get the total Users
+app.get('/api/admin/TotalUser', async (req, res) => {
+  try {
+    const selectAll = "SELECT * FROM device_info";
+
+    // Execute the query
+    const [results] = await db.query(selectAll, [signedAcc]);
+
+    // Get the total number of rows
+    const totalRows = results.length;
+
+    // Send the total as an object (key-value)
+    res.json({ total: totalRows });
+  } catch (err) {
+    console.error('Database query error:', err);
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
+// API to get the total Device
+app.get('/api/admin/TotalDevice', async (req, res) => {
+  try {
+    const selectAll = "SELECT * FROM account";
+
+    // Execute the query
+    const [results] = await db.query(selectAll);
+
+    // Get the total number of rows
+    const totalRows = results.length;
+
+    // Send the total as an object (key-value)
+    res.json({ total: totalRows });
+  } catch (err) {
+    console.error('Database query error:', err);
+    res.status(500).send({ error: 'Database query error' });
+  }
+});
+// API to display recently created account
+app.get('/api/admin/new-users', async (req, res) => {
+  try {
+      // Query to get all new users from the account table
+      const userQuery = 'SELECT * FROM account ORDER BY Date DESC'; // Ensure this is the correct table and field names
+      const [rows] = await db.query(userQuery);
+      res.json({ success: true, users: rows }); // Ensure you are sending users
+  } catch (err) {
+      console.error('Error fetching user data:', err);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+// API to display user activities
+app.get('/api/admin/user-activities', async (req, res) => {
+  try {
+    // Query to get all user activities from the activities table
+    const activityQuery = 'SELECT * FROM activities ORDER BY Date DESC';
+    const [rows] = await db.query(activityQuery);
+    res.json({ success: true, activities: rows });
+  } catch (err) {
+    console.error('Error fetching user activity data:', err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+// API to see device info
+app.get('/api/admin/device-info', async (req, res) => {
+  try {
+    // Query to get all devices from the device_info table
+    const deviceQuery = 'SELECT * FROM device_info';
+    const [rows] = await db.query(deviceQuery);
+
+    // Send the result back as JSON
+    res.json({ success: true, devices: rows });
+  } catch (err) {
+    console.error('Error fetching device data:', err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+
 // Handle admin-login.html
 app.get("/admin-login", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
