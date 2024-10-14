@@ -13,18 +13,25 @@ const saltRounds = 10; // The salt rounds for bcrypt
 const { body, validationResult } = require('express-validator');
 const PORT = process.env.PORT || 3000;
 
-// Configure multer for file upload with original filename preservation
+// Configure multer for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'img')); // Folder to save the uploaded files
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
     cb(null, file.originalname); // Use original filename
   }
 });
 
-const upload = multer({ storage });
+// Set file size limit (e.g., 100 MB)
+const upload = multer({
+  storage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100 MB limit
+});
+
+// Optional: Use body-parser if you need it for other requests
+app.use(express.json({ limit: '100mb' })); // Adjust limit as necessary
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Create a connection to the database
 const db = mysql.createPool({
@@ -1028,29 +1035,29 @@ app.post('/api/save_device_info', async (req, res) => {
 
   // Validate input
   if (!hostname || !ip_address || !fname || !lname || !pnum) {
-      return res.status(400).send('Hostname, IP address, first name, last name, and phone number are required.');
+    return res.status(400).send('Hostname, IP address, first name, last name, and phone number are required.');
   }
 
   try {
-      // Check if the record exists
-      const [result] = await db.query(
-          `SELECT * FROM device_info WHERE Var_Host = ? AND Var_Ip = ?`,
-          [hostname, ip_address]
-      );
+    // Check if the record exists
+    const [result] = await db.query(
+      `SELECT * FROM device_info WHERE Var_Host = ? AND Var_Ip = ?`,
+      [hostname, ip_address]
+    );
 
-      if (result.length === 0) {
-          // Insert new record if it does not exist
-          await db.query(
-              `INSERT INTO device_info (Var_Host, Var_Ip, fname, lname, pnum, Status) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
-              [hostname, ip_address, fname, lname, pnum]
-          );
-          res.send('New record created successfully.');
-      } else {
-          res.send('Record already exists.');
-      }
+    if (result.length === 0) {
+      // Insert new record if it does not exist
+      await db.query(
+        `INSERT INTO device_info (Var_Host, Var_Ip, fname, lname, pnum, Status) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
+        [hostname, ip_address, fname, lname, pnum]
+      );
+      res.send('New record created successfully.');
+    } else {
+      res.send('Record already exists.');
+    }
   } catch (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Error checking or saving the device info.');
+    console.error('Error executing query:', err);
+    res.status(500).send('Error checking or saving the device info.');
   }
 });
 // POST route for inserting sensor data
@@ -1058,32 +1065,32 @@ app.post('/api/insert_data', async (req, res) => {
   const { temperature, water_level, ip_address, hostname } = req.body;
 
   if (!temperature || !water_level || !ip_address) {
-      return res.status(400).send('Missing required data');
+    return res.status(400).send('Missing required data');
   }
 
   try {
-      // Check if the IP address exists in the device_info table and get the Var_Host
-      const [deviceInfo] = await db.query(
-          `SELECT Var_Host FROM device_info WHERE Var_Ip = ?`,
-          [ip_address]
-      );
+    // Check if the IP address exists in the device_info table and get the Var_Host
+    const [deviceInfo] = await db.query(
+      `SELECT Var_Host FROM device_info WHERE Var_Ip = ?`,
+      [ip_address]
+    );
 
-      let varHost;
+    let varHost;
 
-      if (deviceInfo.length > 0) {
-          // If the IP address is found, use the corresponding Var_Host
-          varHost = deviceInfo[0].Var_Host;
-      } else {
-          // If the IP address is not found, use the hostname from the request
-          varHost = hostname; 
-      }
+    if (deviceInfo.length > 0) {
+      // If the IP address is found, use the corresponding Var_Host
+      varHost = deviceInfo[0].Var_Host;
+    } else {
+      // If the IP address is not found, use the hostname from the request
+      varHost = hostname;
+    }
 
-      // Check if the table exists for the given varHost
-      const [tableCheck] = await db.query(`SHOW TABLES LIKE ?`, [varHost]);
+    // Check if the table exists for the given varHost
+    const [tableCheck] = await db.query(`SHOW TABLES LIKE ?`, [varHost]);
 
-      if (tableCheck.length === 0) {
-          // If table does not exist, create it
-          await db.query(`
+    if (tableCheck.length === 0) {
+      // If table does not exist, create it
+      await db.query(`
               CREATE TABLE ${varHost} (
                   Num_Id INT(255) NOT NULL AUTO_INCREMENT,
                   Var_Ip VARCHAR(50) NOT NULL,
@@ -1094,104 +1101,100 @@ app.post('/api/insert_data', async (req, res) => {
                   PRIMARY KEY (Num_Id)
               );
           `);
-          console.log(`Table ${varHost} created successfully`);
-      }
+      console.log(`Table ${varHost} created successfully`);
+    }
 
-      // Insert the sensor data into the table
-      await db.query(
-          `INSERT INTO ${varHost} (Var_Ip, Var_Temp, Var_WLvl, Date_Dev, Time_Dev)
+    // Insert the sensor data into the table
+    await db.query(
+      `INSERT INTO ${varHost} (Var_Ip, Var_Temp, Var_WLvl, Date_Dev, Time_Dev)
            VALUES (?, ?, ?, CURDATE(), CURTIME())`,
-          [ip_address, temperature, water_level]
-      );
-      res.send('New record created successfully');
+      [ip_address, temperature, water_level]
+    );
+    res.send('New record created successfully');
   } catch (err) {
-      console.error('Error inserting data:', err);
-      res.status(500).send('Error inserting data');
+    console.error('Error inserting data:', err);
+    res.status(500).send('Error inserting data');
   }
 });
-// Fetch all admin content
-app.get('/api/admin-content', async (req, res) => {
-  try {
-    const [results] = await db.query('SELECT * FROM page_content ORDER BY section_id ASC');
-    res.json(results);
-  } catch (err) {
-    console.error('Error fetching admin content:', err);
-    res.status(500).send('Error fetching admin content');
-  }
-});
-// Update admin content for a specific section
-app.put('/admin/content/:section_id', async (req, res) => {
-  const { section_id } = req.params;
-  const { content } = req.body;
-
-  if (!section_id) {
-    console.error('Section ID is undefined');
-    return res.status(400).send('Section ID is required');
-  }
+// Route to get content data from the database
+app.get('/api/Page-Content', async (req, res) => {
+  const sql = 'SELECT * FROM pagecontent';
 
   try {
-    await db.query('UPDATE page_content SET content = ? WHERE section_id = ?', [content, section_id]);
-    res.send('Content updated successfully.');
-  } catch (err) {
-    console.error('Error updating content:', err);
-    res.status(500).send('Error updating content');
-  }
-});
-// Fetch images for a specific section
-app.get('/api/section-images/:section_id', async (req, res) => {
-  const { section_id } = req.params;
-
-  if (!section_id) {
-    return res.status(400).send('Section ID is required');
-  }
-
-  try {
-    const [results] = await db.query('SELECT * FROM page_images WHERE section_id = ?', [section_id]);
-
+    const [results] = await db.query(sql);
+    console.log(results); // Log results to see what is returned
     if (results.length === 0) {
-      return res.status(404).send('No images found for this section');
+      return res.status(404).json({ error: 'No content found' });
     }
-
     res.json(results);
   } catch (err) {
-    console.error('Error fetching images for section:', err);
-    res.status(500).send('Error fetching images for this section');
+    console.error(err); // Log the error for debugging
+    res.status(500).json({ error: 'Failed to retrieve content' });
   }
 });
-// API to handle image upload
-app.post('/api/upload-image', upload.single('image'), async (req, res) => {
-  const { oldImageUrl } = req.body;
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
 
-  const filename = req.file.originalname; // Use original filename
-  const fileUrl = `/img/${filename}`;
+// Route to save hero content
+app.post('/api/Save-Content', async (req, res) => {
+  const updates = req.body; // Expecting an array of objects with tagId and tagContent
 
   try {
-    if (oldImageUrl) {
-      const oldImagePath = path.join(__dirname, 'img', path.basename(oldImageUrl));
+    // Iterate through each item and update in database (using a prepared statement for safety)
+    const promises = updates.map(item => {
+      const sql = 'UPDATE pagecontent SET tagContent = ? WHERE tagId = ? AND sectionId = ?';
+      return db.query(sql, [item.tagContent, item.tagId, item.sectionId]);
+    });
 
-      // Remove the old image file if it exists
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
+    await Promise.all(promises); // Wait for all updates to complete
+    res.json({ message: 'Content updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update content' });
+  }
+});
+
+// Route to get image content data from the database
+app.get('/api/Image-Content', async (req, res) => {
+  const sql = 'SELECT * FROM pageimage'; // Adjust sectionId if needed
+
+  try {
+    const [results] = await db.query(sql);
+    console.log(results); // Log results to see what is returned
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'No content found' });
+    }
+    res.json(results);
+  } catch (err) {
+    console.error(err); // Log the error for debugging
+    res.status(500).json({ error: 'Failed to retrieve content' });
+  }
+});
+
+app.post('/api/Save-Image', upload.single('imageUpload'), async (req, res) => {
+  try {
+      const { sectionId, imageId } = req.body; // Get sectionId and imageId from request body
+      const imgData = req.file; // multer will add the uploaded file to req.file
+
+      if (!imgData) {
+          return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      // Update the old image entry in the database
-      await db.query('UPDATE page_images SET filename = ?, url = ? WHERE url = ?', [filename, fileUrl, oldImageUrl]);
+      const src = `img/${imgData.filename}`;
+      // Here you can perform your database update operation
+      const sql = 'UPDATE pageimage SET filename = ?, src = ? WHERE imageId = ? AND sectionId = ?';
+      const result = await db.query(sql, [imgData.filename, src, imageId, sectionId]); // Perform your DB operation
+      
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Image not found or section ID invalid' });
+      }
 
-      return res.json({ imageUrl: fileUrl });
-    } else {
-      // Insert a new image into the database
-      const query = 'INSERT INTO page_images (filename, url) VALUES (?, ?)';
-      await db.query(query, [filename, fileUrl]);
-      res.json({ imageUrl: fileUrl });
-    }
+      return res.json({ message: 'Image updated successfully' });
   } catch (err) {
-    console.error('Error uploading or replacing image:', err);
-    res.status(500).send('Failed to upload image');
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update image', details: err.message });
   }
 });
+
+
 // Function to Log in admin
 const adminEmail = 'admin@gmail.com';
 const adminPassword = 'password123';
@@ -1249,12 +1252,16 @@ app.get("/admin-content", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-content.html"));
 });
 // Handle admin-content1.html
-app.get("/admin-content1", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-content1.html"));
+app.get("/admin-cms", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
 });
 // Handle admin-main.html
 app.get("/admin-main", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
+});
+// Handle admin-main.html
+app.get("/admin-user", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-user.html"));
 });
 // Handle admin-main.html
 app.get("/home", (req, res) => {
@@ -1276,7 +1283,7 @@ app.use((req, res) => {
 });
 // Handle PORT serve
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 

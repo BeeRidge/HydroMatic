@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYDROMATIC</title>
+    <title>HydroMatic</title>
     <link rel="icon" href="/img/HydroMatic.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
@@ -436,70 +436,69 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="bg-c pt-16 pb-20 px-10 w-full h-auto">
+    <section id="Hero" class="bg-c pt-16 pb-20 px-10 w-full h-auto">
         <div class="container mx-auto flex flex-col md:flex-row items-center">
             <div id="headings-container" class=" space-y-6 text-center md:text-left">
-                <h1 id="heading1" class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Monitor
+                <h1 id="heading1" class="fade-slide-in text-5xl font-bold text-black leading-tight hidden">Monitor
                     Remotely with <br><span class="text1">HYDROMATIC</span></h1>
-                <h1 id="heading2" class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Grow
+                <h1 id="heading2" class="fade-slide-in text-5xl font-bold text-black leading-tight hidden">Grow
                     Lettuce with <br><span class="text1">HYDROMATIC</span></h1>
-                <h1 id="heading3" class="fade-slide-in text-5xl font-bold text-gray-800 leading-tight hidden">Sample
+                <h1 id="heading3" class="fade-slide-in text-5xl font-bold text-black leading-tight hidden">Sample
                     Dashboard of <br><span class="text1">HYDROMATIC</span> Site.</h1>
-                <p class="text-gray-600 mx-5 lg:mr-11 text-justify">"Comprehensive Monitoring Solution for Kratky
-                    Hydroponics Farms.
-                    Leveraging IoT,
-                    our system integrates <mark>water-level sensors</mark>, <mark>water temperature sensors</mark>, and
-                    <mark>air pumps</mark> to optimize and sustain your hydroponic system."
+                <p id="Textheading" class="text-black mx-5 lg:mr-11 text-justify">"Comprehensive Monitoring Solution for Kratky
+                    Hydroponics Farms. Leveraging IoT, our system integrates <mark>water-level sensors</mark>,
+                    <mark>water temperature sensors</mark>, and <mark>air pumps</mark> to optimize and sustain your
+                    hydroponic system."
                 </p>
             </div>
             <div class="zoom-container mx-auto">
-                <img src="img/deviceframes.png" alt="App Image" class="w-full h-auto">
+                <img id="sampleDevice" src="img/deviceframes2.png" class="w-full h-auto">
             </div>
         </div>
     </section>
     <!-- Features Section -->
-    <section id="features" class="bg-body py-44 ">
+    <section id="Features" class="bg-body py-44 ">
         <div class="container mx-auto text-center p-6 ">
-            <h2 class="text-5xl font-bold text-gray-200 mb-8 scroll-animation">Key Features</h2>
+            <h2 id="featTitle" class="text-5xl font-bold text-gray-200 mb-8 scroll-animation">Key Features</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-4xl text-d mb-4">
                         <i class="fas fa-calendar-days"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>Real-Time Monitoring</mark>
+                    <h3 id="realTime" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>Real-Time Monitoring</mark>
                     </h3>
-                    <p class="text-lg text-gray-800 mb-2 scroll-animation">Monitor your hydroponic system's status in
+                    <p id="realTimeText" class="text-lg text-gray-800 mb-2 scroll-animation">Monitor your hydroponic system's status in
                         real-time from anywhere.</p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-4xl text-d mb-4">
                         <i class="fas fa-bell"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark>
+                    <h3 id="sms" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>SMS Notification</mark>
                     </h3>
-                    <p class="text-lg text-gray-800 mb-2 scroll-animation">Receive instant SMS notifications about your
+                    <p id="smsText" class="text-lg text-gray-800 mb-2 scroll-animation">Receive instant SMS notifications about your
                         system’s status.</p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-4xl text-d mb-4">
                         <i class="fas fa-seedling"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>IoT Integrated</mark></h3>
-                    <p class="text-lg text-gray-800 mb-2 scroll-animation">Seamlessly integrate IoT devices for
+                    <h3 id="IoT" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"><mark>IoT Integrated</mark></h3>
+                    <p id="IoTText" class="text-lg text-gray-800 mb-2 scroll-animation">Seamlessly integrate IoT devices for
                         automated monitoring.</p>
                 </div>
             </div>
         </div>
     </section>
     <!-- Device Info -->
-    <section id="device-info" class="bg-c py-8">
+    <section id="aboutHydro" class="bg-c py-8">
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
             <div>
-                <h2 class="text-2xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">What is
+                <h2 id="HydroTitle" class="text-2xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">What is
                     <span class="text1">HydroMatic</span> all about?
                 </h2>
-                <p class="mt-4 text-black-200 scroll-animation text-justify">The HydroMatic is a smart system designed
+                <p id="HydroText" class="mt-4 text-black-200 scroll-animation text-justify">The HydroMatic is a smart system designed
                     for
                     easy management of hydroponic setups. It monitors water levels and temperature to ensure optimal
                     conditions for plant growth, while the air pump keeps roots oxygenated. With built-in Wi-Fi, you can
@@ -507,31 +506,31 @@
                     automates tasks like turning the air pump on and off, making it a hassle-free way to maintain a
                     healthy hydroponic environment.</p>
             </div>
-            <img src="img\How.png" class="scroll-animation">
+            <img id="hydroImg" src="img\How.png" class="scroll-animation">
         </div>
         </div>
     </section>
     <!-- Steps to Connect the esp8266 to the WiFi -->
-    <section id="steps" class="bg-body pt-16">
+    <section id="Steps" class="bg-body pt-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">How can I set up
+            <h2 id="stepsTitle" class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">How can I set up
                 <span class="text1">HydroMatic</span> with WiFi?
             </h2>
             <div class="grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
-                <img src="img\step1.jpg" class="h-4/5 rounded-lg bg-gray-100">
-                <img src="img\step3.jpg" class="h-4/5 rounded-lg bg-gray-100">
-                <img src="img\step4.jpg" class="h-4/5 rounded-lg bg-gray-100">
-                <img src="img\step5.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg1" src="img\step1.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg2" src="img\step3.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg3" src="img\step4.jpg" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg4" src="img\step5.jpg" class="h-4/5 rounded-lg bg-gray-100">
             </div>
         </div>
     </section>
     <!-- About Us Section -->
-    <section id="about-us" class="bg-gray-100 py-16 ">
+    <section id="aboutUs" class="bg-gray-100 py-16 ">
         <div class="container mx-auto px-4">
             <!-- About Us Heading -->
             <div class="text-center mb-12">
-                <h2 class="text-5xl font-bold text-gray-800 scroll-animation">About Us</h2>
-                <p class="text-gray-600 mt-4 scroll-animation">We are a passionate team dedicated to innovating and
+                <h2 id="aboutHead" class="text-5xl font-bold text-gray-800 scroll-animation">About Us</h2>
+                <p id="aboutHeadText" class="text-gray-600 mt-4 scroll-animation">We are a passionate team dedicated to innovating and
                     revolutionizing the hydroponic industry.</p>
             </div>
 
@@ -539,18 +538,18 @@
             <div class="flex flex-col md:flex-row items-center mb-12 scroll-animation">
                 <!-- Image Section -->
                 <div class="md:w-1/2 mb-8 md:mb-0 scroll-animation">
-                    <img src="img\lett.jpg" alt="Our Team" class="w-full h-auto rounded-lg shadow-lg">
+                    <img id="aboutImg" src="img\lett.jpg" alt="Our Team" class="w-full h-auto rounded-lg shadow-lg">
                 </div>
                 <!-- Text Section -->
                 <div class="md:w-1/2 md:pl-12">
-                    <h3 class="text-3xl font-semibold text-gray-800 scroll-animation">Our Mission</h3>
-                    <p class="text-gray-600 mt-4 scroll-animation text-justify">
+                    <h3 id="mission" class="text-3xl font-semibold text-gray-800 scroll-animation">Our Mission</h3>
+                    <p id="missionText1" class="text-gray-600 mt-4 scroll-animation text-justify">
                         At HydroMatic, our mission is to make sustainable farming accessible to everyone through
                         cutting-edge technology.
                         We aim to empower farmers, hobbyists, and businesses with the tools they need to grow plants
                         efficiently and sustainably.
                     </p>
-                    <p class="text-gray-600 mt-4 scroll-animation text-justify">
+                    <p id="missionText2" class="text-gray-600 mt-4 scroll-animation text-justify">
                         Our team of experts brings together a wealth of experience in agriculture, engineering, and
                         technology to deliver
                         innovative hydroponic solutions. We believe in the power of hydroponics to transform the future
@@ -565,15 +564,15 @@
     <section id="faq" class="bg-gray-100 py-16">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-5xl font-bold text-gray-800">Frequently Asked Questions</h2>
-                <p class="text-gray-600 mt-4">Answers to your common queries about HydroMatic.</p>
+                <h2 id="faqTitle" class="text-5xl font-bold text-gray-800">Frequently Asked Questions</h2>
+                <p id="faqDesc" class="text-gray-600 mt-4">Answers to your common queries about HydroMatic.</p>
             </div>
 
             <div class="space-y-4">
                 <!-- FAQ Item 1 -->
                 <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer1', this)">
-                        <h3 class="text-lg font-semibold text-gray-200">What is HydroMatic?</h3>
+                        <h3 id="faqItem1" class="text-lg font-semibold text-gray-200">What is HydroMatic?</h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
@@ -588,7 +587,7 @@
                 <!-- FAQ Item 2 -->
                 <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer2', this)">
-                        <h3 class="text-lg font-semibold text-gray-200">How does HydroMatic work?</h3>
+                        <h3 id="faqItem2" class="text-lg font-semibold text-gray-200">How does HydroMatic work?</h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
@@ -603,7 +602,7 @@
                 <!-- FAQ Item 3 -->
                 <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer3', this)">
-                        <h3 class="text-lg font-semibold text-gray-200">What sensors are included?</h3>
+                        <h3 id="faqItem3" class="text-lg font-semibold text-gray-200">What sensors are included?</h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
@@ -618,7 +617,7 @@
                 <!-- FAQ Item 4 -->
                 <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer4', this)">
-                        <h3 class="text-lg font-semibold text-gray-200">How can I get support?</h3>
+                        <h3 id="faqItem4" class="text-lg font-semibold text-gray-200">How can I get support?</h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
@@ -633,7 +632,7 @@
                 <!-- FAQ Item 5 -->
                 <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer5', this)">
-                        <h3 class="text-lg font-semibold text-gray-200">Is HydroMatic easy to set up?</h3>
+                        <h3 id="faqItem5" class="text-lg font-semibold text-gray-200">Is HydroMatic easy to set up?</h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
