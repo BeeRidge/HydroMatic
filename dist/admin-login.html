@@ -58,52 +58,79 @@
 
   <script>
     document.getElementById('adloginForm').addEventListener('submit', async function(e) {
-      e.preventDefault(); // Prevent default form submission
-      
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+        e.preventDefault(); // Prevent default form submission
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
 
-      try {
-        const response = await fetch('/admin-login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Assuming the response contains a token
-          localStorage.setItem('authToken', data.token); // Save token to localStorage
-
-          // Show success message
-          Swal.fire({
-            icon: 'success',
-            title: 'Login Successful',
-            text: data.message,
-          }).then(() => {
-            // Redirect to admin-content.html after closing the alert
-            window.location.href = 'admin-content'; // Ensure this points to your actual admin page
-          });
-        } else {
-          const errorData = await response.json();
-          // Show error message
-          Swal.fire({
-            icon: 'error',
-            title: 'Login Failed',
-            text: errorData.error,
-          });
+        // Basic validation
+        if (!email || !password) {
+            return Swal.fire({
+                icon: 'warning',
+                title: 'Input Required',
+                text: 'Please enter both email and password.',
+            });
         }
-      } catch (error) {
-        // Handle network errors
+
+        // Show loading indicator
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Something went wrong. Please try again later.',
+            title: 'Logging in...',
+            html: 'Please wait while we log you in.',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
-      }
+
+        try {
+            const response = await fetch('/admin-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Assuming the response contains a token
+                localStorage.setItem('authToken', data.token); // Save token to localStorage
+
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login Successful',
+                    text: data.message || 'Welcome back!',
+                }).then(() => {
+                    // Redirect to admin-content.html after closing the alert
+                    window.location.href = 'admin-main'; // Ensure this points to your actual admin page
+                });
+            } else {
+                const errorData = await response.json();
+                // Check if error is related to invalid credentials
+                let errorMessage = errorData.error || 'Login failed. Please try again.';
+
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: errorMessage,
+                });
+            }
+        } catch (error) {
+            // Handle network errors
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again later.',
+            });
+        } finally {
+            Swal.close(); // Close the loading indicator
+        }
     });
-  </script>
+</script>
+
 </body>
 </html>

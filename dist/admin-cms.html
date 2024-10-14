@@ -578,7 +578,39 @@
             });
         });
     </script>
+    <!-- log out -->
+    <script>
+        document.getElementById('logout-button').addEventListener('click', function () {
+            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
 
+            if (token) {
+                fetch('/admin-logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Include the token in the request
+                    },
+                    body: JSON.stringify({ token })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Clear the token from local storage
+                            localStorage.removeItem('token');
+                            // Optionally redirect to login page or show a message
+                            window.location.href = '/admin-login'; // Redirect to login page
+                        } else {
+                            alert('Error logging out');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            } else {
+                // If no token, just redirect to login
+                window.location.href = '/admin-login'; // Redirect to login page
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -91,7 +91,7 @@
         <div class="flex mt-20 px-1 flex-col md:flex-row">
             <nav aria-label="alternative nav">
                 <div
-                    class="bg-gray-800 h-20 fixed bottom-0 mt-12 md:relative md:h-screen z-10 w-full md:w-48 content-center">
+                    class="bg-gray-800 h-20 py-16 fixed bottom-0 mt-12 md:relative md:h-screen z-10 w-full md:w-48 content-center">
                     <div
                         class="md:mt-12 md:w-48 md:fixed md:left-0 md:top-0 content-center md:content-start text-left justify-between">
                         <ul
@@ -498,8 +498,39 @@
         fetchDeviceData();
         fetchNewUserData();
     </script>
+    <!-- log out -->
+    <script>
+        document.getElementById('logout-button').addEventListener('click', function () {
+            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
 
-
+            if (token) {
+                fetch('/admin-logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Include the token in the request
+                    },
+                    body: JSON.stringify({ token })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Clear the token from local storage
+                            localStorage.removeItem('token');
+                            // Optionally redirect to login page or show a message
+                            window.location.href = '/admin-login'; // Redirect to login page
+                        } else {
+                            alert('Error logging out');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            } else {
+                // If no token, just redirect to login
+                window.location.href = '/admin-login'; // Redirect to login page
+            }
+        });
+    </script>
 </body>
 
 </html>

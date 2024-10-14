@@ -1242,30 +1242,54 @@ app.post('/api/Save-Image', upload.single('imageUpload'), async (req, res) => {
 
 /*------------------------------------------------- ADMIN ------------------------------------------- */
 
-// Function to Log in admin
+// JWT secret key
+const secretKey = 'pablo12';
 const adminEmail = 'admin@gmail.com';
 const adminPassword = 'password123';
 
-// Set up JWT secret key
-const secretKey = 'pablo12';
+// In-memory token blacklist (for simplicity, consider using a database in production)
+let tokenBlacklist = [];
+
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.post('/admin-login', (req, res) => {
   const { email, password } = req.body;
 
-  // Check if the provided email and password are correct
   if (email === adminEmail && password === adminPassword) {
-    // Generate JWT token
     const token = jwt.sign({ email: adminEmail }, secretKey, { expiresIn: '1h' });
-
-    // Send the token back to the client
     res.json({ token });
   } else {
-    // Return error if credentials are wrong
     res.status(401).json({ error: 'Invalid email or password' });
   }
 });
+
+// Logout Route
+app.post('/admin-logout', (req, res) => {
+  const { token } = req.body;
+
+  // Add the token to the blacklist
+  tokenBlacklist.push(token);
+  res.json({ message: 'Logged out successfully' });
+});
+
+// Middleware to check if token is blacklisted
+const checkToken = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1]; // Get token from headers
+
+  if (tokenBlacklist.includes(token)) {
+    return res.status(401).json({ error: 'Token is invalid or expired' });
+  }
+
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    req.user = decoded;
+    next();
+  });
+};
 
 // API to get the total Users
 app.get('/api/admin/TotalUser', async (req, res) => {
@@ -1346,6 +1370,18 @@ app.get('/api/admin/device-info', async (req, res) => {
 app.get("/admin-login", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
 });
+// Handle admin-content1.html
+app.get("/admin-cms", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
+});
+// Handle admin-main.html
+app.get("/admin-main", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
+});
+// Handle admin-main.html
+app.get("/admin-user", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-user.html"));
+});
 // Handle index.html
 app.get("/index", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
@@ -1369,26 +1405,6 @@ app.get("/login", (req, res) => {
 // Handle tables.html
 app.get("/tables", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "tables.html"));
-});
-// Serve admin content HTML file
-app.get("/admin-content", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-content.html"));
-});
-// Handle admin-content1.html
-app.get("/admin-cms", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
-});
-// Handle admin-main.html
-app.get("/admin-main", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
-});
-// Handle admin-main.html
-app.get("/admin-user", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-user.html"));
-});
-// Handle admin-main.html
-app.get("/home", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "home.html"));
 });
 // Serve the home page
 app.get("/", (req, res) => {
