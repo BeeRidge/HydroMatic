@@ -241,16 +241,12 @@
                         <div class="flex justify-between items-center mb-4">
                             <!-- Filter Dropdown -->
                             <div>
-                                <label for="filterDropdown" class="mr-2 text-lg text-gray-300">Sort By:</label>
+                                <label for="filterDropdown" class="mr-2 text-lg text-gray-300">Filter By:</label>
                                 <select id="filterDropdown"
                                     class="px-3 py-2 text-lg border rounded bg-white rounded-lg shadow-lg">
-                                    <option value="name">Name (A-Z)</option>
-                                    <option value="harvestDateAsc">Harvest Date (Asc)</option>
-                                    <option value="harvestDateDesc">Harvest Date (Desc)</option>
-                                    <option value="startDateAsc">Start Date (Asc)</option>
-                                    <option value="startDateDesc">Start Date (Desc)</option>
-                                    <option value="daysAsc">Days (Asc)</option>
-                                    <option value="daysDesc">Days (Desc)</option>
+                                    <option value="harvestDateDesc">Harvest Date</option>
+                                    <option value="startDateAsc">Start Date</option>
+                                    <option value="daysDesc">Days</option>
                                     <option value="statusOngoing">Still Ongoing</option>
                                     <option value="statusHarvest">Ready to Harvest</option>
                                 </select>
@@ -363,8 +359,13 @@
         function renderTable(page) {
             const tableBody = document.getElementById('tableBody');
             const tableHead = document.querySelector('#auditTable thead');
-            const noDataMessage = '<div class="p-16 text-4xl font-bold text-gray-300">No Hydro Frame</div>';
+            const noDataMessage = document.querySelector('.no-data-message'); // Select the "No Hydro Frame" message if it exists
             tableBody.innerHTML = ''; // Clear previous rows
+
+            // Remove the "No Hydro Frame" message if it exists
+            if (noDataMessage) {
+                noDataMessage.remove();
+            }
 
             // Check if there is data to display
             if (filteredData.length === 0) {
@@ -372,7 +373,11 @@
                 tableHead.style.display = 'none';
 
                 // Display "No Hydro Frame" message
-                document.getElementById('auditTable').insertAdjacentHTML('beforeend', noDataMessage);
+                const messageElement = document.createElement('div');
+                messageElement.className = 'p-16 text-4xl font-bold text-gray-300 no-data-message';
+                messageElement.textContent = 'No Hydro Frame';
+                document.getElementById('auditTable').appendChild(messageElement);
+
                 document.getElementById('pageIndicator').textContent = ''; // Clear pagination indicator
                 return;
             }
@@ -396,15 +401,15 @@
                 const formattedHarvestDate = `${(harvestDate.getMonth() + 1).toString().padStart(2, '0')}-${harvestDate.getDate().toString().padStart(2, '0')}-${harvestDate.getFullYear()}`;
 
                 const tableRow = `
-            <tr>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.Last_Day}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
-            </tr>
-        `;
+                    <tr>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.Last_Day}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                    </tr>
+                `;
                 tableBody.innerHTML += tableRow;
             }
 
@@ -413,31 +418,20 @@
         }
 
 
+
         function sortData(criteria) {
             // Start with all data
             filteredData = [...allData];
 
             switch (criteria) {
-                case 'harvestDateAsc':
-                    filteredData.sort((a, b) => new Date(a.Harvest_Date) - new Date(b.Harvest_Date));
-                    break;
                 case 'harvestDateDesc':
                     filteredData.sort((a, b) => new Date(b.Harvest_Date) - new Date(a.Harvest_Date));
                     break;
                 case 'startDateAsc':
                     filteredData.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
                     break;
-                case 'startDateDesc':
-                    filteredData.sort((a, b) => new Date(b.Start_Date) - new Date(a.Start_Date));
-                    break;
-                case 'daysAsc':
-                    filteredData.sort((a, b) => new Date(a.Last_Day) - new Date(b.Last_Day));
-                    break;
                 case 'daysDesc':
                     filteredData.sort((a, b) => new Date(b.Last_Day) - new Date(a.Last_Day));
-                    break;
-                case 'name':
-                    filteredData.sort((a, b) => a.Var_Host.localeCompare(b.Var_Host));
                     break;
                 case 'statusOngoing':
                     filteredData = allData.filter(row => row.Status === 'ONGOING');

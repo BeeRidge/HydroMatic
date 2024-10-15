@@ -227,14 +227,10 @@
                         <div class="flex justify-between items-center mb-4">
                             <!-- Sort Dropdown -->
                             <div class="flex items-center">
-                                <label for="sortSelect" class="mr-2 text-lg text-gray-300">Sort By:</label>
+                                <label for="sortSelect" class="mr-2 text-lg text-gray-300">Filter By:</label>
                                 <select id="sortSelect" class="px-2 py-1 text-lg border rounded rounded-lg shadow-lg">
-                                    <option value="name_asc">Name A-Z</option>
-                                    <option value="name_desc">Name Z-A</option>
-                                    <option value="start_date_asc">Start Date Ascending</option>
-                                    <option value="start_date_desc">Start Date Descending</option>
-                                    <option value="harvest_date_asc">Harvest Date Ascending</option>
-                                    <option value="harvest_date_desc">Harvest Date Descending</option>
+                                    <option value="start_date_asc">Start Date</option>
+                                    <option value="harvest_date_desc">Harvest Date</option>
                                 </select>
                             </div>
 
@@ -519,12 +515,6 @@
 
         function sortBeds() {
             switch (currentSort) {
-                case 'name_asc':
-                    allBeds.sort((a, b) => a.Var_Host.localeCompare(b.Var_Host));
-                    break;
-                case 'name_desc':
-                    allBeds.sort((a, b) => b.Var_Host.localeCompare(a.Var_Host));
-                    break;
                 case 'start_date_asc':
                     allBeds.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
                     break;
