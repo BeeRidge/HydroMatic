@@ -708,7 +708,6 @@ app.get('/api/account-details', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-// API to update the first name
 app.post('/api/account/update-fname', [
   body('newFname').isAlpha().escape().trim() // Validate input (only alphabets)
 ], async (req, res) => {
@@ -720,21 +719,42 @@ app.post('/api/account/update-fname', [
   try {
     const { newFname } = req.body;
 
-    // SQL query to update the first name
-    const updateFnameQuery = `
-          UPDATE account 
-          SET Acc_Fname = ? 
-          WHERE Acc_Pnumber = ?
-      `;
-    const [updateResult] = await db.query(updateFnameQuery, [sanitizeInput(newFname), signedAcc]);
-
-    if (updateResult.affectedRows === 0) {
-      return res.status(404).send({ error: 'Old account information is incorrect.' });
+    if (!signedAcc) {
+      return res.status(401).send({ error: 'User not logged in.' });
     }
 
-    // select account logged in
+    // SQL query to update the first name in the account table
+    const updateAccountFnameQuery = `
+      UPDATE account 
+      SET Acc_Fname = ? 
+      WHERE Acc_Pnumber = ?
+    `;
+    const [accountUpdateResult] = await db.query(updateAccountFnameQuery, [sanitizeInput(newFname), signedAcc]);
+
+    if (accountUpdateResult.affectedRows === 0) {
+      return res.status(404).send({ error: 'No account found or first name is unchanged.' });
+    }
+
+    // SQL query to update the first name in the device_info table
+    const updateDeviceFnameQuery = `
+      UPDATE device_info 
+      SET Fname = ? 
+      WHERE Pnum = ? AND Fname <> ?
+    `;
+    const [deviceUpdateResult] = await db.query(updateDeviceFnameQuery, [sanitizeInput(newFname), signedAcc, sanitizeInput(newFname)]);
+
+    if (deviceUpdateResult.affectedRows > 0) {
+      console.log('Device info updated successfully.');
+    }
+
+    // Select account logged in
     const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
     const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    
+    if (rows.length === 0) {
+      return res.status(404).send({ error: 'Account not found.' });
+    }
+
     // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE FIRST NAME")';
     await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
@@ -766,6 +786,18 @@ app.post('/api/account/update-lname', [
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
+    }
+
+    // SQL query to update the first name in the device_info table
+    const updateDeviceFnameQuery = `
+      UPDATE device_info 
+      SET Lname = ? 
+      WHERE Pnum = ? AND Lname <> ?
+    `;
+    const [deviceUpdateResult] = await db.query(updateDeviceFnameQuery, [sanitizeInput(newLname), signedAcc, sanitizeInput(newLname)]);
+
+    if (deviceUpdateResult.affectedRows > 0) {
+      console.log('Device info updated successfully.');
     }
 
     // select account logged in
