@@ -1128,7 +1128,7 @@ app.post('/api/save_device_info', async (req, res) => {
     if (result.length === 0) {
       // Insert new record if it does not exist
       await db.query(
-        `INSERT INTO device_info (Var_Host, Var_Ip, fname, lname, pnum, Status) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
+        `INSERT INTO device_info (Var_Host, Var_Ip, Fname, Lname, Pnum, Status) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
         [hostname, ip_address, fname, lname, pnum]
       );
       res.send('New record created successfully.');
