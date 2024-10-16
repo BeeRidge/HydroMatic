@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2024 at 01:48 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Oct 16, 2024 at 06:23 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -577,8 +577,7 @@ INSERT INTO `pageimage` (`id`, `sectionId`, `imageId`, `filename`, `src`, `lastU
 -- Indexes for table `account`
 --
 ALTER TABLE `account`
-  ADD PRIMARY KEY (`Acc_Id`),
-  ADD UNIQUE KEY `Acc_Pnumber` (`Acc_Pnumber`);
+  ADD PRIMARY KEY (`Acc_Id`);
 
 --
 -- Indexes for table `activities`
