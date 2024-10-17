@@ -473,7 +473,7 @@
                     });
                     if (result.isConfirmed) {
                         try {
-                            const response = await fetch('/api/restore/' + id, { method: 'POST' });
+                            const response = await fetch('/api/recover/' + id, { method: 'POST' });
                             const responseData = await response.json();
                             if (response.ok) {
                                 Swal.fire('Recovered!', responseData.message, 'success');
@@ -490,8 +490,6 @@
             });
         }
     </script>
-    
-
     <!-- Log out button -->
     <script>
         function isUserAuthenticated() {
