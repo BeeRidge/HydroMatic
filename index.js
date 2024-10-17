@@ -1271,6 +1271,31 @@ app.post('/api/Save-Image', upload.single('imageUpload'), async (req, res) => {
     res.status(500).json({ error: 'Failed to update image', details: err.message });
   }
 });
+app.post('/api/logout', async (req, res) => {
+  try {
+    // Assuming 'signedAcc' holds the logged-in user's phone number
+    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    // Insert the activity into the activities table
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED OUT")';
+    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+
+    // Reset signedAcc to log out the user
+    signedAcc = null;
+
+    // Send a success response
+    res.status(200).json({ message: 'Successfully logged out' });
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).json({ error: 'Server error while logging out' });
+  }
+});
+
 
 /*------------------------------------------------- ADMIN ------------------------------------------- */
 
