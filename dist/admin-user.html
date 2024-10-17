@@ -167,7 +167,7 @@
         let newUsers = [];
         let filteredUsers = [];
         let curPageNewUsers = 1;
-        const itemPerPage = 5;
+        const itemPerPage = 10;
 
         // Function to fetch new user data
         async function fetchNewUserData() {
@@ -199,14 +199,14 @@
             paginatedUsers.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                <td class="px-6 py-4 text-left">${user.Acc_Fname}</td>
-                <td class="px-6 py-4 text-left">${user.Acc_Lname}</td>
-                <td class="px-6 py-4 text-left">${user.Acc_Pnumber}</td>
-                <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
-                <td class="px-6 py-4 text-left">
-                    <button class="editBtn px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-lg hover:bg-yellow-600" data-id="${user.Acc_Pnumber}">Edit</button>
-                </td>
-            `;
+                    <td class="px-6 py-4 text-left">${user.Acc_Fname}</td>
+                    <td class="px-6 py-4 text-left">${user.Acc_Lname}</td>
+                    <td class="px-6 py-4 text-left">${user.Acc_Pnumber}</td>
+                    <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 text-left">
+                        <button class="editBtn px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-lg hover:bg-yellow-600" data-id="${user.Acc_Pnumber}">Edit</button>
+                    </td>
+                `;
                 newUserBody.appendChild(row);
             });
 
@@ -233,10 +233,10 @@
                 Swal.fire({
                     title: 'Edit User Details',
                     html: `
-                <input type="text" id="swal-input-fname" class="swal2-input" placeholder="First Name" value="${user.Acc_Fname}">
-                <input type="text" id="swal-input-lname" class="swal2-input" placeholder="Last Name" value="${user.Acc_Lname}">
-                <input type="text" id="swal-input-pnumber" class="swal2-input" placeholder="Phone Number" value="${user.Acc_Pnumber}">
-            `,
+                        <input type="text" id="swal-input-fname" class="swal2-input" placeholder="First Name" value="${user.Acc_Fname}">
+                        <input type="text" id="swal-input-lname" class="swal2-input" placeholder="Last Name" value="${user.Acc_Lname}">
+                        <input type="text" id="swal-input-pnumber" class="swal2-input" placeholder="Phone Number" value="${user.Acc_Pnumber}">
+                    `,
                     focusConfirm: false,
                     showCancelButton: true,
                     confirmButtonText: 'Save',
@@ -264,7 +264,6 @@
             }
         }
 
-
         // Function to update user details on the server
         async function updateUser(userId, newFname, newLname, newNumber) {
             console.log("Updating user:", userId, newFname, newLname, newNumber); // Log update action
@@ -284,13 +283,20 @@
                 const result = await response.json();
                 if (result.success) {
                     // Update the local data and re-render the table
-                    const userIndex = newUsers.findIndex(u => u.Acc_Id === userId);
+                    const userIndex = newUsers.findIndex(u => u.Acc_Pnumber === userId);
                     if (userIndex > -1) {
                         newUsers[userIndex].Acc_Fname = newFname;
                         newUsers[userIndex].Acc_Lname = newLname;
                         newUsers[userIndex].Acc_Pnumber = newNumber;
                         displayNewUserPage(curPageNewUsers); // Refresh the displayed data
-                        Swal.fire('Success', 'User details updated successfully!', 'success');
+
+                        // Show SweetAlert success message
+                        Swal.fire({
+                            title: 'Success',
+                            text: 'User details updated successfully!',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                        });
                     }
                 } else {
                     console.error("Failed to update user:", result.error);
@@ -305,6 +311,7 @@
         // Fetch initial data
         fetchNewUserData();
     </script>
+
 
 </body>
 
