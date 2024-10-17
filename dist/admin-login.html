@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,9 +13,11 @@
   .bg-custom-gradient {
     background: linear-gradient(to left, #1f272b, #1f272b, #1a3d1a, #1d641d);
   }
+
   .bg-dark-gray {
     background-color: #1f272b;
   }
+
   .image-side {
     background-image: url('img/kett.jpg');
     background-size: cover;
@@ -22,19 +25,23 @@
     min-height: 80vh;
     width: 60%;
   }
+
   .form-container {
     padding: 1rem;
     max-width: 400px;
   }
+
   .input-field {
     padding: .5rem;
     font-size: 1rem;
   }
+
   .login-button {
     padding: .5rem .7rem;
     font-size: 1rem;
   }
 </style>
+
 <body class="bg-custom-gradient h-screen flex items-center justify-center">
   <div class="flex bg-white rounded-lg shadow-lg max-w-4xl w-full overflow-hidden">
     <div class="image-side w-1/2"></div>
@@ -44,93 +51,100 @@
         <form id="adloginForm">
           <div class="mb-4">
             <label class="block text-gray-300 text-sm font-bold mb-2" for="email">Email</label>
-            <input class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500" id="email" type="email" name="email" required>
+            <input
+              class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500"
+              id="email" type="email" name="email" required>
           </div>
           <div class="mb-4">
             <label class="block text-gray-300 text-sm font-bold mb-2" for="password">Password</label>
-            <input class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500" id="password" type="password" name="password" required>
+            <input
+              class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500"
+              id="password" type="password" name="password" required>
           </div>
-          <button class="bg-green-600 hover:bg-green-700 text-white font-bold rounded login-button focus:outline-none focus:ring focus:ring-green-500 transition duration-200" type="submit">Login</button>
+          <button
+            class="bg-green-600 hover:bg-green-700 text-white font-bold rounded login-button focus:outline-none focus:ring focus:ring-green-500 transition duration-200"
+            type="submit">Login</button>
         </form>
       </div>
     </div>
   </div>
 
   <script>
-    document.getElementById('adloginForm').addEventListener('submit', async function(e) {
-        e.preventDefault(); // Prevent default form submission
-        
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
+    document.getElementById('adloginForm').addEventListener('submit', async function (e) {
+      e.preventDefault(); // Prevent default form submission
 
-        // Basic validation
-        if (!email || !password) {
-            return Swal.fire({
-                icon: 'warning',
-                title: 'Input Required',
-                text: 'Please enter both email and password.',
-            });
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      // Basic validation
+      if (!email || !password) {
+        return Swal.fire({
+          icon: 'warning',
+          title: 'Input Required',
+          text: 'Please enter both email and password.',
+        });
+      }
+
+      // Show loading indicator
+      Swal.fire({
+        title: 'Logging in...',
+        html: 'Please wait while we log you in.',
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
+      });
 
-        // Show loading indicator
-        Swal.fire({
-            title: 'Logging in...',
-            html: 'Please wait while we log you in.',
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+      try {
+        const response = await fetch('/admin-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
         });
 
-        try {
-            const response = await fetch('/admin-login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+        if (response.ok) {
+          const data = await response.json();
 
-            if (response.ok) {
-                const data = await response.json();
+          // Assuming the response contains a token
+          localStorage.setItem('authToken', data.token); // Save token to localStorage
 
-                // Assuming the response contains a token
-                localStorage.setItem('authToken', data.token); // Save token to localStorage
+          // Show success message
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful',
+            text: data.message || 'Welcome back!',
+          }).then(() => {
+            // Redirect to admin-content.html after closing the alert
+            window.location.href = 'admin-main'; // Ensure this points to your actual admin page
+          });
+        } else {
+          const errorData = await response.json();
+          // Check if error is related to invalid credentials
+          let errorMessage = errorData.error || 'Login failed. Please try again.';
 
-                // Show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Login Successful',
-                    text: data.message || 'Welcome back!',
-                }).then(() => {
-                    // Redirect to admin-content.html after closing the alert
-                    window.location.href = 'admin-main'; // Ensure this points to your actual admin page
-                });
-            } else {
-                const errorData = await response.json();
-                // Check if error is related to invalid credentials
-                let errorMessage = errorData.error || 'Login failed. Please try again.';
-
-                // Show error message
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Failed',
-                    text: errorMessage,
-                });
-            }
-        } catch (error) {
-            // Handle network errors
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Something went wrong. Please try again later.',
-            });
-        } finally {
-            Swal.close(); // Close the loading indicator
+          // Show error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: errorMessage,
+          });
         }
+      } catch (error) {
+        // Handle network errors
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Something went wrong. Please try again later.',
+        });
+      } finally {
+        Swal.close(); // Close the loading indicator
+      }
     });
-</script>
+  </script>
 
 </body>
+
 </html>

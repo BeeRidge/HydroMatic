@@ -1297,6 +1297,7 @@ app.post('/api/logout', async (req, res) => {
 });
 
 
+
 /*------------------------------------------------- ADMIN ------------------------------------------- */
 
 // JWT secret key
@@ -1347,6 +1348,34 @@ const checkToken = (req, res, next) => {
     next();
   });
 };
+
+// PUT route for updating user details
+app.put('/api/admin/update-user/:id', (req, res) => {
+  const userId = req.params.id; // Get user ID from request parameters
+  const { Acc_Fname, Acc_Lname, Acc_Pnumber } = req.body; // Get new user details from request body
+
+  // Validate the input
+  if (!Acc_Fname || !Acc_Lname || !Acc_Pnumber) {
+      return res.status(400).json({ success: false, error: 'All fields are required' });
+  }
+
+  // SQL query to update user details
+  const sql = `UPDATE account SET Acc_Fname = ?, Acc_Lname = ?, Acc_Pnumber = ? WHERE Acc_Pnumber = ?`;
+  db.query(sql, [Acc_Fname, Acc_Lname, Acc_Pnumber, userId], (err, result) => {
+      if (err) {
+          console.error('Error updating user:', err);
+          return res.status(500).json({ success: false, error: 'Database error' });
+      }
+
+      // Check if any rows were affected (i.e., user was found and updated)
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      // Respond with success
+      return res.json({ success: true, message: 'User updated successfully' });
+  });
+});
 
 // API to get the total Users
 app.get('/api/admin/TotalUser', async (req, res) => {
