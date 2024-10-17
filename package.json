@@ -82,6 +82,7 @@
     "path-key": "^3.1.1",
     "path-parse": "^1.0.7",
     "path-scurry": "^1.11.1",
+    "pdfkit": "^0.15.0",
     "picocolors": "^1.0.1",
     "picomatch": "^2.3.1",
     "pify": "^2.3.0",

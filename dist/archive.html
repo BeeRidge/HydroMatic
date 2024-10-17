@@ -302,7 +302,7 @@
         const rowsPerPage = 5;
         let allData = [];
         let filteredData = [];
-    
+
         document.addEventListener('DOMContentLoaded', () => {
             // Event listeners for pagination and filtering
             document.getElementById('prevBtn').addEventListener('click', () => {
@@ -311,14 +311,14 @@
                     renderTable(currentPage);
                 }
             });
-    
+
             document.getElementById('nextBtn').addEventListener('click', () => {
                 if (currentPage < Math.ceil(filteredData.length / rowsPerPage)) {
                     currentPage++;
                     renderTable(currentPage);
                 }
             });
-    
+
             const filterSelect = document.getElementById('sortSelect');
             if (filterSelect) {
                 filterSelect.addEventListener('change', (event) => {
@@ -326,10 +326,10 @@
                     filterData(event.target.value);
                 });
             }
-    
+
             reload(); // Initial data load
         });
-    
+
         function reload() {
             fetch('/api/archived')
                 .then(response => response.json())
@@ -340,14 +340,14 @@
                 })
                 .catch(error => console.error('Error fetching archived data:', error));
         }
-    
+
         function setNoDataMessage(filter) {
             // Clear the table body and hide the table header
             const tableBody = document.getElementById('tableBody');
             const tableHead = document.querySelector('#archivedTable thead');
             tableBody.innerHTML = '';
             tableHead.style.display = 'none';
-    
+
             let message = 'No Hydro Frame Removed or Finished';
             switch (filter) {
                 case 'status_finished':
@@ -359,13 +359,13 @@
                 default:
                     message = 'No data available';
             }
-    
+
             // Display the no data message
             const noDataMessage = `<div class="p-16 text-4xl font-bold text-gray-300">${message}</div>`;
             document.getElementById('archivedTable').insertAdjacentHTML('beforeend', noDataMessage);
             document.getElementById('pageIndicator').textContent = '';
         }
-    
+
         function filterData(filter) {
             // Filter the data based on the selected filter
             filteredData = [...allData];
@@ -388,7 +388,7 @@
                 default:
                     filteredData = [...allData];
             }
-    
+
             // If no filtered data is found, display the no data message
             if (filteredData.length === 0) {
                 setNoDataMessage(filter);
@@ -398,7 +398,7 @@
                 renderTable(currentPage);
             }
         }
-    
+
         function clearNoDataMessage() {
             // Remove the previous no data message if it exists
             const noDataMessageDiv = document.querySelector('#archivedTable > div');
@@ -407,61 +407,81 @@
             }
             document.querySelector('#archivedTable thead').style.display = ''; // Show the header again
         }
-    
+
         function renderTable(page) {
             const tableBody = document.getElementById('tableBody');
             const tableHead = document.querySelector('#archivedTable thead');
-    
+
             // Clear the table body
             tableBody.innerHTML = '';
-    
+
             // If there are no filtered data items, hide the table header
             if (filteredData.length === 0) {
                 tableHead.style.display = 'none';
                 setNoDataMessage('');
                 return;
             }
-    
+
             // Show the table header
             tableHead.style.display = '';
-    
+
             // Render the filtered data for the current page
             const startIndex = (page - 1) * rowsPerPage;
             const endIndex = Math.min(startIndex + rowsPerPage, filteredData.length);
             for (let i = startIndex; i < endIndex; i++) {
                 const row = filteredData[i];
                 const statusClass = row.Status === 'FINISHED' ? 'text-green-500' : 'text-red-500';
+
+                // Format dates to MM-DD-YYYY
+                const formatDate = (dateString) => {
+                    const date = new Date(dateString);
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${month}-${day}-${year}`;
+                };
+
                 const restoreButton = row.Status === 'FINISHED' ? '' : `
-                    <button id="restoreBtn" class="restore bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300" data-id="${row.Archive_Id}">
-                        Restore
-                    </button>
-                `;
-                const archivedDate = new Date(row.Date_Archived).toLocaleDateString();
-                const startDate = new Date(row.Start_Date).toLocaleDateString();
-                const harvestDate = new Date(row.Harvest_Date).toLocaleDateString();
+            <button id="restoreBtn" class="restore bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
+                data-id="${row.Archive_Id}"
+                data-var-host="${row.Var_Host}"
+                data-var-ip="${row.Var_Ip}"
+                data-date="${formatDate(row.Date_Archived)}">
+                Restore
+            </button>
+        `;
+
+                const archivedDate = formatDate(row.Date_Archived);
+                const startDate = formatDate(row.Start_Date);
+                const harvestDate = formatDate(row.Harvest_Date);
+
                 const tableRow = `
-                    <tr>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${startDate}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${harvestDate}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${archivedDate}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">
-                            ${restoreButton}
-                        </td>
-                    </tr>
-                `;
+            <tr>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${startDate}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${harvestDate}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${archivedDate}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">
+                    ${restoreButton}
+                </td>
+            </tr>
+        `;
                 tableBody.innerHTML += tableRow;
             }
-    
+
             // Update the page indicator
             document.getElementById('pageIndicator').textContent = `Page ${page} of ${Math.ceil(filteredData.length / rowsPerPage)}`;
-    
+
             // Add event listeners for the restore buttons
             document.querySelectorAll('#restoreBtn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const id = event.target.getAttribute('data-id');
+                    const varHost = event.target.getAttribute('data-var-host');
+                    const varIp = event.target.getAttribute('data-var-ip');
+                    const date = event.target.getAttribute('data-date');
+
                     const result = await Swal.fire({
                         title: 'Are you sure?',
                         text: 'Do you want to recover your bed?',
@@ -471,15 +491,23 @@
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Yes, recover it!'
                     });
+
                     if (result.isConfirmed) {
                         try {
-                            const response = await fetch('/api/recover/' + id, { method: 'POST' });
+                            const response = await fetch('/api/recover', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ id, varHost, varIp, date })
+                            });
+
                             const responseData = await response.json();
                             if (response.ok) {
                                 Swal.fire('Recovered!', responseData.message, 'success');
                                 reload();
                             } else {
-                                Swal.fire('Error!', responseData.message, 'error');
+                                Swal.fire('Error!', responseData.error, 'error');
                             }
                         } catch (error) {
                             console.error('Error during recovery:', error);
@@ -489,7 +517,10 @@
                 });
             });
         }
+
+
     </script>
+
     <!-- Log out button -->
     <script>
         function isUserAuthenticated() {
