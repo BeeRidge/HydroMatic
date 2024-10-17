@@ -486,7 +486,8 @@
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
             <div>
-                <h2 id="HydroTitle" class="text-2xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">
+                <h2 id="HydroTitle"
+                    class="text-2xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">
                 </h2>
                 <p id="HydroText" class="mt-4 text-black-200 scroll-animation text-justify"></p>
             </div>
@@ -637,6 +638,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Fetch page content
@@ -647,10 +649,10 @@
                     if (Array.isArray(data)) {
                         // Get all section elements
                         const sections = document.querySelectorAll('section');
-    
+
                         // Create a Set to hold all section IDs for easy lookup
                         const sectionIds = new Set(Array.from(sections).map(section => section.id));
-    
+
                         data.forEach(item => {
                             // Check if the item's sectionId matches any of the section IDs in the document
                             if (sectionIds.has(item.sectionId)) {
@@ -671,7 +673,7 @@
                 .catch(error => {
                     console.error("Error fetching content:", error);
                 });
-    
+
             // Fetching image content
             fetch("api/Image-Content")
                 .then(response => response.json())
@@ -680,7 +682,7 @@
                         const imageData = Array.isArray(data) ? data : [data];
                         const sections = document.querySelectorAll('section');
                         const sectionIds = new Set(Array.from(sections).map(section => section.id));
-    
+
                         imageData.forEach(item => {
                             if (sectionIds.has(item.sectionId)) {
                                 const element = document.getElementById(item.imageId);
@@ -702,7 +704,6 @@
                 });
         });
     </script>
-    
     <!-- JavaScript to toggle answers -->
     <script>
         function toggleAnswer(answerId, element) {
@@ -977,9 +978,10 @@
                 .replace(/'/g, "&#x27;")
                 .replace(/\//g, "&#x2F;");
         }
-        // Send OTP on button click
+        // Set up countdown timer for the OTP send button
         document.getElementById('send').addEventListener('click', async () => {
             const phone = document.getElementById('signupPhone').value;
+            const sendButton = document.getElementById('send');
 
             if (!phone) {
                 Swal.fire('Error', 'Please enter your phone number.', 'error');
@@ -1004,6 +1006,22 @@
 
                 if (data.success) {
                     Swal.fire('Success', 'OTP sent successfully!', 'success');
+
+                    // Start the countdown timer
+                    let countdown = 60;
+                    sendButton.disabled = true;
+                    sendButton.textContent = `Resend Code in ${countdown}s`;
+
+                    const timerInterval = setInterval(() => {
+                        countdown--;
+                        sendButton.textContent = `Resend Code in ${countdown}s`;
+
+                        if (countdown <= 0) {
+                            clearInterval(timerInterval);
+                            sendButton.disabled = false;
+                            sendButton.textContent = 'Send Code';
+                        }
+                    }, 1000);
                 } else {
                     Swal.fire('Error', 'Failed to send OTP. ' + data.error, 'error');
                 }
@@ -1012,6 +1030,7 @@
                 Swal.fire('Error', 'Failed to send OTP.', 'error');
             }
         });
+
 
 
         async function handleSignUp(event) {
