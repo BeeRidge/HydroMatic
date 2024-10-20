@@ -214,23 +214,23 @@
             </nav>
         </header>
         <!-- Body -->
-        <div class="flex-grow overflow-hidden background-image">
+        <div class="flex-grow overflow-hidden bg-gray-300">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
-                    <h1 class="text-4xl text-gray-300 pb-6 font-bold">Dashboard</h1>
+                    <h1 class="text-4xl text-gray-900 pb-6 font-bold">Dashboard</h1>
                     <div
                         class="px-6 flex w-full text-center justify-center gap-5 py-4 grid sm:grid-cols-1 md:grid-cols-3">
-                        <div class="py-4 px-6 bg-gray-300 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
-                                 w-full font-bold">
+                        <div class="py-4 px-6 rounded-lg text-center aspect-square shadow-2xl
+                                 w-full font-bold bg-gradient-to-r from-green-400 to-blue-300">
                             <p class="text-xl" style="color: #171817;"> Total Hydro Frame</p>
                             <p id="totalBed"></p>
                         </div>
-                        <div class="py-4 px-6 bg-gray-300 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
+                        <div class="py-4 px-6 bg-blue-300 rounded-lg shadow-2xl text-center aspect-square
                                  w-full font-bold">
                             <p class="text-xl" style="color: #171817;"> Raeady to Harvest </p>
                             <p id="totalHarvest"></p>
                         </div>
-                        <div class="py-4 px-6 bg-gray-300 border-2 border-gray-500 border-solid rounded-lg shadow-lg text-center aspect-square
+                        <div class="py-4 px-6 bg-gradient-to-r from-blue-300 to-green-400 rounded-lg shadow-lg text-center aspect-square
                                  w-full font-bold">
                             <p class="text-xl" style="color: #171817;"> Still on Ongoing </p>
                             <p id="totalOngoing"></p>
@@ -241,7 +241,7 @@
                         <div class="flex justify-between items-center mb-4">
                             <!-- Filter Dropdown -->
                             <div>
-                                <label for="filterDropdown" class="mr-2 text-lg text-gray-300">Filter By:</label>
+                                <label for="filterDropdown" class="mr-2 text-lg text-gray-900">Filter By:</label>
                                 <select id="filterDropdown"
                                     class="px-3 py-2 text-lg border rounded bg-white rounded-lg shadow-lg">
                                     <option value="harvestDateDesc">Harvest Date</option>
@@ -255,10 +255,10 @@
                             <!-- Pagination Controls -->
                             <div id="pagination" class="flex items-center space-x-2">
                                 <button id="prevBtn"
-                                    class="px-4 py-2 text-lg bg-gray-300 rounded-lg shadow-lg">Previous</button>
-                                <span id="pageIndicator" class="text-lg text-gray-300"></span>
+                                    class="px-4 py-2 text-lg rounded-lg shadow-lg">Previous</button>
+                                <span id="pageIndicator" class="text-lg text-gray-900"></span>
                                 <button id="nextBtn"
-                                    class="px-4 py-2 text-lg bg-gray-300 rounded-lg shadow-lg">Next</button>
+                                    class="px-4 py-2 text-lg rounded-lg shadow-lg">Next</button>
                             </div>
                         </div>
 
