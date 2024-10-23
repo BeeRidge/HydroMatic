@@ -171,9 +171,9 @@
                     <div class="py-4 grid sm:grid-cols-1 md:grid-cols-2">
                         <h1 class="text-4xl text-header pb-6 font-bold">Device Management</h1>
                         <div class="text-right w-full">
-                            <button id="addBedBtn" class="py-4 px-6 bg-gray-300 border-2  border-solid rounded-lg shadow-lg text-center aspect-square
+                            <button id="addBedBtn" class="py-4 px-6 bg-gray-300 hover:bg-gray-900 hover:text-gray-300 border-2 shadow-xl rounded-lg text-center aspect-square
                                  w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
-                                <p class="text-header"> + Add <br> Hydro Frame </p>
+                                <p> + Add <br> Hydro Frame </p>
                             </button>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                             <!-- Sort Dropdown -->
                             <div class="flex items-center">
                                 <label for="sortSelect" class="mr-2 text-lg text-header">Filter By:</label>
-                                <select id="sortSelect" class="px-2 py-1 text-lg border rounded rounded-lg shadow-lg">
+                                <select id="sortSelect" class="px-2 py-1 text-lg border hover:bg-gray-900 hover:text-gray-300 rounded rounded-lg shadow-lg">
                                     <option value="start_date_asc">Start Date</option>
                                     <option value="harvest_date_desc">Harvest Date</option>
                                 </select>
@@ -191,10 +191,10 @@
                             <!-- Pagination Controls -->
                             <div id="pagination" class="flex items-center">
                                 <button id="prevBtn"
-                                    class="px-4 py-2 text-lg bg-gray-300 rounded mr-2 rounded-lg shadow-lg">Previous</button>
-                                <span id="pageIndicator" class="text-lg text-gray-300"></span>
+                                    class="px-4 py-2 text-lg bg-gray-300 hover:bg-gray-900 hover:text-gray-300 rounded mr-2 rounded-lg shadow-lg">Previous</button>
+                                <span id="pageIndicator" class="text-lg text-gray-900"></span>
                                 <button id="nextBtn"
-                                    class="px-4 py-2 text-lg bg-gray-300 rounded ml-2 rounded-lg shadow-lg">Next</button>
+                                    class="px-4 py-2 text-lg bg-gray-300 hover:bg-gray-900 hover:text-gray-300 rounded ml-2 rounded-lg shadow-lg">Next</button>
                             </div>
                         </div>
 
@@ -338,14 +338,14 @@
             const newBedDiv = document.createElement('div');
             const bedId = deviceInfo.Var_Host; // Unique ID for each bed
 
-            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-gray-300  bg-gray-900 rounded-lg shadow-lg p-6 cursor-pointer  ';
+            newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-gray-300 text-gray-800 hover:bg-gray-800 hover:text-gray-300 border-2 border-gray-800 border-solid rounded-lg shadow-xl p-6 cursor-pointer';
             newBedDiv.innerHTML = `
-                    <h1 class="text-xl text-gray-300 font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
-                    <p class="text-lg  text-gray-300 ">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
-                    <p class="text-lg  text-gray-300 ">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
+                    <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
+                    <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
+                    <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
                     <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
                     <div class="text-right">
-                        <button id="deleteBtn${bedId}" class="mt-4 text-red-600 hover:text-red-800 delete-bed-btn text-right"><i class="fas fa-trash-alt mr-3"></i>Remove</button>
+                        <button id="deleteBtn${bedId}" class="mt-4 text-red-700 hover:text-red-600 delete-bed-btn text-right"><i class="fas fa-trash-alt mr-3"></i>Remove</button>
                     </div>
                 `;
 

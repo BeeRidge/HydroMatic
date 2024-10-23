@@ -171,14 +171,14 @@
         <div class="flex-grow overflow-hidden ">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
-                    <h1 class="text-4xl text-gray-300 pb-6 font-bold">Dashboard</h1>
+                    <h1 class="text-4xl text-gray-900 pb-6 font-bold">Dashboard</h1>
                     <div class="px-6 flex w-full text-center justify-center gap-5 py-4 grid sm:grid-cols-1 md:grid-cols-3">
     
                         <!-- Total Hydro Frame -->
                         <div class="py-4 px-6 bg-body  rounded-lg shadow-inner text-center aspect-square w-full font-bold">
                             <p class="text-xl" style="color: #ffffff;">
                                 <!-- PNG icon for Total Hydro Frame -->
-                                <img src="img\3.png" alt="Total Hydro Frame Icon" class="mx-auto w-1/5 h-auto mb-2">
+                                <img src="img\3.png" alt="Total Hydro Frame Icon" class="mx-auto w-1/6 h-auto mb-2">
                                 Total Hydro Frame
                             </p>
                             <p class="text-white" id="totalBed"></p>
@@ -188,7 +188,7 @@
                         <div class="py-4 px-6 bg-body   rounded-lg shadow-inner text-center aspect-square w-full font-bold">
                             <p class="text-xl" style="color: #ffffff;">
                                 <!-- PNG icon for Ready to Harvest -->
-                                <img src="img\1.png" alt="Ready to Harvest Icon" class="mx-auto w-1/5 h-auto mb-2">
+                                <img src="img\1.png" alt="Ready to Harvest Icon" class="mx-auto w-1/6 h-auto mb-2">
                                 Ready to Harvest
                             </p>
                             <p class="text-white" id="totalHarvest"></p>
@@ -198,7 +198,7 @@
                        <div class="py-4 px-6 bg-body   rounded-lg shadow-inner text-center aspect-square w-full font-bold">
                             <p class="text-xl" style="color: #ffffff;">
                                 <!-- PNG icon for Still Ongoing -->
-                                <img src="img\2.png" alt="Still Ongoing Icon" class="mx-auto w-1/5 h-auto mb-2">
+                                <img src="img\2.png" alt="Still Ongoing Icon" class="mx-auto w-1/6 h-auto mb-2">
                                 Still Ongoing
                             </p>
                             <p class="text-white" id="totalOngoing"></p>
@@ -213,7 +213,7 @@
                             <div>
                                 <label for="filterDropdown" class="mr-2 text-lg ">Filter By:</label>
                                 <select id="filterDropdown"
-                                    class="px-3 py-2 text-lg border rounded bg-white rounded-lg shadow-lg">
+                                    class="px-3 py-2 text-lg hover:bg-gray-900 hover:text-gray-300 border rounded bg-white rounded-lg shadow-lg">
                                     <option value="harvestDateDesc">Harvest Date</option>
                                     <option value="startDateAsc">Start Date</option>
                                     <option value="daysDesc">Days</option>
@@ -225,10 +225,10 @@
                             <!-- Pagination Controls -->
                             <div id="pagination" class="flex items-center space-x-2">
                                 <button id="prevBtn"
-                                    class="px-4 py-2 text-lg bg-gray-300 rounded-lg shadow-lg">Previous</button>
-                                <span id="pageIndicator" class="text-lg text-gray-300"></span>
+                                    class="px-4 py-2 text-lg bg-gray-300 hover:bg-gray-900 hover:text-gray-300 rounded-lg shadow-lg">Previous</button>
+                                <span id="pageIndicator" class="text-lg text-gray-900"></span>
                                 <button id="nextBtn"
-                                    class="px-4 py-2 text-lg bg-gray-300 rounded-lg shadow-lg">Next</button>
+                                    class="px-4 py-2 text-lg bg-gray-300 hover:bg-gray-900 hover:text-gray-300 rounded-lg shadow-lg">Next</button>
                             </div>
                         </div>
 
