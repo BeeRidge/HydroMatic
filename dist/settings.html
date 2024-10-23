@@ -88,55 +88,6 @@
 
             font-weight: 700;
         }
-
-        .background-image {
-            position: relative;
-            /* Needed for the pseudo-element */
-            overflow: hidden;
-            /* Ensures the pseudo-element doesn't overflow */
-        }
-
-        .background-image::before {
-            content: '';
-            /* Creates an empty pseudo-element */
-            position: absolute;
-            /* Position it absolutely within the parent */
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('img/oakleaf.jpg');
-            /* Background image */
-            background-size: cover;
-            /* Cover the entire container */
-            background-position: center;
-            /* Opacity of the image */
-            z-index: 0;
-            /* Place it behind the content */
-        }
-
-        .background-image::after {
-            content: '';
-            /* Creates another empty pseudo-element */
-            position: absolute;
-            /* Position it absolutely within the parent */
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.55);
-            /* Dark overlay with 60% opacity */
-            z-index: 1;
-            /* Place it above the background image */
-        }
-
-        /* Ensure text and content are on top of the background */
-        .background-image>* {
-            position: relative;
-            /* Ensure children are positioned above the pseudo-elements */
-            z-index: 2;
-            /* Higher z-index to show on top */
-        }
     </style>
 </head>
 
@@ -210,47 +161,47 @@
             </nav>
         </header>
         <!-- Body -->
-        <div class="flex-grow overflow-hidden">
+        <div class="flex-grow overflow-hidden background-image">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
-                    <h1 class="text-4xl text-gray-300 pb-6 font-bold">Settings</h1>
+                    <h1 class="text-4xl text-gray-800 pb-6 font-bold">Settings</h1>
                     <div class="pb-16">
                         <div
-                            class="p-6 w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5 overflow-auto">
+                            class="p-6   w-full h-auto grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5 overflow-auto">
                             <!-- Account Information -->
                             <div id="account"
-                                class="w-full bg-white border-2 border-gray-500 border-solid rounded-lg shadow-lg p-6 aspect-square grid grid-cols-2 gap-4">
-                                <h1 class="text-3xl col-span-2 text-black py-8 font-bold uppercase text-center">Account
+                                class="w-full bg-body border border-gray-500 border-solid rounded-lg shadow-lg p-6 aspect-square grid grid-cols-2 gap-4">
+                                <h1 class="text-3xl col-span-2 text-gray-200 py-8 font-bold uppercase text-center">Account
                                     Information</h1>
 
                                 <!-- First Name -->
-                                <h1 class="text-black py-2 px-6 font-bold uppercase">First Name:</h1>
+                                <h1 class="text-gray-200  py-2 px-6 font-bold uppercase">First Name:</h1>
                                 <div class="flex items-center">
                                     <input type="text" id="Acc_Fname"
-                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
+                                        class="w-full text-xl text-black bg-gray-200 py-2 font-bold text-center border border-gray-300 rounded-md"
                                         readonly>
                                     <button id="editFnameBtn"
-                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                                        class="ml-3 px-3 py-2 bg-gray-800 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-white">Edit</button>
                                 </div>
 
                                 <!-- Last Name -->
-                                <h1 class="text-black py-2 px-6 font-bold uppercase">Last Name:</h1>
+                                <h1 class="text-gray-200 py-2 px-6 font-bold uppercase">Last Name:</h1>
                                 <div class="flex items-center">
                                     <input type="text" id="Acc_Lname"
-                                        class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
+                                        class="w-full text-xl text-black bg-gray-200 py-2 font-bold text-center border border-gray-300 rounded-md"
                                         readonly>
                                     <button id="editLnameBtn"
-                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                                    class="ml-3 px-3 py-2 bg-gray-800 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-white">Edit</button>
                                 </div>
 
                                 <!-- Phone Number -->
-                                <h1 class="text-black py-2 px-6 font-bold uppercase">Phone Number:</h1>
+                                <h1 class="text-gray-200 py-2 px-6 font-bold uppercase">Phone Number:</h1>
                                 <div class="flex items-center">
                                     <input type="text" id="Acc_Pnumber"
                                         class="w-full text-xl text-black py-2 font-bold text-center border border-gray-300 rounded-md"
                                         readonly>
                                     <button id="editPhoneBtn"
-                                        class="ml-3 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">Edit</button>
+                                    class="ml-3 px-3 py-2 bg-gray-800 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-white">Edit</button>
                                 </div>
 
                                 <!-- Forgot Password -->
@@ -262,8 +213,8 @@
                             </div>
                             <!-- Device Information -->
                             <div id="device-info"
-                                class="w-full bg-white border-2 border-gray-500 border-solid rounded-lg shadow-lg p-6 aspect-square">
-                                <h1 class="text-3xl text-black py-2 font-bold uppercase">Device Information</h1>
+                                class="w-full bg-body border border-gray-500 border-solid rounded-lg shadow-lg p-6 aspect-square">
+                                <h1 class="text-3xl text-gray-200 py-2 font-bold uppercase">Device Information</h1>
 
                                 <!-- Div for showing no devices paired -->
                                 <div id="noDevicesMessage"

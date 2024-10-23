@@ -88,54 +88,6 @@
             font-weight: 700;
         }
 
-        .background-image {
-            position: relative;
-            /* Needed for the pseudo-element */
-            overflow: hidden;
-            /* Ensures the pseudo-element doesn't overflow */
-        }
-
-        .background-image::before {
-            content: '';
-            /* Creates an empty pseudo-element */
-            position: absolute;
-            /* Position it absolutely within the parent */
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('img/oakleaf.jpg');
-            /* Background image */
-            background-size: cover;
-            /* Cover the entire container */
-            background-position: center;
-            /* Opacity of the image */
-            z-index: 0;
-            /* Place it behind the content */
-        }
-
-        .background-image::after {
-            content: '';
-            /* Creates another empty pseudo-element */
-            position: absolute;
-            /* Position it absolutely within the parent */
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.55);
-            /* Dark overlay with 60% opacity */
-            z-index: 1;
-            /* Place it above the background image */
-        }
-
-        /* Ensure text and content are on top of the background */
-        .background-image>* {
-            position: relative;
-            /* Ensure children are positioned above the pseudo-elements */
-            z-index: 2;
-            /* Higher z-index to show on top */
-        }
     </style>
 </head>
 
@@ -206,10 +158,10 @@
             </nav>
         </header>
         <!-- Body -->
-        <div class="flex-grow overflow-hidden">
+        <div class="flex-grow overflow-hidden bg-gray-300">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
-                    <h1 class="text-4xl text-gray-300 pb-6 font-bold">Archive</h1>
+                    <h1 class="text-4xl text-gray-800 pb-6 font-bold">Archive</h1>
                     <!-- HTML structure -->
                     <div class="p-6 overflow-x-auto text-center">
                         <!-- Filter and Pagination Bar -->
@@ -241,31 +193,31 @@
                             <thead class="bg-gray-100">
                                 <tr>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        class="px-6 py-4 bg-body border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider">
                                         Name
                                     </th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        class="px-6 py-4 bg-body border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider">
                                         IP Address
                                     </th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        class="px-6 py-4 bg-body  border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider">
                                         Start Date
                                     </th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        class="px-6 py-4 bg-body border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider">
                                         Harvest Date
                                     </th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                                        class="px-6 py-4 bg-body border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider whitespace-nowrap">
                                         Date Archived
                                     </th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        class="px-6 py-4 bg-body border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider">
                                         Status
                                     </th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        class="px-6 py-4 bg-body border-b-2 border-gray-300 bg-gray-50 text-center text-sm font-semibold text-gray-200 uppercase tracking-wider">
                                     </th>
                                 </tr>
                             </thead>
