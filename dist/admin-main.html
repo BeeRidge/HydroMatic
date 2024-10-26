@@ -714,6 +714,33 @@
             }
         });
     </script>
+    <script>
+        document.getElementById('logout-button').addEventListener('click', function () {
+            // Use the server-side logout endpoint to clear the session
+            fetch('/admin-logout', { // Updated to match the server endpoint
+                method: 'POST',
+                credentials: 'include', // Include credentials to allow sending cookies
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Clear any token from local storage
+                    localStorage.removeItem('token');
+                    // Clear any session-related data from cookies
+                    document.cookie = 'session=; Max-Age=0; path=/';
+                    // Redirect to the login page
+                    window.location.href = '/admin-login';
+                } else {
+                    alert('Error logging out');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 
 </html>

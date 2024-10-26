@@ -1157,3 +1157,97 @@
 </body>
 
 </html>
+
+<!-- HydroMatic Device Table -->
+<div class="w-full shadow-lg p-6 bg-gray-200 mt-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroMatic Device</h1>
+    <div class="mb-4">
+        <input type="text" id="deviceSearchInput" placeholder="Search by Device Name or IP Address"
+            class="w-full p-2 border border-gray-300 rounded-lg shadow-sm" />
+    </div>
+    <table id="hydroMaticDeviceTable"
+        class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <thead class="bg-sky-custom text-white">
+            <tr>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    First Name</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Last Name</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Phone Number</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Device Name</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    IP Address</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Status</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200" id="hydroMaticDeviceBody">
+            <!-- Data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+    <div id="devicePagination" class="flex items-center justify-center mt-4">
+        <button id="prevDeviceBtn"
+            class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
+        <span id="devicePageIndicator" class="text-lg text-gray-600 mx-2"></span>
+        <button id="nextDeviceBtn"
+            class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
+    </div>
+</div>
+
+<!-- HydroFrame Table -->
+<div class="w-full shadow-lg p-6 bg-gray-200 mt-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroFrame</h1>
+    <div class="mb-4">
+        <input type="text" id="frameSearchInput" placeholder="Search by Frame Name or IP Address"
+            class="w-full p-2 border border-gray-300 rounded-lg shadow-sm" />
+    </div>
+    <table id="hydroFrameTable"
+        class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
+        <thead class="bg-sky-custom text-white">
+            <tr>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Name</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Ip Address</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Start Date</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Harvest Date</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Days</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Status</th>
+                <th
+                    class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                    Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200" id="hydroFrameBody">
+            <!-- Data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+    <div id="framePagination" class="flex items-center justify-center mt-4">
+        <button id="prevFrameBtn"
+            class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
+        <span id="framePageIndicator" class="text-lg text-gray-600 mx-2"></span>
+        <button id="nextFrameBtn"
+            class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
+    </div>
+</div>

@@ -227,7 +227,6 @@ app.post('/api/logout', async (req, res) => {
     res.status(500).json({ error: 'An error occurred during logout' });
   }
 });
-
 // Data for displaying the image and description of growth
 app.get("/api/growthtimeline", async (req, res) => {
   try {
@@ -1212,7 +1211,6 @@ app.post('/admin-logout', (req, res) => {
     res.status(200).json({ message: 'Admin logged out successfully' });
   });
 });
-
 // Route to get content data from the database
 app.get('/api/Page-Content', async (req, res) => {
   const sql = 'SELECT * FROM pagecontent';
@@ -1384,6 +1382,20 @@ app.get('/api/admin/device-info', async (req, res) => {
 
     // Send the result back as JSON
     res.json({ success: true, devices: rows });
+  } catch (err) {
+    console.error('Error fetching device data:', err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+// API to see device info
+app.get('/api/admin/hydro-frames', async (req, res) => {
+  try {
+    // Query to get all devices from the device_info table
+    const deviceQuery = 'SELECT * FROM display_bed';
+    const [rows] = await db.query(deviceQuery);
+
+    // Send the result back as JSON
+    res.json({ success: true, frames: rows });
   } catch (err) {
     console.error('Error fetching device data:', err);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
