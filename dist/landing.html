@@ -21,6 +21,13 @@
             background: #1f272b;
         }
 
+
+        section#video-background-section {
+            background-color: #000;
+            /* Black fallback */
+        }
+
+
         .cta-btn {
             color: #000000;
         }
@@ -259,6 +266,124 @@
         .scroll-animation:nth-child(3) {
             animation-delay: 0.3s;
         }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(31, 39, 43, 0.5);
+            /* Adjusted opacity for a dimmer effect */
+            pointer-events: none;
+            /* Prevent the overlay from blocking interactions */
+        }
+
+        .text {
+            height: 55%;
+            position: relative;
+            z-index: 10;
+            text-align: left;
+            max-width: 700px;
+            /* Restrict text container width */
+            padding-left: 20px;
+            /* Add some padding */
+            right: 25%;
+            /* Make sure text doesn't go too far right on smaller screens */
+        }
+
+        .text h2 {
+            font-size: 4rem;
+            /* Use rem units for better scalability */
+            font-weight: 800;
+            color: #fff;
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+
+        .text h3 {
+            font-size: 3rem;
+            /* Adjusted for responsiveness */
+            font-weight: 700;
+            color: #fff;
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+
+        .text p {
+            font-size: 1rem;
+            /* Smaller font size for responsiveness */
+            color: #fff;
+            margin: 20px 0;
+            font-weight: 400;
+            max-width: 700px;
+        }
+
+        /* Media Queries for responsiveness */
+
+        /* For tablets */
+        @media (max-width: 1024px) {
+            .text h2 {
+                font-size: 3rem;
+            }
+
+            .text h3 {
+                font-size: 2.5rem;
+            }
+
+            .text p {
+                font-size: 0.95rem;
+            }
+
+            .text {
+                max-width: 90%;
+                /* Increase max-width for tablets */
+                right: 10%;
+            }
+        }
+
+        /* For small devices (mobile) */
+        @media (max-width: 768px) {
+            .text h2 {
+                font-size: 2.5rem;
+            }
+
+            .text h3 {
+                font-size: 2rem;
+            }
+
+            .text p {
+                font-size: 0.9rem;
+            }
+
+            .text {
+                max-width: 100%;
+                /* Allow the text to use full width on mobile */
+                right: 0;
+                padding-left: 15px;
+            }
+        }
+
+        /* For very small devices (smaller mobile) */
+        @media (max-width: 480px) {
+            .text h2 {
+                font-size: 2rem;
+            }
+
+            .text h3 {
+                font-size: 1.5rem;
+            }
+
+            .text p {
+                font-size: 0.85rem;
+            }
+
+            .text {
+                max-width: 100%;
+                right: 0;
+                padding-left: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -316,10 +441,10 @@
             </div>
             <!-- Desktop Navigation -->
             <nav id="navbar-menu" class="hidden lg:flex space-x-8">
-                <a href="#Features" class="nav-link text-white hover:text-green-100">Features</a>
-                <a href="#aboutHydro" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
-                <a href="#Steps" class="nav-link text-white hover:text-green-100">Connect to WiFi</a>
-                <a href="#aboutUs" class="nav-link text-white hover:text-green-100">About Us</a>
+                <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
+                <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
+                <a href="#steps" class="nav-link text-white hover:text-green-100">Connect to WiFi</a>
+                <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
                 <button class="nav-link text-white hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
             </nav>
             <!-- Mobile Menu Toggle Button -->
@@ -329,15 +454,14 @@
         </div>
         <!-- Mobile Navigation Menu -->
         <nav id="mobile-menu" class="hidden flex flex-col space-y-4 mt-4">
-            <a href="#Features" class="nav-link text-white hover:text-green-100">Features</a>
-            <a href="#aboutHydro" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
-            <a href="#Steps" class="nav-link text-white hover:text-green-100">How to</a>
-            <a href="#aboutUs" class="nav-link text-white hover:text-green-100">About Us</a>
+            <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
+            <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
+            <a href="#steps" class="nav-link text-white hover:text-green-100">How to</a>
+            <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
             <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign
                 up</button>
         </nav>
     </header>
-
     <!-- Modal Structure -->
     <div id="modal" class="fixed z-50 inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center hidden">
         <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6 space-y-6">
@@ -435,6 +559,25 @@
             </form>
         </div>
     </div>
+
+    <!-- Video Background Section -->
+    <section id="video-background-section" class="relative w-full h-screen flex items-center justify-center">
+        <!-- Video Background -->
+        <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover">
+            <source src="img\hydrovid.mp4" type="video/mp4">
+        </video>
+
+        <!-- Dark Overlay -->
+        <div class="overlay"></div>
+
+        <!-- Text Overlay -->
+        <div class="text">
+            <h2 id="auto"></h2>
+            <h3 id="Hydro"></h3>
+            <p id="para"></p>
+        </div>
+    </section>
+
 
     <!-- Hero Section -->
     <section id="Hero" class="bg-c pt-16 pb-20 px-10 w-full h-auto">

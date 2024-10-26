@@ -44,7 +44,131 @@
         display: inline-block;
         font-weight: 700;
     }
+
+    section#video-background-section {
+        background-color: #000;
+        /* Black fallback */
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(31, 39, 43, 0.5);
+        /* Adjusted opacity for a dimmer effect */
+        pointer-events: none;
+        /* Prevent the overlay from blocking interactions */
+    }
+
+    .text {
+        height: 55%;
+        position: relative;
+        z-index: 10;
+        text-align: left;
+        max-width: 700px;
+        /* Restrict text container width */
+        padding-left: 20px;
+        /* Add some padding */
+        right: 25%;
+        /* Make sure text doesn't go too far right on smaller screens */
+    }
+
+    .text h2 {
+        font-size: 4rem;
+        /* Use rem units for better scalability */
+        font-weight: 800;
+        color: #fff;
+        line-height: 1em;
+        text-transform: uppercase;
+    }
+
+    .text h3 {
+        font-size: 3rem;
+        /* Adjusted for responsiveness */
+        font-weight: 700;
+        color: #fff;
+        line-height: 1em;
+        text-transform: uppercase;
+    }
+
+    .text p {
+        font-size: 1rem;
+        /* Smaller font size for responsiveness */
+        color: #fff;
+        margin: 20px 0;
+        font-weight: 400;
+        max-width: 700px;
+    }
+
+    /* Media Queries for responsiveness */
+
+    /* For tablets */
+    @media (max-width: 1024px) {
+        .text h2 {
+            font-size: 3rem;
+        }
+
+        .text h3 {
+            font-size: 2.5rem;
+        }
+
+        .text p {
+            font-size: 0.95rem;
+        }
+
+        .text {
+            max-width: 90%;
+            /* Increase max-width for tablets */
+            right: 10%;
+        }
+    }
+
+    /* For small devices (mobile) */
+    @media (max-width: 768px) {
+        .text h2 {
+            font-size: 2.5rem;
+        }
+
+        .text h3 {
+            font-size: 2rem;
+        }
+
+        .text p {
+            font-size: 0.9rem;
+        }
+
+        .text {
+            max-width: 100%;
+            /* Allow the text to use full width on mobile */
+            right: 0;
+            padding-left: 15px;
+        }
+    }
+
+    /* For very small devices (smaller mobile) */
+    @media (max-width: 480px) {
+        .text h2 {
+            font-size: 2rem;
+        }
+
+        .text h3 {
+            font-size: 1.5rem;
+        }
+
+        .text p {
+            font-size: 0.85rem;
+        }
+
+        .text {
+            max-width: 100%;
+            right: 0;
+            padding-left: 10px;
+        }
+    }
 </style>
+
 
 <body class="bg-gray-800 font-sans leading-normal tracking-normal mt-12">
 
@@ -118,6 +242,25 @@
                     </div>
                     <div class="w-full p-6">
                         <div class="bg-white border-transparent rounded-lg shadow-xl">
+                            <!-- Video Background Section -->
+                            <section id="video-background-section"
+                                class="relative w-full h-screen flex items-center justify-center">
+                                <!-- Video Background -->
+                                <video autoplay muted loop playsinline
+                                    class="absolute top-0 left-0 w-full h-full object-cover">
+                                    <source src="img\hydrovid.mp4" type="video/mp4">
+                                </video>
+
+                                <!-- Dark Overlay -->
+                                <div class="overlay"></div>
+
+                                <!-- Text Overlay -->
+                                <div class="text">
+                                    <h2 id="auto" contenteditable="true"></h2>
+                                    <h3 id="Hydro" contenteditable="true"></h3>
+                                    <p id="para" contenteditable="true"></p>
+                                </div>
+                            </section>
                             <!-- Hero Section -->
                             <section id="Hero" class="bg-c pt-16 pb-20 px-10 w-full h-auto">
                                 <div class="container mx-auto flex flex-col md:flex-row items-center">

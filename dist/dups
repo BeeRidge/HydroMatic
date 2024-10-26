@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroMatic</title>
+    <link rel="icon" href="/img/Logo.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- FontAwesome CDN -->
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap');
+
+        .font-family-karla {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-sidebar {
+            background: #1f272b;
+        }
+
+        .cta-btn {
+            color: #000000;
+        }
+
+        .absolute {
+            background: #099627;
+        }
+
+        .a:hover {
+            background: #15cc15;
+        }
+
+        .upgrade-btn:hover {
+            background: #000000;
+        }
+
+        .active-nav-link {
+            background: #86efac;
+            color: #06641b;
+        }
+
+        .nav-item:hover {
+            background: #86efac;
+            color: #06641b;
+        }
+
+        .account-link:hover {
+            background: #000000;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 4px 8px rgba(0, 29, 7, 0.849), 0 6px 20px rgba(0, 39, 2, 0.342);
+        }
+
+        .bg-bed-color {
+            background-color: #86efac;
+        }
+
+        .bg-body {
+            background: #1f272b;
+        }
+
+        .text1 {
+            color: #15cc15;
+        }
+
+        .text2 {
+            color: #FFFF;
+        }
+
+        .text-combined {
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .bg-c {
+            background: rgb(224, 224, 224);
+        }
+
+        .bg-d {
+            background: #15cc15;
+        }
+
+        .border-d {
+            border-color: #15cc15;
+        }
+
+        .zoom-container {
+            overflow: hidden;
+            /* Remove any automatic zooming */
+        }
+
+        .zoom-container img {
+            transition: transform 0.7s ease;
+            /* Ensure the image scales correctly */
+        }
+
+        /* Zoom on hover */
+        .zoom-container:hover img {
+            transform: scale(1.4);
+        }
+
+        .hover-bg-d {
+            background-color: #15cc15;
+            transition: background-color 0.3s ease;
+        }
+
+        .hover-bg-d:hover {
+            background-color: #1f272b;
+        }
+
+        .nav-link {
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #15cc15;
+            background-color: rgba(21, 204, 21, 0.1);
+        }
+
+        .nav-menu {
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-menu.hidden {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .nav-menu.visible {
+            max-height: 500px;
+        }
+
+        .sub-header {
+            background-color: #1f272b;
+            position: relative;
+            z-index: 1111;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .sub-header .left-content p {
+            color: #fff;
+            padding: 8px 0px;
+            font-size: 13px;
+        }
+
+        .sub-header .right-icons {
+            text-align: right;
+            padding: 8px 0px;
+        }
+
+        .sub-header .right-icons ul li {
+            display: inline-block;
+            margin-left: 15px;
+        }
+
+        .sub-header .right-icons ul li a {
+            color: #fff;
+            font-size: 14px;
+            transition: all .3s;
+        }
+
+        .sub-header .right-icons ul li a:hover {
+            color: #15cc15;
+        }
+
+        .sub-header .left-content p em {
+            font-style: normal;
+            color: #15cc15;
+        }
+
+
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        mark {
+            --color1: springgreen;
+            --color2: springgreen;
+            --bg-height: 40%;
+
+            all: unset;
+            background-image: linear-gradient(var(--color1), var(--color2));
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+            background-size: 0 var(--bg-height);
+            animation: highlight 800ms 1 ease-out;
+            animation-fill-mode: forwards;
+            animation-play-state: paused;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @keyframes highlight {
+            to {
+                background-size: 100% var(--bg-height);
+            }
+        }
+
+        /* Ensure the image scales correctly */
+        .img {
+            transition: transform 0.5s ease;
+
+        }
+
+        /* Clean fade and slide-up animation */
+        @keyframes cleanFadeSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-animation {
+            opacity: 0;
+            /* Start invisible */
+            transform: translateY(20px);
+            /* Start with a slight downward shift */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-animation.visible {
+            animation: cleanFadeSlideUp 0.8s ease-out forwards;
+            /* Smooth fade and slide-up animation */
+        }
+
+        /* Staggered animation for each feature item */
+        .scroll-animation:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .scroll-animation:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .scroll-animation:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+
+<body class="font-family-karla">
+    <!-- Sub-header Section -->
+    <div class="sub-header bg-gray-800 text-white py-2 shadow-md hidden lg:block">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center">
+                <div class="w-full lg:w-2/3 sm:w-2/3 mb-2 lg:mb-0">
+                    <div class="left-content">
+                        <p class="text-sm italic">Stay updated with our latest news!</p>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/3 sm:w-1/3 text-right">
+                    <div class="right-icons">
+                        <ul class="flex justify-end space-x-4">
+                            <li>
+                                <a href="https://www.facebook.com/"
+                                    class="transition-colors duration-300 hover:text-green-500">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="https://www.behance.net/"
+                                    class="transition-colors duration-300 hover:text-green-500">
+                                    <i class="fab fa-behance"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/"
+                                    class="transition-colors duration-300 hover:text-green-500">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Header -->
+    <header class="bg-body py-4 p-6 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-16 h-16">
+                    <img src="/img/Logo.png" alt="HydroMatic Logo">
+                </div>
+                <a href=""
+                    class="text-2xl md:text-3xl lg:text-4xl xl:text-5xl uppercase font-family-karla hover:text-green-100 text-combined">
+                    <span class="text2">Hydro</span><span class="text1">Matic</span>
+                </a>
+            </div>
+            <!-- Desktop Navigation -->
+            <nav id="navbar-menu" class="hidden lg:flex space-x-8">
+                <a href="#Features" class="nav-link text-white hover:text-green-100">Features</a>
+                <a href="#aboutHydro" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
+                <a href="#Steps" class="nav-link text-white hover:text-green-100">Connect to WiFi</a>
+                <a href="#aboutUs" class="nav-link text-white hover:text-green-100">About Us</a>
+                <button class="nav-link text-white hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
+            </nav>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="navbar-toggler" class="lg:hidden text-gray-100 focus:outline-none" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars fa-2x"></i>
+            </button>
+        </div>
+        <!-- Mobile Navigation Menu -->
+        <nav id="mobile-menu" class="hidden flex flex-col space-y-4 mt-4">
+            <a href="#Features" class="nav-link text-white hover:text-green-100">Features</a>
+            <a href="#aboutHydro" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
+            <a href="#Steps" class="nav-link text-white hover:text-green-100">How to</a>
+            <a href="#aboutUs" class="nav-link text-white hover:text-green-100">About Us</a>
+            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign
+                up</button>
+        </nav>
+    </header>
+    <!-- Modal Structure -->
+    <div id="modal" class="fixed z-50 inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6 space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 id="modal-title" class="text-4xl font-bold text-gray-700">Login</h2>
+                <button class="text-gray-500 hover:text-gray-700 transition duration-300 ease-in-out"
+                    onclick="closeModal()">✖</button>
+            </div>
+            <!-- Tabs for switching between Login and Sign Up -->
+            <div class="flex justify-center space-x-6 mb-4">
+                <button id="login-tab"
+                    class="py-2 px-4 border-b-2 border-blue-600 text-gray-500 hover:text-blue-700 transition duration-300 ease-in-out"
+                    onclick="switchToLogin()">Login</button>
+                <button id="signup-tab"
+                    class="py-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-green-700 transition duration-300 ease-in-out"
+                    onclick="switchToSignUp()">Sign
+                    Up</button>
+            </div>
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                <div class="flex flex-col space-y-2">
+                    <label for="loginPhone" class="text-sm text-gray-700">Phone Number</label>
+                    <input id="loginPhone" type="text" placeholder="Phone Number"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="[0-9]{11}" title="Phone number must be between 11 digits" required>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="loginPassword" class="text-sm text-gray-700">Password</label>
+                    <input id="loginPassword" type="password" placeholder="Password"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="^[a-zA-Z0-9]{6,}"
+                        title="Password must be at least 6 characters long and contain only letters and numbers"
+                        required>
+                </div>
+                <div class="flex justify-end">
+                    <a id="forgotPassword"
+                        class="text-red-500 cursor-pointer hover:text-red-700 transition duration-300 ease-in-out">
+                        Forgot Password
+                    </a>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-300 ease-in-out">
+                    Log In
+                </button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
+                <div class="flex flex-col space-y-2">
+                    <div class="grid grid-cols-2 gap-5">
+                        <label for="firstName" class="text-sm text-gray-700">First Name</label>
+                        <label for="lastName" class="text-sm text-gray-700">Last Name</label>
+                        <input id="firstName" type="text" placeholder="First Name"
+                            class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            pattern="[A-Za-z]+" title="First name should contain only letters" required>
+                        <input id="lastName" type="text" placeholder="Last Name"
+                            class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            pattern="[A-Za-z]+" title="Last name should contain only letters" required>
+                    </div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="signupPhone" class="text-sm text-gray-700">Phone Number</label>
+                    <input id="signupPhone" type="text" placeholder="Phone Number"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="\d{11}" title="Phone number must be exactly 11 digits" required>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="signupPassword" class="text-sm text-gray-700">Password</label>
+                    <input id="signupPassword" type="password" placeholder="Password"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="[A-Za-z0-9]{8,}"
+                        title="Password must be at least 8 characters long and contain only letters and numbers"
+                        required>
+                    <input id="confirmPassword" type="password" placeholder="Confirm Password"
+                        class="w-full p-2 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        pattern="[A-Za-z0-9]{8,}"
+                        title="Password must be at least 8 characters long and contain only letters and numbers"
+                        required>
+                    <p class="text-xs text-gray-500 text-center">Password contains a-z, A-Z, and 0-9 characters only</p>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label for="signupCode" class="text-sm text-gray-700">Code</label>
+                    <div class="grid grid-cols-2 gap-5">
+                        <input id="signupCode" type="text" placeholder="Code"
+                            class="p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            pattern="\d{6}" title="Code must be exactly 6 digits" required>
+                        <button id="send" type="button"
+                            class=" bg-green-600 hover:bg-green-700 text-white p-3 rounded-md transition duration-300 ease-in-out">Send
+                            Code</button>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Sign
+                    Up</button>
+            </form>
+        </div>
+    </div>
+    <!-- Hero Section -->
+    <section id="Hero" class="bg-c pt-16 pb-20 px-10 w-full h-auto">
+        <div class="container mx-auto flex flex-col md:flex-row items-center">
+            <div id="headings-container" class=" space-y-6 text-center md:text-left">
+                <h1 id="heading1" class="fade-slide-in text-5xl font-bold text-black leading-tight hidden"></h1>
+                <h1 id="heading2" class="fade-slide-in text-5xl font-bold text-black leading-tight hidden"></h1>
+                <h1 id="heading3" class="fade-slide-in text-5xl font-bold text-black leading-tight hidden"></h1>
+                <p id="Textheading" class="text-black mx-5 lg:mr-11 text-justify">
+                </p>
+            </div>
+            <div class="zoom-container mx-auto">
+                <img id="sampleDevice" src="" class="w-full h-auto">
+            </div>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section id="Features" class="bg-body py-44 ">
+        <div class="container mx-auto text-center p-6 ">
+            <h2 id="featTitle" class="text-5xl font-bold text-gray-200 mb-8 scroll-animation"></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
+                    <div class="text-4xl text-d mb-4">
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
+                    <h3 id="realTime" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation">
+                    </h3>
+                    <p id="realTimeText" class="text-lg text-gray-800 mb-2 scroll-animation"></p>
+                </div>
+                <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
+                    <div class="text-4xl text-d mb-4">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3 id="sms" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation">
+                    </h3>
+                    <p id="smsText" class="text-lg text-gray-800 mb-2 scroll-animation"></p>
+                </div>
+                <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
+                    <div class="text-4xl text-d mb-4">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 id="IoT" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"></h3>
+                    <p id="IoTText" class="text-lg text-gray-800 mb-2 scroll-animation"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Device Info -->
+    <section id="aboutHydro" class="bg-c py-8">
+        <div
+            class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
+            <div>
+                <h2 id="HydroTitle"
+                    class="text-2xl font-bold tracking-tight text-black-200 sm:text-4xl scroll-animation">
+                </h2>
+                <p id="HydroText" class="mt-4 text-black-200 scroll-animation text-justify"></p>
+            </div>
+            <img id="hydroImg" src="" class="scroll-animation">
+        </div>
+        </div>
+    </section>
+    <!-- Steps to Connect the esp8266 to the WiFi -->
+    <section id="Steps" class="bg-body pt-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+            <h2 id="stepsTitle" class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">
+            </h2>
+            <div class="grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
+                <img id="stepsImg1" src="" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg2" src="" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg3" src="" class="h-4/5 rounded-lg bg-gray-100">
+                <img id="stepsImg4" src="" class="h-4/5 rounded-lg bg-gray-100">
+            </div>
+        </div>
+    </section>
+    <!-- About Us Section -->
+    <section id="aboutUs" class="bg-gray-100 py-16 ">
+        <div class="container mx-auto px-4">
+            <!-- About Us Heading -->
+            <div class="text-center mb-12">
+                <h2 id="aboutHead" class="text-5xl font-bold text-gray-800 scroll-animation"></h2>
+                <p id="aboutHeadText" class="text-gray-600 mt-4 scroll-animation"></p>
+            </div>
+
+            <!-- Mission Statement -->
+            <div class="flex flex-col md:flex-row items-center mb-12 scroll-animation">
+                <!-- Image Section -->
+                <div class="md:w-1/2 mb-8 md:mb-0 scroll-animation">
+                    <img id="aboutImg" src="img\lett.jpg" alt="Our Team" class="w-full h-auto rounded-lg shadow-lg">
+                </div>
+                <!-- Text Section -->
+                <div class="md:w-1/2 md:pl-12">
+                    <h3 id="mission" class="text-3xl font-semibold text-gray-800 scroll-animation"></h3>
+                    <p id="missionText1" class="text-gray-600 mt-4 scroll-animation text-justify">
+                    </p>
+                    <p id="missionText2" class="text-gray-600 mt-4 scroll-animation text-justify">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- FAQ Section -->
+    <section id="faq" class="bg-gray-100 py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 id="faqTitle" class="text-5xl font-bold text-gray-800"></h2>
+                <p id="faqDesc" class="text-gray-600 mt-4"></p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer1', this)">
+                        <h3 id="faqItem1" class="text-lg font-semibold text-gray-200"></h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer1" class="hidden mt-2 text-center text-gray-300">
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer2', this)">
+                        <h3 id="faqItem2" class="text-lg font-semibold text-gray-200"></h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer2" class="hidden mt-2 text-center text-gray-300">
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer3', this)">
+                        <h3 id="faqItem3" class="text-lg font-semibold text-gray-200"></h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer3" class="hidden mt-2 text-center text-gray-300">
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer4', this)">
+                        <h3 id="faqItem4" class="text-lg font-semibold text-gray-200"></h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer4" class="hidden mt-2 text-center text-gray-300">
+                    </div>
+                </div>
+
+                <!-- FAQ Item 5 -->
+                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                    <div class="flex justify-between items-center" onclick="toggleAnswer('answer5', this)">
+                        <h3 id="faqItem5" class="text-lg font-semibold text-gray-200"></h3>
+                        <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
+                            <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
+                            <!-- Downward Arrow -->
+                        </button>
+                    </div>
+                    <div id="answer5" class="hidden mt-2 text-center text-gray-300">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer Section -->
+    <footer class="bg-body custom-shadow text-gray-200 py-8">
+        <div class="container mx-auto px-4">
+            <!-- Footer Content -->
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <!-- Social Media Icons -->
+                <div class="mb-4 md:mb-0">
+                    <ul class="flex space-x-6">
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="#" class="hover:text-green-500"><i class="fab fa-linkedin-in"></i></a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="text-center md:text-right">
+                    <p>&copy; 2024 HydroMatic. All rights reserved.</p>
+                    <p>Email: <a href="mailto:info@hydromatic.com" class="hover:text-gray-400">HydroMatic@gmail.com</a>
+                    </p>
+                    <p>Phone: <a href="tel:+1234567890" class="hover:text-gray-400">+63 (976) 312-0382</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Load Page Content -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Fetch page content
+            fetch("api/Page-Content")
+                .then(response => response.json())
+                .then(data => {
+                    // Check if data is an array
+                    if (Array.isArray(data)) {
+                        // Get all section elements
+                        const sections = document.querySelectorAll('section');
+
+                        // Create a Set to hold all section IDs for easy lookup
+                        const sectionIds = new Set(Array.from(sections).map(section => section.id));
+
+                        data.forEach(item => {
+                            // Check if the item's sectionId matches any of the section IDs in the document
+                            if (sectionIds.has(item.sectionId)) {
+                                const element = document.getElementById(item.tagId);
+                                if (element) {
+                                    element.innerHTML = item.tagContent; // Update the element's content
+                                } else {
+                                    console.error("Element with id:", item.tagId, "not found.");
+                                }
+                            } else {
+                                console.warn("Section ID does not match any known section:", item.sectionId);
+                            }
+                        });
+                    } else {
+                        console.error("Unexpected data format:", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching content:", error);
+                });
+
+            // Fetching image content
+            fetch("api/Image-Content")
+                .then(response => response.json())
+                .then(data => {
+                    if (data && typeof data === 'object') {
+                        const imageData = Array.isArray(data) ? data : [data];
+                        const sections = document.querySelectorAll('section');
+                        const sectionIds = new Set(Array.from(sections).map(section => section.id));
+
+                        imageData.forEach(item => {
+                            if (sectionIds.has(item.sectionId)) {
+                                const element = document.getElementById(item.imageId);
+                                if (element) {
+                                    element.src = item.src; // Update the image source
+                                } else {
+                                    console.error("Element with id:", item.imageId, "not found.");
+                                }
+                            } else {
+                                console.warn("Section ID does not match any known section:", item.sectionId);
+                            }
+                        });
+                    } else {
+                        console.error("Unexpected data format: expected an object or array, but received:", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching content:", error);
+                });
+        });
+    </script>
+    <!-- JavaScript to toggle answers -->
+    <script>
+        function toggleAnswer(answerId, element) {
+            const answer = document.getElementById(answerId);
+            const arrowIcon = element.querySelector('.arrow-icon');
+
+            // Toggle the answer's visibility
+            answer.classList.toggle('hidden');
+
+            // Change the arrow direction
+            if (answer.classList.contains('hidden')) {
+                arrowIcon.innerHTML = '<i class="fas fa-chevron-down text-2xl font-bold"></i>'; // Downward Arrow
+            } else {
+                arrowIcon.innerHTML = '<i class="fas fa-chevron-up text-2xl font-bold"></i>'; // Upward Arrow
+            }
+        }
+    </script>
+    <!-- Smooth scrolling for navigation links -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobile-menu");
+            mobileMenu.classList.toggle("hidden");
+        }
+
+        // Example function to open modal (define it as per your requirements)
+        function openModal() {
+            // Your modal opening logic here
+        }
+    </script>
+    <!-- Forgot password -->
+    <script>
+        document.getElementById('forgotPassword').addEventListener('click', function () {
+            // Step 1: Prompt for phone number
+            Swal.fire({
+                title: 'Enter Phone Number',
+                input: 'text',
+                inputPlaceholder: 'Phone Number',
+                showCancelButton: true,
+                confirmButtonText: 'Send OTP',
+                preConfirm: (phone) => {
+                    // Basic validation for phone number (must be 11 digits)
+                    if (!/^\d{11}$/.test(phone)) {
+                        Swal.showValidationMessage('Please enter a valid 11-digit phone number.');
+                        return false;
+                    }
+                    return phone;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const phone = result.value;
+
+                    // Step 2: Send OTP to phone
+                    fetch('/api/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Success', 'OTP sent to your phone number', 'success').then(() => {
+                                    // Step 3: Prompt for OTP
+                                    Swal.fire({
+                                        title: 'Enter OTP',
+                                        input: 'text',
+                                        inputPlaceholder: 'OTP',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Verify OTP',
+                                        preConfirm: (otp) => {
+                                            if (!/^\d{6}$/.test(otp)) {
+                                                Swal.showValidationMessage('Please enter a valid 6-digit code.');
+                                                return false;
+                                            }
+                                            return otp;
+                                        }
+                                    }).then((otpResult) => {
+                                        if (otpResult.isConfirmed) {
+                                            const otp = otpResult.value;
+
+                                            // Step 4: Verify OTP
+                                            fetch('/api/otp-verify', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ phone, otp })
+                                            })
+                                                .then(res => res.json())
+                                                .then(verifyData => {
+                                                    if (verifyData.success) {
+                                                        Swal.fire('Success', 'OTP verified. Please enter your new password.', 'success').then(() => {
+                                                            // Step 5: Prompt for new password and confirm password
+                                                            Swal.fire({
+                                                                title: 'New Password',
+                                                                html:
+                                                                    '<input type="password" id="newPassword" class="swal2-input" placeholder="New Password">' +
+                                                                    '<input type="password" id="confirmPassword" class="swal2-input" placeholder="Confirm Password">',
+                                                                focusConfirm: false,
+                                                                showCancelButton: true,
+                                                                confirmButtonText: 'Update Password',
+                                                                preConfirm: () => {
+                                                                    const newPassword = Swal.getPopup().querySelector('#newPassword').value;
+                                                                    const confirmPassword = Swal.getPopup().querySelector('#confirmPassword').value;
+
+                                                                    if (!newPassword || !confirmPassword) {
+                                                                        Swal.showValidationMessage('Please enter both fields.');
+                                                                        return false;
+                                                                    }
+
+                                                                    if (newPassword !== confirmPassword) {
+                                                                        Swal.showValidationMessage('Passwords do not match.');
+                                                                        return false;
+                                                                    }
+
+                                                                    return newPassword;
+                                                                }
+                                                            }).then((passwordResult) => {
+                                                                if (passwordResult.isConfirmed) {
+                                                                    const newPassword = passwordResult.value;
+
+                                                                    // Step 6: Update the password
+                                                                    fetch('/api/account/forgot-password', {
+                                                                        method: 'POST',
+                                                                        headers: { 'Content-Type': 'application/json' },
+                                                                        body: JSON.stringify({ phone, newPassword: newPassword })
+                                                                    })
+                                                                        .then(res => res.json())
+                                                                        .then(updateData => {
+                                                                            if (updateData.success) {
+                                                                                Swal.fire('Success', 'Password updated successfully', 'success');
+                                                                            } else {
+                                                                                Swal.fire('Error', updateData.error, 'error');
+                                                                            }
+                                                                        }).catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+                                                                }
+                                                            });
+                                                        });
+                                                    } else {
+                                                        Swal.fire('Error', verifyData.error, 'error');
+                                                    }
+                                                }).catch(err => Swal.fire('Error', 'Something went wrong during OTP verification.', 'error'));
+                                        }
+                                    });
+                                });
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        }).catch(err => Swal.fire('Error', 'Failed to send OTP.', 'error'));
+                }
+            });
+        });
+    </script>
+    <!-- load heading roulet -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const headings = document.querySelectorAll('#headings-container h1');
+            let currentIndex = 0;
+
+            function showNextHeading() {
+                if (currentIndex < headings.length) {
+                    headings[currentIndex].classList.remove('hidden');
+                    headings[currentIndex].classList.add('visible');
+                    headings[currentIndex].style.animation = "bounceIn 1s ease-in-out";
+                    if (currentIndex > 0) {
+                        headings[currentIndex - 1].classList.add('hidden');
+                    }
+                    currentIndex++;
+                    setTimeout(showNextHeading, 1500); // Delay between headings
+                }
+            }
+
+            showNextHeading();
+        });
+    </script>
+    <!-- Intersection -->
+    <script>
+        (function (document) {
+            const markers = [...document.querySelectorAll('mark')];
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach((entry) => {
+                    if (entry.intersectionRatio > 0) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.8
+            });
+
+            markers.forEach(mark => {
+                observer.observe(mark);
+            });
+        })(document);
+    </script>
+    <!-- toggle Mobile -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+    <!-- handle scroll -->
+    <script>
+        // Add this script at the bottom of your body or in a separate JS file
+
+        function handleScroll() {
+            const elements = document.querySelectorAll('.scroll-animation');
+            const viewportHeight = window.innerHeight;
+
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+
+                if (elementTop < viewportHeight) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial check in case elements are already in view
+    </script>
+    <!-- Javascript modal for login/signup -->
+    <script>
+        function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function switchToLogin() {
+            document.getElementById('login-tab').classList.add('border-blue-600');
+            document.getElementById('signup-tab').classList.remove('border-green-600');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('modal-title').innerText = 'Login';
+        }
+
+        function switchToSignUp() {
+            document.getElementById('signup-tab').classList.add('border-green-600');
+            document.getElementById('login-tab').classList.remove('border-blue-600');
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('modal-title').innerText = 'Sign Up';
+        }
+    </script>
+    <!-- Signup -->
+    <script>
+        // Sanitize user inputs to prevent XSS
+        function sanitizeInput(input) {
+            return input
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#x27;")
+                .replace(/\//g, "&#x2F;");
+        }
+        // Set up countdown timer for the OTP send button
+        document.getElementById('send').addEventListener('click', async () => {
+            const phone = document.getElementById('signupPhone').value;
+            const sendButton = document.getElementById('send');
+
+            if (!phone) {
+                Swal.fire('Error', 'Please enter your phone number.', 'error');
+                return;
+            }
+
+            // Basic validation for phone number
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exact 11 digits.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone }),
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire('Success', 'OTP sent successfully!', 'success');
+
+                    // Start the countdown timer
+                    let countdown = 60;
+                    sendButton.disabled = true;
+                    sendButton.textContent = `Resend Code in ${countdown}s`;
+
+                    const timerInterval = setInterval(() => {
+                        countdown--;
+                        sendButton.textContent = `Resend Code in ${countdown}s`;
+
+                        if (countdown <= 0) {
+                            clearInterval(timerInterval);
+                            sendButton.disabled = false;
+                            sendButton.textContent = 'Send Code';
+                        }
+                    }, 1000);
+                } else {
+                    Swal.fire('Error', 'Failed to send OTP. ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                Swal.fire('Error', 'Failed to send OTP.', 'error');
+            }
+        });
+
+
+
+        async function handleSignUp(event) {
+            event.preventDefault();
+
+            // Sanitize inputs before using them
+            const fname = sanitizeInput(document.getElementById('firstName').value);
+            const lname = sanitizeInput(document.getElementById('lastName').value);
+            const phone = sanitizeInput(document.getElementById('signupPhone').value);
+            const password = sanitizeInput(document.getElementById('signupPassword').value);
+            const confirmPassword = sanitizeInput(document.getElementById('confirmPassword').value);
+            const otp = sanitizeInput(document.getElementById('signupCode').value);
+
+            // Basic validation
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exactly 11 digits.', 'error');
+                return;
+            }
+
+            if (!/^[A-Za-z0-9]{6,}$/.test(password)) {
+                Swal.fire('Error', 'Password must be at least 6 characters long and contain only letters and numbers.', 'error');
+                return;
+            }
+
+            if (!/^\d{6}$/.test(otp)) {
+                Swal.fire('Error', 'Code must be exactly 6 digits.', 'error');
+                return;
+            }
+
+            // Check if the password and confirm password match
+            if (password !== confirmPassword) {
+                Swal.fire('Error', 'Passwords do not match.', 'error');
+                return;
+            }
+
+            // Proceed with form submission if everything is valid
+            try {
+                const response = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ fname, lname, phone, password, otp }),
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire('Success', 'Account created successfully!', 'success').then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', 'Failed to create account. ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                Swal.fire('Error', 'Failed to create account.', 'error');
+            }
+        }
+    </script>
+    <!-- Login -->
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            // Get the raw input values
+            let phone = document.getElementById('loginPhone').value;
+            let password = document.getElementById('loginPassword').value;
+
+            // Sanitize the inputs
+            phone = sanitizeInput(phone);
+            password = sanitizeInput(password);
+
+            // Basic validation
+            if (!phone || !password) {
+                Swal.fire('Error', 'Both phone number and password are required.', 'error');
+                return;
+            }
+
+            if (!/^\d{11}$/.test(phone)) {
+                Swal.fire('Error', 'Phone number must be exactly 11 digits.', 'error');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9]{6,}$/.test(password)) {
+                Swal.fire('Error', 'Password must be at least 6 characters long and contain only letters and numbers.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, password }),
+                });
+
+                const data = await response.json();
+                console.log('Server response:', data);
+
+                if (data.success) {
+                    localStorage.setItem('userPhone', phone);
+                    sessionStorage.setItem('authToken', data.token);
+
+                    Swal.fire('Success', 'Login successful!', 'success').then(() => {
+                        window.location.href = 'http://localhost:3000/dashboard';
+                    });
+                } else {
+                    Swal.fire('Error', data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error logging in:', error);
+                Swal.fire('Error', 'Login failed. Please try again.', 'error');
+            }
+        }
+
+        // Sanitization function to prevent XSS
+        function sanitizeInput(input) {
+            return input
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#x27;")
+                .replace(/\//g, "&#x2F;");
+        }
+    </script>
+
+</body>
+
+</html>
