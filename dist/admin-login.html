@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login</title>
+  <link rel="icon" href="/img/Logo.png" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
@@ -50,10 +51,10 @@
         <h1 class="text-3xl font-bold text-center text-white mb-6">Admin Login</h1>
         <form id="adloginForm">
           <div class="mb-4">
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="email">Email</label>
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="user">Username</label>
             <input
               class="shadow appearance-none border border-gray-600 rounded w-full input-field leading-tight focus:outline-none focus:ring focus:ring-green-500"
-              id="email" type="email" name="email" required>
+              id="user" type="text" name="user" required>
           </div>
           <div class="mb-4">
             <label class="block text-gray-300 text-sm font-bold mb-2" for="password">Password</label>
@@ -72,19 +73,19 @@
   <script>
     document.getElementById('adloginForm').addEventListener('submit', async function (e) {
       e.preventDefault(); // Prevent default form submission
-
-      const email = document.getElementById('email').value.trim();
+  
+      const user = document.getElementById('user').value.trim();
       const password = document.getElementById('password').value.trim();
-
+  
       // Basic validation
-      if (!email || !password) {
+      if (!user || !password) {
         return Swal.fire({
           icon: 'warning',
           title: 'Input Required',
-          text: 'Please enter both email and password.',
+          text: 'Please enter both user and password.',
         });
       }
-
+  
       // Show loading indicator
       Swal.fire({
         title: 'Logging in...',
@@ -95,36 +96,33 @@
           Swal.showLoading();
         }
       });
-
+  
       try {
         const response = await fetch('/admin-login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user, password }),
+          credentials: 'include' // Include cookies to maintain session
         });
-
+  
         if (response.ok) {
           const data = await response.json();
-
-          // Assuming the response contains a token
-          localStorage.setItem('authToken', data.token); // Save token to localStorage
-
+  
           // Show success message
           Swal.fire({
             icon: 'success',
             title: 'Login Successful',
             text: data.message || 'Welcome back!',
           }).then(() => {
-            // Redirect to admin-content.html after closing the alert
-            window.location.href = 'admin-main'; // Ensure this points to your actual admin page
+            // Redirect to the admin main page after closing the alert
+            window.location.href = 'admin-main'; // Make sure this URL points to the correct admin page
           });
         } else {
           const errorData = await response.json();
-          // Check if error is related to invalid credentials
           let errorMessage = errorData.error || 'Login failed. Please try again.';
-
+  
           // Show error message
           Swal.fire({
             icon: 'error',
@@ -144,6 +142,7 @@
       }
     });
   </script>
+  
 
 </body>
 

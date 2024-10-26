@@ -16,7 +16,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
-
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF autoTable Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
 
@@ -87,9 +90,6 @@
 
             font-weight: 700;
         }
-
-    
-        
     </style>
 </head>
 
@@ -171,11 +171,21 @@
         <div class="flex-grow overflow-hidden ">
             <div class="w-full h-full overflow-y-auto md:px-4 lg:px-16">
                 <main class="w-full h-full p-6">
-                    <h1 class="text-4xl text-gray-900 pb-6 font-bold">Dashboard</h1>
-                    <div class="px-6 flex w-full text-center justify-center gap-5 py-4 grid sm:grid-cols-1 md:grid-cols-3">
-    
+                    <div class="py-4 grid sm:grid-cols-1 md:grid-cols-2">
+                        <h1 class="text-4xl text-gray-900 pb-6 font-bold">Dashboard</h1>
+                        <div class="text-right w-full">
+                            <button id="printPdfBtn" class="py-4 px-6 bg-gray-300 hover:bg-gray-900 hover:text-gray-300 border-2 shadow-xl rounded-lg text-center aspect-square
+                             w-full sm:w-full md:w-40 lg:w-40 xl:w-48 font-bold">
+                                <p> Print Out </p>
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="px-6 flex w-full text-center justify-center gap-5 py-4 grid sm:grid-cols-1 md:grid-cols-3">
+
                         <!-- Total Hydro Frame -->
-                        <div class="py-4 px-6 bg-body  rounded-lg shadow-inner text-center aspect-square w-full font-bold">
+                        <div
+                            class="py-4 px-6 bg-body  rounded-lg shadow-inner text-center aspect-square w-full font-bold">
                             <p class="text-xl" style="color: #ffffff;">
                                 <!-- PNG icon for Total Hydro Frame -->
                                 <img src="img\3.png" alt="Total Hydro Frame Icon" class="mx-auto w-1/6 h-auto mb-2">
@@ -183,9 +193,10 @@
                             </p>
                             <p class="text-white" id="totalBed"></p>
                         </div>
-                    
+
                         <!-- Ready to Harvest -->
-                        <div class="py-4 px-6 bg-body   rounded-lg shadow-inner text-center aspect-square w-full font-bold">
+                        <div
+                            class="py-4 px-6 bg-body   rounded-lg shadow-inner text-center aspect-square w-full font-bold">
                             <p class="text-xl" style="color: #ffffff;">
                                 <!-- PNG icon for Ready to Harvest -->
                                 <img src="img\1.png" alt="Ready to Harvest Icon" class="mx-auto w-1/6 h-auto mb-2">
@@ -193,9 +204,10 @@
                             </p>
                             <p class="text-white" id="totalHarvest"></p>
                         </div>
-                    
+
                         <!-- Still Ongoing -->
-                       <div class="py-4 px-6 bg-body   rounded-lg shadow-inner text-center aspect-square w-full font-bold">
+                        <div
+                            class="py-4 px-6 bg-body   rounded-lg shadow-inner text-center aspect-square w-full font-bold">
                             <p class="text-xl" style="color: #ffffff;">
                                 <!-- PNG icon for Still Ongoing -->
                                 <img src="img\2.png" alt="Still Ongoing Icon" class="mx-auto w-1/6 h-auto mb-2">
@@ -203,9 +215,9 @@
                             </p>
                             <p class="text-white" id="totalOngoing"></p>
                         </div>
-                    
+
                     </div>
-                    
+
                     <div class="px-6 overflow-x-auto py-8 text-center">
                         <!-- Top Bar with Pagination and Filters -->
                         <div class="flex justify-between items-center mb-4">
@@ -264,6 +276,20 @@
                 </main>
             </div>
         </div>
+        <!-- Modal for PDF Preview -->
+        <div id="pdfModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-4 w-11/12 max-w-3xl">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">PDF Preview</h2>
+                    <button id="closeModalBtn" class="text-red-500 text-xl">&times;</button>
+                </div>
+                <iframe id="pdfPreview" class="w-full h-96 mt-4" frameborder="0"></iframe>
+                <div class="flex justify-end mt-4">
+                    <button id="savePdfBtn" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Save
+                        PDF</button>
+                </div>
+            </div>
+        </div>
         <!-- Footer -->
         <footer class="w-full bg-sidebar py-4 px-6 text-white text-center">
             <p>&copy; 2024 HydroMatic. All rights reserved.</p>
@@ -276,6 +302,99 @@
         integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Function to create PDF -->
+    <script>
+        // Function to create PDF content
+        function createPdfContent(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Set up the PDF title
+            doc.setFontSize(18);
+            doc.text("HydroMatic HydroFrame Report", 14, 20);
+            doc.setFontSize(12);
+            doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
+
+            // Set up the table headers
+            const tableColumn = ["Name", "IP Address", "Start Date", "Days", "Harvest Date", "Status"];
+            const tableRows = [];
+
+            // Add rows from the data
+            data.forEach(row => {
+                const rowData = [
+                    row.Var_Host,
+                    row.Var_Ip,
+                    new Date(row.Start_Date).toLocaleDateString(),
+                    row.Last_Day,
+                    new Date(row.Harvest_Date).toLocaleDateString(),
+                    row.Status
+                ];
+                tableRows.push(rowData);
+            });
+
+            // Use autoTable to add the data to the PDF
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 35,
+                theme: 'striped'
+            });
+
+            return doc;
+        }
+
+        // Function to preview the PDF in the modal
+        async function previewPdf() {
+            try {
+                // Fetch the data to be included in the PDF
+                const response = await fetch('/api/Dashboard-Data');
+                const data = await response.json();
+
+                // Create PDF content
+                const doc = createPdfContent(data);
+
+                // Convert the PDF to a data URL and show in the iframe
+                const pdfDataUrl = doc.output('dataurlstring');
+                document.getElementById('pdfPreview').src = pdfDataUrl;
+
+                // Show the modal
+                document.getElementById('pdfModal').classList.remove('hidden');
+            } catch (err) {
+                console.error('Error generating PDF:', err);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while generating the PDF.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Function to save the PDF
+        function savePdf() {
+            // Fetch data again or use the previous data
+            const response = fetch('/api/Dashboard-Data');
+            response.then(r => r.json())
+                .then(data => {
+                    const doc = createPdfContent(data);
+                    doc.save("HydroMatic_HydroFrame_Report.pdf");
+                });
+        }
+
+        // Event listeners for modal and PDF actions
+        document.getElementById('printPdfBtn').addEventListener('click', previewPdf);
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('pdfModal').classList.add('hidden');
+        });
+        document.getElementById('savePdfBtn').addEventListener('click', savePdf);
+
+        // Close modal when clicking outside of it
+        document.getElementById('pdfModal').addEventListener('click', (event) => {
+            if (event.target === document.getElementById('pdfModal')) {
+                document.getElementById('pdfModal').classList.add('hidden');
+            }
+        });
+    </script>
     <!-- Display total bed, harvest, and ongoing -->
     <script>
         function loadTotal() {
@@ -474,189 +593,85 @@
             mobileMenu.classList.toggle('hidden');
         }
     </script>
-    <!-- Log out button -->
+    <!-- Function to check if the user is authenticated based on session -->
     <script>
-        function isUserAuthenticated() {
-            return !!sessionStorage.getItem('authToken'); // Example check
-        }
-    
-        if (!isUserAuthenticated()) {
-            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-        }
-    
-        async function logoutUser() {
-            try {
-                // Call the Express API to handle logout
-                const response = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+        function checkSessionStatus() {
+            fetch('/api/check-session', {
+                method: 'GET',
+                credentials: 'include' // Ensure cookies are included in the request
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.isAuthenticated) {
+                        // Redirect to the login page if the session is not valid
+                        Swal.fire({
+                            title: 'Session Expired',
+                            text: 'Please log in again.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = 'http://localhost:3000/';
+                        });
                     }
-                });
-    
-                const result = await response.json();
-    
-                if (response.ok) {
-                    // Clear all items from local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-    
-                    // Show SweetAlert confirmation
-                    await Swal.fire({
-                        title: 'Logged Out',
-                        text: result.message || 'You have been successfully logged out.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-    
-                    // Redirect to login page or home page
-                    window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-                } else {
-                    // Show SweetAlert error message
-                    Swal.fire({
-                        title: 'Logout Failed',
-                        text: result.error || 'An error occurred while logging out. Please try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            } catch (error) {
-                console.error('Error logging out:', error);
-    
-                // Show SweetAlert error message
-                Swal.fire({
-                    title: 'Logout Failed',
-                    text: 'An error occurred while logging out. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    
-        document.getElementById('logout-button').addEventListener('click', logoutUser);
-    
-        // Optional: Prevent navigation back to the protected page
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                // Redirect to the login page if the user tries to go back
-                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-            }
-        });
-    </script>
-    <!-- mobile Log out button -->
-    <script>
-        function isUserAuthenticated() {
-            return !!sessionStorage.getItem('authToken'); // Example check
-        }
-    
-        if (!isUserAuthenticated()) {
-            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-        }
-    
-        async function logoutUser() {
-            try {
-                // Call the Express API to handle logout
-                const response = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-    
-                const result = await response.json();
-    
-                if (response.ok) {
-                    // Clear all items from local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-    
-                    // Show SweetAlert confirmation
-                    await Swal.fire({
-                        title: 'Logged Out',
-                        text: result.message || 'You have been successfully logged out.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-    
-                    // Redirect to login page or home page
-                    window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-                } else {
-                    // Show SweetAlert error message
-                    Swal.fire({
-                        title: 'Logout Failed',
-                        text: result.error || 'An error occurred while logging out. Please try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            } catch (error) {
-                console.error('Error logging out:', error);
-    
-                // Show SweetAlert error message
-                Swal.fire({
-                    title: 'Logout Failed',
-                    text: 'An error occurred while logging out. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    
-        document.getElementById('mobile-logout').addEventListener('click', logoutUser);
-    
-        // Optional: Prevent navigation back to the protected page
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                // Redirect to the login page if the user tries to go back
-                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-            }
-        });
-    </script>
-    <!-- Check logged in user -->
-    <script>
-        // Function to check if there's a logged-in account
-        function checkLoginStatus() {
-            // Check sessionStorage for a logged-in user
-            let sessionUser = sessionStorage.getItem('userPhone');
-
-            // Check localStorage for a logged-in user
-            let localUser = localStorage.getItem('userPhone');
-
-            // If user exists in sessionStorage or localStorage, return the user's info
-            if (sessionUser) {
-                console.log('User is logged in via session storage:', sessionUser);
-                return sessionUser;
-            } else if (localUser) {
-                console.log('User is logged in via local storage:', localUser);
-                return localUser;
-            } else {
-                console.log('No user is logged in.');
-                return null;
-            }
-        }
-
-        // Example usage
-        let loggedInUser = checkLoginStatus();
-        if (loggedInUser) {
-            // User is logged in, proceed with logged-in logic
-            console.log('Logged in as:', loggedInUser);
-        } else {
-            // No user is logged in, show Swal alert and then redirect to login
-            Swal.fire({
-                icon: 'warning',
-                title: 'No user logged in',
-                text: 'You will be redirected to the login page.',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Clear all items from local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    // Redirect to login page after user clicks "OK"
+                })
+                .catch(error => {
+                    console.error('Error checking session:', error);
                     window.location.href = 'http://localhost:3000/';
-                }
-            });
+                });
         }
+
+        // Call the session check function when the page loads
+        document.addEventListener('DOMContentLoaded', checkSessionStatus);
+
+        // Logout function to destroy the session
+        async function logoutUser() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Clear localStorage and sessionStorage
+                    localStorage.clear();
+                    sessionStorage.clear();
+
+                    // Show a SweetAlert confirmation
+                    await Swal.fire({
+                        title: 'Logged Out',
+                        text: 'You have been successfully logged out.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+
+                    // Redirect to the login page
+                    window.location.href = 'http://localhost:3000/';
+                } else {
+                    Swal.fire({
+                        title: 'Logout Failed',
+                        text: 'An error occurred while logging out. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        document.getElementById('logout-button').addEventListener('click', logoutUser);
+        document.getElementById('mobile-logout').addEventListener('click', logoutUser);
     </script>
 </body>
 

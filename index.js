@@ -9,10 +9,18 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const app = express();
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 const saltRounds = 10; // The salt rounds for bcrypt
 const { body, validationResult } = require('express-validator');
 const PORT = process.env.PORT || 3000;
 
+// Configure session middleware
+app.use(session({
+  secret: 'c1a5da10672b82ad5af1bb0abb714293c5fa9667005bc4712017ac00eea56d27', // Replace with a secure secret key
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 1-day session expiration
+}));
 // Configure multer for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -22,17 +30,11 @@ const storage = multer.diskStorage({
     cb(null, file.originalname); // Use original filename
   }
 });
-
 // Set file size limit (e.g., 100 MB)
 const upload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 } // 100 MB limit
 });
-
-// Optional: Use body-parser if you need it for other requests
-app.use(express.json({ limit: '100mb' })); // Adjust limit as necessary
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
-
 // Create a connection to the database
 const db = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
@@ -40,7 +42,6 @@ const db = mysql.createPool({
   password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "lettucegrowth",
 });
-
 // Test the database connection
 const testConnection = async () => {
   try {
@@ -52,25 +53,20 @@ const testConnection = async () => {
   }
 };
 testConnection();
-
+// Optional: Use body-parser if you need it for other requests
+app.use(express.json({ limit: '100mb' })); // Adjust limit as necessary
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 // Middleware for parsing JSON
 app.use(bodyParser.json());
-
 // Serve static files from the "dist" and "img" directories
 app.use("/dist", express.static(path.join(__dirname, "dist")));
 app.use("/img", express.static(path.join(__dirname, "img")));
-
 // Semaphore API Key
 const SEMAPHORE_API_KEY = "9211423d3b8b372cac30d1357da0729f";
-
 // Store OTPs temporarily (In production, use a database or a cache like Redis)
 const otpStorage = {};
-
 // Generate a random OTP
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
-
-// Variable store the signed in account
-let signedAcc = null;
 
 // API to send OTP
 app.post("/api/send-otp", async (req, res) => {
@@ -170,39 +166,68 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    // Query the database for the account with the provided phone number
     const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ?', [phone]);
 
     if (results.length === 0) {
       return res.status(401).json({ error: 'Invalid phone number or password' });
     }
 
-    // Extract the hashed password from the database
     const hashedPassword = results[0].Acc_Password;
-    console.log('Stored hashed password:', hashedPassword); // During login
-
-    // Compare the provided password with the hashed password stored in the database
     const isMatch = await bcrypt.compare(password, hashedPassword);
 
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid phone number or password' });
     }
-    // select account logged in
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
-    // Insert the activity into the activities table
+
+    // Set the user session
+    req.session.user = {
+      phone: results[0].Acc_Pnumber,
+      fname: results[0].Acc_Fname,
+      lname: results[0].Acc_Lname
+    };
+
+    // Insert login activity
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED IN")';
     await db.query(activityQuery, [results[0].Acc_Fname, results[0].Acc_Lname, results[0].Acc_Pnumber]);
-    // If the password matches, log the user in
-    signedAcc = results[0].Acc_Pnumber;
-    console.log(`Number: ${signedAcc}`);
-    res.status(200).json({ success: true, message: 'Login successful', user: results[0] });
 
+    res.status(200).json({ success: true, message: 'Login successful', user: req.session.user });
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// User logout
+app.post('/api/logout', async (req, res) => {
+  try {
+    // Get user details from the session
+    const { Acc_Fname, Acc_Lname, Acc_Pnumber } = req.session.user || {};
+
+    // Destroy the session
+    req.session.destroy(async (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to log out' });
+      }
+
+      if (Acc_Fname && Acc_Lname && Acc_Pnumber) {
+        // Insert logout activity into the database
+        const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED OUT")';
+        try {
+          await db.query(activityQuery, [Acc_Fname, Acc_Lname, Acc_Pnumber]);
+        } catch (dbErr) {
+          console.error('Error logging activity:', dbErr);
+          // You can choose to respond with an error or continue
+        }
+      }
+
+      // Respond with success message
+      res.status(200).json({ message: 'User logged out successfully' });
+    });
+  } catch (error) {
+    console.error('Error in logout process:', error);
+    res.status(500).json({ error: 'An error occurred during logout' });
+  }
+});
+
 // Data for displaying the image and description of growth
 app.get("/api/growthtimeline", async (req, res) => {
   try {
@@ -213,36 +238,48 @@ app.get("/api/growthtimeline", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-// Get all the data from table device_info
-app.get("/api/device_info", async (req, res) => {
+// API to get user-specific data
+app.get('/api/device_info', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const [results] = await db.query('SHOW TABLES LIKE "device_info"');
     if (results.length === 0) {
       return res.status(404).json({ error: "Table device_info not found" });
     }
-    const [data] = await db.query("SELECT * FROM device_info WHERE Pnum = ?", [signedAcc]);
+    const [data] = await db.query("SELECT * FROM device_info WHERE Pnum = ?", [req.session.user.phone]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-// Get all the data from table display_bed
+// Updated /api/display_bed route
 app.get("/api/display_bed", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const [results] = await db.query('SHOW TABLES LIKE "display_bed"');
     if (results.length === 0) {
       return res.status(404).json({ error: "Table display_bed not found" });
     }
-    const [data] = await db.query("SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Start_Date Asc", [signedAcc]);
+    const [data] = await db.query("SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Start_Date ASC", [req.session.user.phone]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-// Get specific the data from table display_bed
+// Get specific data from table display_bed
 app.post("/api/display_table", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   const { Var_Host, Var_Ip } = req.body;
 
   if (!Var_Host || !Var_Ip) {
@@ -250,7 +287,7 @@ app.post("/api/display_table", async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, signedAcc]);
+    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, req.session.user.phone]);
     if (results.length === 0) {
       return res.status(404).json({ error: "No data found for the given Var_Host and Var_Ip" });
     }
@@ -368,88 +405,58 @@ app.post('/api/checkDevice', async (req, res) => {
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// Creating bed display
+// Updated /api/add-bed-database route
 app.post("/api/add-bed-database", async (req, res) => {
-  console.log("Request received for /api/add-bed-database");
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   const { Var_Host, Var_Ip, Last_Day, Start_Date } = req.body;
 
-  // Validate incoming data
   if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
-    console.error("Missing required fields");
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  // Input validation and sanitization
-  if (!Var_Host || !/^[a-zA-Z0-9-_]+$/.test(Var_Host)) {
-    return res.status(400).json({ error: "Invalid Hostname format." });
-  }
-  if (!Var_Ip || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(Var_Ip)) {
-    return res.status(400).json({ error: "Invalid IP Address format." });
-  }
-  if (!Last_Day || Last_Day < 1 || Last_Day > 70) {
-    return res.status(400).json({ error: "Invalid number of days." });
-  }
-  if (!Start_Date || isNaN(new Date(Start_Date).getTime())) {
-    return res.status(400).json({ error: "Invalid date format." });
-  }
-
-  // Convert Start_Date to a JavaScript Date object
-  const startDate = new Date(Start_Date);
-
-  // Check if Start_Date is valid
-  if (isNaN(startDate.getTime())) {
-    console.error("Invalid Start_Date format");
-    return res.status(400).json({ error: "Invalid Start_Date format" });
-  }
-
-  // Calculate Harvest_Date by adding (70 - Last_Day) days to Start_Date
-  const harvestDate = new Date(startDate);
-  harvestDate.setDate(harvestDate.getDate() + (70 - Last_Day));
-
-  // Format the Harvest_Date in YYYY-MM-DD format
-  const Harvest_Date = harvestDate.toISOString().split("T")[0];
-
   try {
-    // Check if the device already exists in display_bed
     const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
 
     if (results.length > 0) {
-      // Device already exists
-      console.error("Device with the same hostname or IP already exists");
       return res.status(409).json({ error: "Device with the same hostname or IP already exists" });
     }
 
-    // Insert new bed
+    const startDate = new Date(Start_Date);
+    const harvestDate = new Date(startDate);
+    harvestDate.setDate(harvestDate.getDate() + (70 - Last_Day));
+    const Harvest_Date = harvestDate.toISOString().split("T")[0];
+
     await db.query(
       `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, "ONGOING", ?)`,
-      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, signedAcc]
+      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, req.session.user.phone]
     );
-    // select account logged in
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
-    // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "ADD HYDRO FRAME")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
-    console.log("Bed inserted successfully!");
-    return res.status(200).json({ message: "Bed inserted successfully!" });
+    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "ADD HYDRO FRAME")';
+    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+
+    res.status(200).json({ message: "Bed inserted successfully!" });
   } catch (err) {
     console.error("Error:", err);
-    return res.status(500).json({ error: "Error inserting data into database" });
+    res.status(500).json({ error: "Error inserting data into database" });
   }
 });
-// POST endpoint to remove a bed
+// Updated POST endpoint to remove a bed
 app.post("/api/delete-device", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
   const { Var_Host } = req.body;
-  console.log(`Number: ${signedAcc}`);
+
   if (!Var_Host) {
     return res.status(400).json({ message: "No hostname provided." });
   }
 
   try {
     // SQL query to select the record to be deleted
-    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ?", [Var_Host]);
+    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Pnum = ?", [Var_Host, req.session.user.phone]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found." });
@@ -459,7 +466,7 @@ app.post("/api/delete-device", async (req, res) => {
     const { Var_Host: name, Var_Ip: ip, Start_Day: sDay, Last_Day: lDay, Start_Date: sDate, Harvest_Date: hDate } = results[0];
 
     // SQL query to delete the record
-    const [deleteResult] = await db.query("DELETE FROM display_bed WHERE Var_Host = ?", [Var_Host]);
+    const [deleteResult] = await db.query("DELETE FROM display_bed WHERE Var_Host = ? AND Pnum = ?", [Var_Host, req.session.user.phone]);
 
     if (deleteResult.affectedRows === 0) {
       return res.status(404).json({ message: "Bed not found." });
@@ -472,30 +479,29 @@ app.post("/api/delete-device", async (req, res) => {
     await db.query(
       `INSERT INTO archived (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Date_Archived, Status, Pnum) 
       VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?, ?)`,
-      [name, ip, sDay, lDay, sDate, hDate, stat, signedAcc]
+      [name, ip, sDay, lDay, sDate, hDate, stat, req.session.user.phone]
     );
 
-    // select account logged in
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
     // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "REMOVE HYDRO FRAME")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
 
-    console.log("Insert Successful to archived");
     res.status(200).json({ message: "Bed successfully deleted." });
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ message: "Failed to delete the bed from the database." });
   }
 });
-// Endpoint to update the Last_Day and Last_Update_Date
+// Updated /api/update-last-day endpoint
 app.post("/api/update-last-day", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
   const { Var_Host, Var_Ip, Start_Day, Start_Date, currentDate } = req.body;
 
   try {
     // SQL query to select Last_Day from the database
-    const [results] = await db.query('SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, signedAcc]);
+    const [results] = await db.query('SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, req.session.user.phone]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found" });
@@ -508,8 +514,8 @@ app.post("/api/update-last-day", async (req, res) => {
       await db.query(
         `UPDATE display_bed
         SET Last_Day = DATEDIFF(?, ?) + ? - 1, Update_Date = ?
-        WHERE Var_Host = ? AND Var_Ip = ?`,
-        [currentDate, Start_Date, Start_Day, currentDate, Var_Host, Var_Ip]
+        WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?`,
+        [currentDate, Start_Date, Start_Day, currentDate, Var_Host, Var_Ip, req.session.user.phone]
       );
 
       res.status(200).json({ message: "Update successful" });
@@ -523,15 +529,17 @@ app.post("/api/update-last-day", async (req, res) => {
 });
 // API for Dates
 app.post("/api/dates", async (req, res) => {
-  console.log("Request body:", req.body);
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   const { Var_Host, Var_Ip } = req.body;
 
   try {
-    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [Var_Host, Var_Ip, signedAcc]);
-    console.log("Fetched results:", results);
+    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [Var_Host, Var_Ip, req.session.user.phone]);
     res.json(results);
   } catch (err) {
-    console.error("Error:", err);
+    console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
@@ -554,149 +562,134 @@ app.get("/api/growth-stages", async (req, res) => {
     res.status(500).json({ error: "Error fetching growth stages" });
   }
 });
-// API notify
+// Updated /api/notify-harvest endpoint
 app.post('/api/notify-harvest', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
-    // Query to find crops that have Last_Day between 60 and 70 and have not received an SMS today
     const query = `
       SELECT * FROM display_bed 
       WHERE Last_Day >= 60 AND Last_Day <= 70 
         AND (Last_SMS_Date IS NULL OR Last_SMS_Date < CURDATE()) AND Pnum = ?
     `;
 
-    const [crops] = await db.query(query, [signedAcc]);
-
-    // Log the result to check if crops are found
-    console.log('Crops found with Last_Day between 60 and 70:', crops);
+    const [crops] = await db.query(query, [req.session.user.phone]);
 
     if (crops.length === 0) {
       return res.status(200).json({ message: 'No crops ready for harvest within the specified range or it already sent an SMS notification' });
     }
 
-    // Loop through each crop and send SMS
-    try {
-      for (const crop of crops) {
-        const cropName = crop.Var_Host; // Replace with actual crop name column if needed
-        const lastDay = crop.Last_Day;  // Last_Day from database
-        const harvestDate = new Date(crop.Harvest_Date); // Harvest date
+    for (const crop of crops) {
+      const cropName = crop.Var_Host;
+      const lastDay = crop.Last_Day;
+      const harvestDate = new Date(crop.Harvest_Date);
+      const formattedHarvestDate = harvestDate.toDateString();
 
-        // Format harvestDate to "Thu Sep 26 2024"
-        const formattedHarvestDate = harvestDate.toDateString();
+      const message = `Dear Farmer, your crop from "${cropName}" is ready to harvest. It has been growing for ${lastDay} days. Please harvest the crops until ${formattedHarvestDate}.`;
 
-        // Create SMS message for crops ready to harvest based on Last_Day
-        const message = `Dear Farmer, your crop from "${cropName}" is ready to harvest. It has been growing for ${lastDay} days. Please harvest the crops until ${formattedHarvestDate}.`;
+      await axios.post('https://api.semaphore.co/api/v4/messages', {
+        apikey: SEMAPHORE_API_KEY,
+        number: req.session.user.phone,
+        message: message,
+        sendername: "HydroMatic",
+      });
 
-        // Log SMS details for debugging
-        console.log('Sending SMS to:', signedAcc);
-        console.log('Message:', message);
-
-        // Send SMS using Semaphore API
-        await axios.post('https://api.semaphore.co/api/v4/messages', {
-          apikey: SEMAPHORE_API_KEY,
-          number: signedAcc,
-          message: message,
-          sendername: "HydroMatic", // Replace with your actual sender name
-        }).catch(smsError => {
-          console.error('Error sending SMS:', smsError);
-          throw smsError; // Throw error to handle it outside the loop
-        });
-
-        // Update the date of the last SMS sent
-        const updateQuery = 'UPDATE display_bed SET Last_SMS_Date = CURDATE(), Status = "HARVEST"  WHERE Var_Host = ? AND Var_Ip = ?';
-        await db.query(updateQuery, [crop.Var_Host, crop.Var_Ip]);
-      }
-
-      // After sending all SMS, send a success response
-      res.status(200).json({ message: 'SMS notifications sent successfully' });
-    } catch (smsError) {
-      console.error('Error sending SMS notifications:', smsError);
-      res.status(500).json({ message: 'Error sending SMS notifications' });
+      const updateQuery = 'UPDATE display_bed SET Last_SMS_Date = CURDATE(), Status = "HARVEST" WHERE Var_Host = ? AND Var_Ip = ?';
+      await db.query(updateQuery, [crop.Var_Host, crop.Var_Ip]);
     }
+
+    res.status(200).json({ message: 'SMS notifications sent successfully' });
   } catch (error) {
     console.error('Error in /api/notify-harvest:', error);
     res.status(500).json({ message: 'Error processing request' });
   }
 });
-// API to fetch all archived data
+// Updated /api/archived endpoint
 app.get('/api/archived', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
   try {
     const selectArchived = "SELECT * FROM archived WHERE Pnum = ? ORDER BY Archive_Id DESC";
-    const [results] = await db.query(selectArchived, [signedAcc]);
+    const [results] = await db.query(selectArchived, [req.session.user.phone]);
     res.json(results); // Send the results as JSON
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// API to fetch all archived data
+// Updated /api/Dashboard-Data endpoint
 app.get('/api/Dashboard-Data', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Var_Host ASC";
-    const [results] = await db.query(selectAll, [signedAcc]);
-    res.json(results); // Send the results as JSON
+    const [results] = await db.query(selectAll, [req.session.user.phone]);
+    res.json(results);
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
   }
 });
 // API to get the total bed frames
 app.get('/api/TotalBed', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const selectAll = "SELECT * FROM display_bed WHERE Pnum = ?";
-
-    // Execute the query
-    const [results] = await db.query(selectAll, [signedAcc]);
-
-    // Get the total number of rows
+    const [results] = await db.query(selectAll, [req.session.user.phone]);
     const totalRows = results.length;
-
-    // Send the total as an object (key-value)
     res.json({ total: totalRows });
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// API to get the total bed frames
+// API to get the total bed frames with Status 'HARVEST'
 app.get('/api/TotalHarvest', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? AND Status = 'HARVEST'";
-
-    // Execute the query
-    const [results] = await db.query(selectAll, [signedAcc]);
-
-    // Get the total number of rows
+    const [results] = await db.query(selectAll, [req.session.user.phone]);
     const totalRows = results.length;
-
-    // Send the total as an object (key-value)
     res.json({ total: totalRows });
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// API to get the total bed frames
+// API to get the total bed frames with Status 'ONGOING'
 app.get('/api/TotalOngoing', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? AND Status = 'ONGOING'";
-
-    // Execute the query
-    const [results] = await db.query(selectAll, [signedAcc]);
-
-    // Get the total number of rows
+    const [results] = await db.query(selectAll, [req.session.user.phone]);
     const totalRows = results.length;
-
-    // Send the total as an object (key-value)
     res.json({ total: totalRows });
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).send({ error: 'Database query error' });
   }
 });
-// API for account information
+// Updated /api/account-details route
 app.get('/api/account-details', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
-    console.log('Current signedAcc:', signedAcc); // Debugging line
     const query = `SELECT Acc_Fname as fname, Acc_Lname as lname, Acc_Pnumber as phone FROM account WHERE Acc_Pnumber = ? LIMIT 1`;
-    const [rows] = await db.query(query, [signedAcc]);
+    const [rows] = await db.query(query, [req.session.user.phone]);
 
     if (rows.length > 0) {
       res.json(rows[0]);
@@ -708,6 +701,7 @@ app.get('/api/account-details', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+// API to update the first name
 app.post('/api/account/update-fname', [
   body('newFname').isAlpha().escape().trim() // Validate input (only alphabets)
 ], async (req, res) => {
@@ -716,12 +710,12 @@ app.post('/api/account/update-fname', [
     return res.status(400).json({ errors: errors.array() });
   }
 
+  if (!req.session.user) {
+    return res.status(401).send({ error: 'Unauthorized' });
+  }
+
   try {
     const { newFname } = req.body;
-
-    if (!signedAcc) {
-      return res.status(401).send({ error: 'User not logged in.' });
-    }
 
     // SQL query to update the first name in the account table
     const updateAccountFnameQuery = `
@@ -729,7 +723,7 @@ app.post('/api/account/update-fname', [
       SET Acc_Fname = ? 
       WHERE Acc_Pnumber = ?
     `;
-    const [accountUpdateResult] = await db.query(updateAccountFnameQuery, [sanitizeInput(newFname), signedAcc]);
+    const [accountUpdateResult] = await db.query(updateAccountFnameQuery, [sanitizeInput(newFname), req.session.user.phone]);
 
     if (accountUpdateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'No account found or first name is unchanged.' });
@@ -741,23 +735,11 @@ app.post('/api/account/update-fname', [
       SET Fname = ? 
       WHERE Pnum = ? AND Fname <> ?
     `;
-    const [deviceUpdateResult] = await db.query(updateDeviceFnameQuery, [sanitizeInput(newFname), signedAcc, sanitizeInput(newFname)]);
-
-    if (deviceUpdateResult.affectedRows > 0) {
-      console.log('Device info updated successfully.');
-    }
-
-    // Select account logged in
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
-    
-    if (rows.length === 0) {
-      return res.status(404).send({ error: 'Account not found.' });
-    }
+    await db.query(updateDeviceFnameQuery, [sanitizeInput(newFname), req.session.user.phone, sanitizeInput(newFname)]);
 
     // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE FIRST NAME")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
 
     res.send({ message: 'First name updated successfully.' });
   } catch (err) {
@@ -774,38 +756,35 @@ app.post('/api/account/update-lname', [
     return res.status(400).json({ errors: errors.array() });
   }
 
+  if (!req.session.user) {
+    return res.status(401).send({ error: 'Unauthorized' });
+  }
+
   try {
     const { newLname } = req.body;
 
     const updateLnameQuery = `
-          UPDATE account 
-          SET Acc_Lname = ? 
-          WHERE Acc_Pnumber = ?
-      `;
-    const [updateResult] = await db.query(updateLnameQuery, [sanitizeInput(newLname), signedAcc]);
+      UPDATE account 
+      SET Acc_Lname = ? 
+      WHERE Acc_Pnumber = ?
+    `;
+    const [updateResult] = await db.query(updateLnameQuery, [sanitizeInput(newLname), req.session.user.phone]);
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
     }
 
-    // SQL query to update the first name in the device_info table
-    const updateDeviceFnameQuery = `
+    // SQL query to update the last name in the device_info table
+    const updateDeviceLnameQuery = `
       UPDATE device_info 
       SET Lname = ? 
       WHERE Pnum = ? AND Lname <> ?
     `;
-    const [deviceUpdateResult] = await db.query(updateDeviceFnameQuery, [sanitizeInput(newLname), signedAcc, sanitizeInput(newLname)]);
+    await db.query(updateDeviceLnameQuery, [sanitizeInput(newLname), req.session.user.phone, sanitizeInput(newLname)]);
 
-    if (deviceUpdateResult.affectedRows > 0) {
-      console.log('Device info updated successfully.');
-    }
-
-    // select account logged in
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
     // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE LAST NAME")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
 
     res.send({ message: 'Last name updated successfully.' });
   } catch (err) {
@@ -813,10 +792,6 @@ app.post('/api/account/update-lname', [
     res.status(500).send({ error: 'Error updating last name.' });
   }
 });
-// Function to sanitize input
-function sanitizeInput(input) {
-  return input.replace(/[^\w\s]/gi, ''); // Remove non-alphanumeric characters (except spaces)
-}
 // API to update the phone number
 app.post('/api/account/update-phone', [
   body('newPnumber').isMobilePhone().escape().trim()
@@ -826,11 +801,15 @@ app.post('/api/account/update-phone', [
     return res.status(400).json({ errors: errors.array() });
   }
 
+  if (!req.session.user) {
+    return res.status(401).send({ error: 'Unauthorized' });
+  }
+
   try {
     const { newPnumber } = req.body;
 
     const checkPhoneNumberQuery = `
-        SELECT * FROM account WHERE Acc_Pnumber = ?
+      SELECT * FROM account WHERE Acc_Pnumber = ?
     `;
     const [phoneResults] = await db.query(checkPhoneNumberQuery, [newPnumber]);
 
@@ -839,11 +818,11 @@ app.post('/api/account/update-phone', [
     }
 
     const updatePhoneQuery = `
-        UPDATE account 
-        SET Acc_Pnumber = ? 
-        WHERE Acc_Pnumber = ?
+      UPDATE account 
+      SET Acc_Pnumber = ? 
+      WHERE Acc_Pnumber = ?
     `;
-    const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), signedAcc]);
+    const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
@@ -851,33 +830,33 @@ app.post('/api/account/update-phone', [
 
     // Update the phone number in related tables
     const updateArchiveQuery = `
-        UPDATE archive 
-        SET Pnum = ? 
-        WHERE Pnum = ?
+      UPDATE archive 
+      SET Pnum = ? 
+      WHERE Pnum = ?
     `;
-    await db.query(updateArchiveQuery, [sanitizeInput(newPnumber), sanitizeInput(signedAcc)]);
+    await db.query(updateArchiveQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
 
     const updateDeviceInfoQuery = `
-        UPDATE device_info 
-        SET Pnum = ? 
-        WHERE Pnum = ?
+      UPDATE device_info 
+      SET Pnum = ? 
+      WHERE Pnum = ?
     `;
-    await db.query(updateDeviceInfoQuery, [sanitizeInput(newPnumber), sanitizeInput(signedAcc)]);
+    await db.query(updateDeviceInfoQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
 
     const updateDisplayBedQuery = `
-        UPDATE display_bed 
-        SET Pnum = ? 
-        WHERE Pnum = ?
+      UPDATE display_bed 
+      SET Pnum = ? 
+      WHERE Pnum = ?
     `;
-    await db.query(updateDisplayBedQuery, [sanitizeInput(newPnumber), sanitizeInput(signedAcc)]);
+    await db.query(updateDisplayBedQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
 
-    // Update the signedAcc variable
-    const [select] = await db.query("SELECT * FROM account WHERE Acc_Pnumber = ?", [sanitizeInput(newPnumber)]);
-    signedAcc = select[0].Acc_Pnumber;
-    console.log(`Number: ${signedAcc}`);
+    // Update the session phone
+    req.session.user.phone = newPnumber;
+
     // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE PHONE NUMBER")';
-    await db.query(activityQuery, [select[0].Acc_Fname, select[0].Acc_Lname, select[0].Acc_Pnumber]);
+    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, newPnumber]);
+
     res.send({ message: 'Phone number updated successfully.' });
   } catch (err) {
     console.error('Error updating phone number:', err);
@@ -886,17 +865,20 @@ app.post('/api/account/update-phone', [
 });
 // API to update password
 app.post('/api/account/update-password', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send({ error: 'Unauthorized' });
+  }
+
   const { newPassword } = req.body;
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   try {
     const query = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
-    await db.query(query, [hashedPassword, signedAcc]); // Assuming signedAcc is the authenticated user's phone number
-    // select account logged in
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
+    await db.query(query, [hashedPassword, req.session.user.phone]);
+
     // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE PASSWORD")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+
     res.json({ message: 'Password updated successfully' });
   } catch (err) {
     console.error('Error updating password:', err);
@@ -908,7 +890,6 @@ app.post('/api/account/forgot-password', async (req, res) => {
   const { phone, newPassword } = req.body;
 
   try {
-    // Check if the account exists
     const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
     const [rows] = await db.query(accountCheckQuery, [phone]);
 
@@ -916,67 +897,49 @@ app.post('/api/account/forgot-password', async (req, res) => {
       return res.status(404).json({ success: false, error: 'No account found with the provided phone number.' });
     }
 
-    // If account exists, proceed to update the password
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
     const updatePasswordQuery = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
     await db.query(updatePasswordQuery, [hashedPassword, phone]);
 
-    // Insert the activity into the activities table
     const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "FORGOT PASSWORD")';
     await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
 
-    return res.json({ success: true, message: 'Password updated successfully' });
+    res.json({ success: true, message: 'Password updated successfully' });
   } catch (err) {
     console.error('Error updating password:', err);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
-// API recover from archive
+// Updated /api/recover endpoint
 app.post('/api/recover', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const { id, varHost, varIp, date } = req.body;
+
+  if (!id || !varHost || !varIp || !date) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   try {
-    console.log("Request body:", req.body);
-    const { id, varHost, varIp, date } = req.body;
-
-    if (!id || !varHost || !varIp || !date) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const dateParts = date.split('-');
-    if (dateParts.length !== 3) {
-      return res.status(400).json({ error: 'Invalid date format. Use MM-DD-YYYY.' });
-    }
-
-    const formattedDate = `${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
-      return res.status(400).json({ error: 'Invalid date format. Use MM-DD-YYYY.' });
-    }
-
-    const [checkResult] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [varHost, varIp, signedAcc]);
+    const [checkResult] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [varHost, varIp, req.session.user.phone]);
 
     if (checkResult.length === 0) {
-      const [archivedResult] = await db.query("SELECT * FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?", [id, varHost, varIp, formattedDate]);
+      const [archivedResult] = await db.query("SELECT * FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ?", [id, varHost, varIp]);
 
       if (archivedResult.length === 1) {
         const resultData = archivedResult[0];
         const lday = resultData.Last_Day;
-        let status;
-        if (lday >= 60) {
-          status = "HARVEST";
-        } else {
-          status = "ONGOING";
-        }
+        const status = lday >= 60 ? "HARVEST" : "ONGOING";
 
-        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date, status, signedAcc]);
+        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date, status, req.session.user.phone]);
 
-        const [deleteResult] = await db.query("DELETE FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ? AND Date_Archived = ?", [id, varHost, varIp, formattedDate]);
+        const [deleteResult] = await db.query("DELETE FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ?", [id, varHost, varIp]);
 
         if (deleteResult.affectedRows > 0) {
-          // select account logged in
-          const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-          const [rows] = await db.query(accountCheckQuery, [signedAcc]);
           // Insert the activity into the activities table
           const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "RECOVER HYDRO FRAME")';
-          await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+          await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
           res.status(200).json({ message: 'Record recovered and inserted successfully' });
         } else {
           res.status(404).json({ error: 'Record not found for deletion' });
@@ -1010,7 +973,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
       // SQL query to select Last_Day from the database
       const [rows] = await connection.query(
         'SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?',
-        [Var_Host, Var_Ip, signedAcc]
+        [Var_Host, Var_Ip, req.session.user.phone]
       );
 
       if (rows.length > 0) {
@@ -1196,6 +1159,60 @@ app.post('/api/insert_data', async (req, res) => {
     res.status(500).send('Error inserting data');
   }
 });
+// Middleware to check if user is logged in
+const checkUserSession = (req, res, next) => {
+  if (req.session.user) {
+    next(); // Proceed to the next middleware or route handler if the user is logged in
+  } else {
+    res.redirect('/'); // Redirect to the landing page if not logged in as a user
+  }
+};
+// API endpoint to check the session status
+app.get('/api/check-session', (req, res) => {
+  if (req.session.user || req.session.admin) {
+    // If the user or admin session exists, the user is authenticated
+    res.json({ isAuthenticated: true });
+  } else {
+    // If no session, the user is not authenticated
+    res.json({ isAuthenticated: false });
+  }
+});
+
+
+/*------------------------------------------------- ADMIN ------------------------------------------- */
+
+// Admin Login
+app.post('/admin-login', async (req, res) => {
+  const { user, password } = req.body;
+  try {
+    // Query the database to verify the admin's email and password
+    const [rows] = await db.execute(
+      'SELECT * FROM admin WHERE Username = ? AND Password = ?',
+      [user, password]
+    );
+
+    if (rows.length > 0) {
+      // Set the admin session
+      req.session.admin = { user: rows[0].Username };
+      res.json({ message: 'Login successful' });
+    } else {
+      res.status(401).json({ error: 'Invalid email or password' });
+    }
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'An error occurred while logging in' });
+  }
+});
+// Admin logout
+app.post('/admin-logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to log out' });
+    }
+    res.status(200).json({ message: 'Admin logged out successfully' });
+  });
+});
+
 // Route to get content data from the database
 app.get('/api/Page-Content', async (req, res) => {
   const sql = 'SELECT * FROM pagecontent';
@@ -1271,84 +1288,6 @@ app.post('/api/Save-Image', upload.single('imageUpload'), async (req, res) => {
     res.status(500).json({ error: 'Failed to update image', details: err.message });
   }
 });
-app.post('/api/logout', async (req, res) => {
-  try {
-    // Assuming 'signedAcc' holds the logged-in user's phone number
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
-    const [rows] = await db.query(accountCheckQuery, [signedAcc]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Account not found' });
-    }
-
-    // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED OUT")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
-
-    // Reset signedAcc to log out the user
-    signedAcc = null;
-
-    // Send a success response
-    res.status(200).json({ message: 'Successfully logged out' });
-  } catch (error) {
-    console.error('Error during logout:', error);
-    res.status(500).json({ error: 'Server error while logging out' });
-  }
-});
-
-
-
-/*------------------------------------------------- ADMIN ------------------------------------------- */
-
-// JWT secret key
-const secretKey = 'pablo12';
-const adminEmail = 'admin@gmail.com';
-const adminPassword = 'password123';
-
-// In-memory token blacklist (for simplicity, consider using a database in production)
-let tokenBlacklist = [];
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.post('/admin-login', (req, res) => {
-  const { email, password } = req.body;
-
-  if (email === adminEmail && password === adminPassword) {
-    const token = jwt.sign({ email: adminEmail }, secretKey, { expiresIn: '1h' });
-    res.json({ token });
-  } else {
-    res.status(401).json({ error: 'Invalid email or password' });
-  }
-});
-
-// Logout Route
-app.post('/admin-logout', (req, res) => {
-  const { token } = req.body;
-
-  // Add the token to the blacklist
-  tokenBlacklist.push(token);
-  res.json({ message: 'Logged out successfully' });
-});
-
-// Middleware to check if token is blacklisted
-const checkToken = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1]; // Get token from headers
-
-  if (tokenBlacklist.includes(token)) {
-    return res.status(401).json({ error: 'Token is invalid or expired' });
-  }
-
-  jwt.verify(token, secretKey, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    req.user = decoded;
-    next();
-  });
-};
-
 // PUT route for updating user details
 app.put('/api/admin/update-user/:id', (req, res) => {
   const userId = req.params.id; // Get user ID from request parameters
@@ -1376,14 +1315,13 @@ app.put('/api/admin/update-user/:id', (req, res) => {
       return res.json({ success: true, message: 'User updated successfully' });
   });
 });
-
 // API to get the total Users
 app.get('/api/admin/TotalUser', async (req, res) => {
   try {
     const selectAll = "SELECT * FROM device_info";
 
     // Execute the query
-    const [results] = await db.query(selectAll, [signedAcc]);
+    const [results] = await db.query(selectAll);
 
     // Get the total number of rows
     const totalRows = results.length;
@@ -1451,45 +1389,46 @@ app.get('/api/admin/device-info', async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
-
+// Middleware to check if admin is logged in
+const checkAdminSession = (req, res, next) => {
+  if (req.session.admin) {
+    next(); // Proceed to the next middleware or route handler if the admin is logged in
+  } else {
+    res.redirect('/admin-login'); // Redirect to the landing page if not logged in as an admin
+  }
+};
 // Handle admin-login.html
 app.get("/admin-login", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
 });
-// Handle admin-content1.html
-app.get("/admin-cms", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
-});
-// Handle admin-main.html
-app.get("/admin-main", (req, res) => {
+// Admin-protected routes
+app.get("/admin-main", checkAdminSession, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
 });
-// Handle admin-main.html
-app.get("/admin-user", (req, res) => {
+app.get("/admin-user", checkAdminSession, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "admin-user.html"));
 });
-// Handle index.html
-app.get("/index", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
-});
-// Handle dashboard.html
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "dashboard.html"));
-});
-// Handle settings.html
-app.get("/settings", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "settings.html"));
-});
-// Handle archive.html
-app.get("/archive", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "archive.html"));
+app.get("/admin-cms", checkAdminSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
 });
 // Handle login.html
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "login.html"));
 });
-// Handle tables.html
-app.get("/tables", (req, res) => {
+// User-protected routes
+app.get("/index", checkUserSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+app.get("/dashboard", checkUserSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "dashboard.html"));
+});
+app.get("/settings", checkUserSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "settings.html"));
+});
+app.get("/archive", checkUserSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "archive.html"));
+});
+app.get("/tables", checkUserSession, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "tables.html"));
 });
 // Serve the home page
@@ -1511,7 +1450,12 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+/* ----------------------------------------------------Functions--------------------------------------------------------- */
 
+// Function to sanitize input
+function sanitizeInput(input) {
+  return input.replace(/[^\w\s]/gi, ''); // Remove non-alphanumeric characters (except spaces)
+}
 // Utility function to convert database date to Manila time (GMT+8)
 function convertToManilaTime(dateString) {
   const date = new Date(dateString);
@@ -1522,8 +1466,6 @@ function convertToManilaTime(dateString) {
   // Return only the date part in YYYY-MM-DD format
   return manilaTime.toISOString().split('T')[0];
 }
-
-
 function formatTime(timeInput) {
   // If timeInput is already in HH:MM format, return it as is
   if (typeof timeInput === 'string' && /^[0-2][0-3]:[0-5][0-9]$/.test(timeInput)) {
@@ -1547,8 +1489,6 @@ function formatTime(timeInput) {
 
   return `${hours}:${minutes}`; // Return time in HH:MM format
 }
-
-
 function getManilaTime() {
   const manilaOffset = 8 * 60; // Manila is GMT+8
   const localDate = new Date();

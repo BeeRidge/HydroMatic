@@ -224,7 +224,7 @@
                                     class="block py-1 md:py-3 pl-1 align-middle text-white no-underline hover:text-white border-b-2 border-gray-800 hover:border-green-500">
                                     <span
                                         class="pb-1 md:pb-0 text-xs md:text-base text-gray-400 md:text-gray-200 block md:inline-block">Manage
-                                        Accounts</span>
+                                        User Account</span>
                                 </a>
                             </li>
                         </ul>
@@ -715,39 +715,59 @@
             });
         });
     </script>
-    <!-- log out -->
     <script>
         document.getElementById('logout-button').addEventListener('click', function () {
-            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
-
-            if (token) {
-                fetch('/admin-logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` // Include the token in the request
-                    },
-                    body: JSON.stringify({ token })
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            // Clear the token from local storage
-                            localStorage.removeItem('token');
-                            // Optionally redirect to login page or show a message
-                            window.location.href = '/admin-login'; // Redirect to login page
-                        } else {
-                            alert('Error logging out');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            } else {
-                // If no token, just redirect to login
-                window.location.href = '/admin-login'; // Redirect to login page
-            }
+            // Use the server-side logout endpoint to clear the session
+            fetch('/admin-logout', { // Updated to match the server endpoint
+                method: 'POST',
+                credentials: 'include', // Include credentials to allow sending cookies
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Clear any token from local storage
+                    localStorage.removeItem('token');
+                    // Clear any session-related data from cookies
+                    document.cookie = 'session=; Max-Age=0; path=/';
+                    // Redirect to the login page
+                    window.location.href = '/admin-login';
+                } else {
+                    alert('Error logging out');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
     </script>
+     
+    <script>
+        // Function to check if the admin is already logged in
+        function checkAdminSession() {
+            fetch('/api/check-session', {
+                method: 'GET',
+                credentials: 'include' // Include cookies to check the session
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.isAuthenticated) {
+                    // If the session is not valid, redirect to the admin login page
+                    window.location.href = '/admin-login';
+                }
+                // If authenticated, no redirection needed; the user stays on the current page
+            })
+            .catch(error => {
+                console.error('Error checking session:', error);
+            });
+        }
+    
+        // Check the session on page load
+        document.addEventListener('DOMContentLoaded', checkAdminSession);
+    </script>
+    
+      
 </body>
 
 </html>

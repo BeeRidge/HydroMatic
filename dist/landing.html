@@ -557,7 +557,6 @@
             </form>
         </div>
     </div>
-
     <!-- Video Background Section -->
     <section id="video-background-section" class="relative w-full h-screen flex items-center justify-center">
         <!-- Video Background -->
@@ -576,8 +575,6 @@
             <p id="start"></p>
         </div>
     </section>
-
-
     <!-- Hero Section -->
     <section id="Hero" class="bg-c pt-16 pb-20 px-10 w-full h-auto">
         <div class="container mx-auto flex flex-col md:flex-row items-center">
@@ -778,7 +775,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Fetch page content
@@ -1010,28 +1007,6 @@
             });
         });
     </script>
-    <!-- load heading roulet -->
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const headings = document.querySelectorAll('#headings-container h1');
-            let currentIndex = 0;
-
-            function showNextHeading() {
-                if (currentIndex < headings.length) {
-                    headings[currentIndex].classList.remove('hidden');
-                    headings[currentIndex].classList.add('visible');
-                    headings[currentIndex].style.animation = "bounceIn 1s ease-in-out";
-                    if (currentIndex > 0) {
-                        headings[currentIndex - 1].classList.add('hidden');
-                    }
-                    currentIndex++;
-                    setTimeout(showNextHeading, 1500); // Delay between headings
-                }
-            }
-
-            showNextHeading();
-        });
-    </script> -->
     <!-- Intersection -->
     <script>
         (function (document) {
@@ -1298,7 +1273,29 @@
                 .replace(/\//g, "&#x2F;");
         }
     </script>
+    <!-- prevent user to go back when its not logout -->
+    <script>
+        // Function to check if the user is already logged in
+        function checkSession() {
+            fetch('/api/check-session', {
+                method: 'GET',
+                credentials: 'include' // Include cookies in the request
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isAuthenticated) {
+                        // If the session is valid, redirect to the dashboard
+                        window.location.href = '/dashboard';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking session:', error);
+                });
+        }
 
+        // Call the checkSession function when the page loads
+        document.addEventListener('DOMContentLoaded', checkSession);
+    </script>
 </body>
 
 </html>

@@ -311,7 +311,57 @@
         // Fetch initial data
         fetchNewUserData();
     </script>
+    <script>
+        document.getElementById('logout-button').addEventListener('click', function () {
+            // Use the server-side logout endpoint to clear the session
+            fetch('/admin-logout', { // Updated to match the server endpoint
+                method: 'POST',
+                credentials: 'include', // Include credentials to allow sending cookies
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Clear any token from local storage
+                        localStorage.removeItem('token');
+                        // Clear any session-related data from cookies
+                        document.cookie = 'session=; Max-Age=0; path=/';
+                        // Redirect to the login page
+                        window.location.href = '/admin-login';
+                    } else {
+                        alert('Error logging out');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
 
+    <script>
+        // Function to check if the admin is already logged in
+        function checkAdminSession() {
+            fetch('/api/check-session', {
+                method: 'GET',
+                credentials: 'include' // Include cookies to check the session
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.isAuthenticated) {
+                        // If the session is not valid, redirect to the admin login page
+                        window.location.href = '/admin-login';
+                    }
+                    // If authenticated, no redirection needed; the user stays on the current page
+                })
+                .catch(error => {
+                    console.error('Error checking session:', error);
+                });
+        }
+
+        // Check the session on page load
+        document.addEventListener('DOMContentLoaded', checkAdminSession);
+    </script>
 
 </body>
 

@@ -12,10 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.9/sweetalert2.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
 
@@ -781,189 +779,85 @@
             });
         });
     </script>
-    <!-- Log out button -->
     <script>
-        function isUserAuthenticated() {
-            return !!sessionStorage.getItem('authToken'); // Example check
-        }
-    
-        if (!isUserAuthenticated()) {
-            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-        }
-    
-        async function logoutUser() {
-            try {
-                // Call the Express API to handle logout
-                const response = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-    
-                const result = await response.json();
-    
-                if (response.ok) {
-                    // Clear all items from local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-    
-                    // Show SweetAlert confirmation
-                    await Swal.fire({
-                        title: 'Logged Out',
-                        text: result.message || 'You have been successfully logged out.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-    
-                    // Redirect to login page or home page
-                    window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-                } else {
-                    // Show SweetAlert error message
+        // Function to check if the user is authenticated based on session
+        function checkSessionStatus() {
+            fetch('/api/check-session', {
+                method: 'GET',
+                credentials: 'include' // Ensure cookies are included in the request
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.isAuthenticated) {
+                    // Redirect to the login page if the session is not valid
                     Swal.fire({
-                        title: 'Logout Failed',
-                        text: result.error || 'An error occurred while logging out. Please try again.',
-                        icon: 'error',
+                        title: 'Session Expired',
+                        text: 'Please log in again.',
+                        icon: 'warning',
                         confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = 'http://localhost:3000/';
                     });
                 }
-            } catch (error) {
-                console.error('Error logging out:', error);
-    
-                // Show SweetAlert error message
-                Swal.fire({
-                    title: 'Logout Failed',
-                    text: 'An error occurred while logging out. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    
-        document.getElementById('logout-button').addEventListener('click', logoutUser);
-    
-        // Optional: Prevent navigation back to the protected page
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                // Redirect to the login page if the user tries to go back
-                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-            }
-        });
-    </script>
-    <!-- mobile Log out button -->
-    <script>
-        function isUserAuthenticated() {
-            return !!sessionStorage.getItem('authToken'); // Example check
-        }
-    
-        if (!isUserAuthenticated()) {
-            window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-        }
-    
-        async function logoutUser() {
-            try {
-                // Call the Express API to handle logout
-                const response = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-    
-                const result = await response.json();
-    
-                if (response.ok) {
-                    // Clear all items from local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-    
-                    // Show SweetAlert confirmation
-                    await Swal.fire({
-                        title: 'Logged Out',
-                        text: result.message || 'You have been successfully logged out.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-    
-                    // Redirect to login page or home page
-                    window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-                } else {
-                    // Show SweetAlert error message
-                    Swal.fire({
-                        title: 'Logout Failed',
-                        text: result.error || 'An error occurred while logging out. Please try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            } catch (error) {
-                console.error('Error logging out:', error);
-    
-                // Show SweetAlert error message
-                Swal.fire({
-                    title: 'Logout Failed',
-                    text: 'An error occurred while logging out. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    
-        document.getElementById('mobile-logout').addEventListener('click', logoutUser);
-    
-        // Optional: Prevent navigation back to the protected page
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                // Redirect to the login page if the user tries to go back
-                window.location.href = 'http://localhost:3000/'; // Change this to your desired URL
-            }
-        });
-    </script>
-    <!-- Check logged in user -->
-    <script>
-        // Function to check if there's a logged-in account
-        function checkLoginStatus() {
-            // Check sessionStorage for a logged-in user
-            let sessionUser = sessionStorage.getItem('userPhone');
-
-            // Check localStorage for a logged-in user
-            let localUser = localStorage.getItem('userPhone');
-
-            // If user exists in sessionStorage or localStorage, return the user's info
-            if (sessionUser) {
-                console.log('User is logged in via session storage:', sessionUser);
-                return sessionUser;
-            } else if (localUser) {
-                console.log('User is logged in via local storage:', localUser);
-                return localUser;
-            } else {
-                console.log('No user is logged in.');
-                return null;
-            }
-        }
-
-        // Example usage
-        let loggedInUser = checkLoginStatus();
-        if (loggedInUser) {
-            // User is logged in, proceed with logged-in logic
-            console.log('Logged in as:', loggedInUser);
-        } else {
-            // No user is logged in, show Swal alert and then redirect to login
-            Swal.fire({
-                icon: 'warning',
-                title: 'No user logged in',
-                text: 'You will be redirected to the login page.',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Clear all items from local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    // Redirect to login page after user clicks "OK"
-                    window.location.href = 'http://localhost:3000/';
-                }
+            })
+            .catch(error => {
+                console.error('Error checking session:', error);
+                window.location.href = 'http://localhost:3000/';
             });
         }
+
+        // Call the session check function when the page loads
+        document.addEventListener('DOMContentLoaded', checkSessionStatus);
+
+        // Logout function to destroy the session
+        async function logoutUser() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Clear localStorage and sessionStorage
+                    localStorage.clear();
+                    sessionStorage.clear();
+
+                    // Show a SweetAlert confirmation
+                    await Swal.fire({
+                        title: 'Logged Out',
+                        text: 'You have been successfully logged out.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+
+                    // Redirect to the login page
+                    window.location.href = 'http://localhost:3000/';
+                } else {
+                    Swal.fire({
+                        title: 'Logout Failed',
+                        text: 'An error occurred while logging out. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+                Swal.fire({
+                    title: 'Logout Failed',
+                    text: 'An error occurred while logging out. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        document.getElementById('logout-button').addEventListener('click', logoutUser);
+        document.getElementById('mobile-logout').addEventListener('click', logoutUser);
     </script>
 </body>
 </html>
