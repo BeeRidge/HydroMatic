@@ -143,7 +143,7 @@ app.post("/api/verify-otp", async (req, res) => {
 
 
         // Insert the new user with the hashed password
-        const [insertResults] = await db.query("INSERT INTO account (Acc_Fname, Acc_Lname, Acc_Pnumber, Acc_Password) VALUES (?, ?, ?, ?)", [fname, lname, phone, hashedPassword]);
+        const [insertResults] = await db.query("INSERT INTO account (Acc_Fname, Acc_Lname, Acc_Pnumber, Acc_Password, Date) VALUES (?, ?, ?, ?, CURDATE())", [fname, lname, phone, hashedPassword]);
 
         res.status(200).json({ success: true, message: "Account created successfully!" });
       } else {
