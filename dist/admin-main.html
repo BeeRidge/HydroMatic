@@ -384,9 +384,9 @@
             paginatedActivities.forEach(activity => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${activity.Fname}</td>
-                    <td class="px-6 py-4 text-left">${activity.Lname}</td>
-                    <td class="px-6 py-4 text-left">${activity.Pnum}</td>
+                    <td class="px-6 py-4 text-left">${activity.AccountFirstname}</td>
+                    <td class="px-6 py-4 text-left">${activity.AccountLastname}</td>
+                    <td class="px-6 py-4 text-left">${activity.AccountPhoneNumber}</td>
                     <td class="px-6 py-4 text-left">${activity.Activity}</td>
                     <td class="px-6 py-4 text-left">${new Date(activity.Date).toLocaleDateString()}</td>
                 `;
@@ -427,12 +427,12 @@
             paginatedDevices.forEach(device => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${device.Fname}</td>
-                    <td class="px-6 py-4 text-left">${device.Lname}</td>
-                    <td class="px-6 py-4 text-left">${device.Pnum}</td>
-                    <td class="px-6 py-4 text-left">${device.Var_Host}</td>
-                    <td class="px-6 py-4 text-left">${device.Var_Ip}</td>
-                    <td class="px-6 py-4 text-left">${device.Status}</td>
+                    <td class="px-6 py-4 text-left">${device.OwnerFirstname}</td>
+                    <td class="px-6 py-4 text-left">${device.OwnerLastname}</td>
+                    <td class="px-6 py-4 text-left">${device.OwnerPhoneNumber}</td>
+                    <td class="px-6 py-4 text-left">${device.DeviceHostname}</td>
+                    <td class="px-6 py-4 text-left">${device.DeviceIpAddress}</td>
+                    <td class="px-6 py-4 text-left">${device.DeviceStatus}</td>
                 `;
                 deviceBody.appendChild(row);
             });
@@ -474,9 +474,9 @@
             paginatedUsers.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${user.Acc_Fname}</td>
-                    <td class="px-6 py-4 text-left">${user.Acc_Lname}</td>
-                    <td class="px-6 py-4 text-left">${user.Acc_Pnumber}</td>
+                    <td class="px-6 py-4 text-left">${user.AccountFirstname}</td>
+                    <td class="px-6 py-4 text-left">${user.AccountLastname}</td>
+                    <td class="px-6 py-4 text-left">${user.AccountPhoneNumber}</td>
                     <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
                 `;
                 newUserBody.appendChild(row);

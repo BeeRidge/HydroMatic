@@ -40,7 +40,7 @@ const db = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "lettucegrowth",
+  database: process.env.DB_NAME || "hydromatic",
 });
 // Test the database connection
 const testConnection = async () => {
@@ -134,7 +134,7 @@ app.post("/api/verify-otp", async (req, res) => {
     delete otpStorage[phone]; // Clear OTP after successful verification
 
     try {
-      const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ?', [phone]);
+      const [results] = await db.query('SELECT * FROM account WHERE AccountPhoneNumber = ?', [phone]);
 
       if (results.length === 0) {
         // **Correctly hash the password before storing it**
@@ -143,7 +143,7 @@ app.post("/api/verify-otp", async (req, res) => {
 
 
         // Insert the new user with the hashed password
-        const [insertResults] = await db.query("INSERT INTO account (Acc_Fname, Acc_Lname, Acc_Pnumber, Acc_Password, Date) VALUES (?, ?, ?, ?, CURDATE())", [fname, lname, phone, hashedPassword]);
+        const [insertResults] = await db.query("INSERT INTO account (AccountFirstname, AccountLastname, AccountPhoneNumber, AccountPassword, Date) VALUES (?, ?, ?, ?, CURDATE())", [fname, lname, phone, hashedPassword]);
 
         res.status(200).json({ success: true, message: "Account created successfully!" });
       } else {
@@ -166,29 +166,30 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM account WHERE Acc_Pnumber = ?', [phone]);
+    const [results] = await db.query('SELECT * FROM account WHERE AccountPhoneNumber = ?', [phone]);
 
     if (results.length === 0) {
-      return res.status(401).json({ error: 'Invalid phone number or password' });
+      return res.status(401).json({ error: 'Invalid Phone Number' });
     }
 
-    const hashedPassword = results[0].Acc_Password;
+    const hashedPassword = results[0].AccountPassword;
     const isMatch = await bcrypt.compare(password, hashedPassword);
 
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid phone number or password' });
+      return res.status(401).json({ error: 'Invalid Password' });
     }
 
     // Set the user session
     req.session.user = {
-      phone: results[0].Acc_Pnumber,
-      fname: results[0].Acc_Fname,
-      lname: results[0].Acc_Lname
+      id: results[0].AccountId,
+      phone: results[0].AccountPhoneNumber,
+      fname: results[0].AccountFirstname,
+      lname: results[0].AccountLastname
     };
 
     // Insert login activity
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED IN")';
-    await db.query(activityQuery, [results[0].Acc_Fname, results[0].Acc_Lname, results[0].Acc_Pnumber]);
+    const activityQuery = 'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "LOGGED IN")';
+    await db.query(activityQuery, [results[0].AccountId]);
 
     res.status(200).json({ success: true, message: 'Login successful', user: req.session.user });
   } catch (err) {
@@ -199,23 +200,30 @@ app.post('/api/login', async (req, res) => {
 // User logout
 app.post('/api/logout', async (req, res) => {
   try {
-    // Get user details from the session
-    const { Acc_Fname, Acc_Lname, Acc_Pnumber } = req.session.user || {};
+    // Check if user session exists
+    if (!req.session.user || !req.session.user.id) {
+      return res.status(400).json({ error: 'No active session found' });
+    }
 
-    // Destroy the session
+    const AccountId = req.session.user.id; // Assign AccountId from session data
+
+    // Destroy the session and perform database operations within callback
     req.session.destroy(async (err) => {
       if (err) {
+        console.error('Error destroying session:', err);
         return res.status(500).json({ error: 'Failed to log out' });
       }
 
-      if (Acc_Fname && Acc_Lname && Acc_Pnumber) {
+      // Only proceed with logging if AccountId is valid
+      if (AccountId) {
         // Insert logout activity into the database
-        const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "LOGGED OUT")';
+        const activityQuery = 'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "LOGGED OUT")';
         try {
-          await db.query(activityQuery, [Acc_Fname, Acc_Lname, Acc_Pnumber]);
+          await db.query(activityQuery, [AccountId]);
+          console.log('Logout activity logged successfully');
         } catch (dbErr) {
-          console.error('Error logging activity:', dbErr);
-          // You can choose to respond with an error or continue
+          console.error('Error logging logout activity:', dbErr);
+          return res.status(500).json({ error: 'Failed to log activity' });
         }
       }
 
@@ -244,11 +252,11 @@ app.get('/api/device_info', async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SHOW TABLES LIKE "device_info"');
+    const [results] = await db.query('SHOW TABLES LIKE "deviceinformation"');
     if (results.length === 0) {
-      return res.status(404).json({ error: "Table device_info not found" });
+      return res.status(404).json({ error: "Table deviceinformation not found" });
     }
-    const [data] = await db.query("SELECT * FROM device_info WHERE Pnum = ?", [req.session.user.phone]);
+    const [data] = await db.query("SELECT * FROM deviceinformation WHERE AccountId = ?", [req.session.user.id]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -262,11 +270,11 @@ app.get("/api/display_bed", async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SHOW TABLES LIKE "display_bed"');
+    const [results] = await db.query('SHOW TABLES LIKE "hydroframe"');
     if (results.length === 0) {
-      return res.status(404).json({ error: "Table display_bed not found" });
+      return res.status(404).json({ error: "Table hydroframe not found" });
     }
-    const [data] = await db.query("SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Start_Date ASC", [req.session.user.phone]);
+    const [data] = await db.query("SELECT * FROM hydroframe WHERE AccountId = ? ORDER BY HydroFrameStartDay ASC", [req.session.user.id]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -282,13 +290,13 @@ app.post("/api/display_table", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
 
   if (!Var_Host || !Var_Ip) {
-    return res.status(400).json({ error: "Missing Var_Host or Var_Ip" });
+    return res.status(400).json({ error: "Missing Hostname or Ip Address" });
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, req.session.user.phone]);
+    const [results] = await db.query('SELECT * FROM hydroframe WHERE DeviceHostName = ? AND DeviceIpAddress = ? AND AccountId = ?', [Var_Host, Var_Ip, req.session.user.id]);
     if (results.length === 0) {
-      return res.status(404).json({ error: "No data found for the given Var_Host and Var_Ip" });
+      return res.status(404).json({ error: "No data found for the given Hostname and Ip Address" });
     }
     res.json(results);
   } catch (err) {
@@ -300,13 +308,13 @@ app.post("/api/display_table", async (req, res) => {
 app.post("/api/send-Data", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
   try {
-    const [results] = await db.query("SHOW TABLES LIKE ?", [Var_Host]);
+    const [results] = await db.query("SHOW TABLES LIKE ?", [DeviceHostname]);
     if (results.length === 0) {
       return res.status(404).json({ error: "Table not found" });
     }
 
     // Use ?? for table names
-    const [check] = await db.query("SELECT * FROM ??", [Var_Host]);
+    const [check] = await db.query("SELECT * FROM ??", [DeviceHostname]);
 
     // Convert resultData.Date_Dev to Manila time (GMT+8)
     const currentDate = convertToManilaTime(new Date().toISOString());
@@ -315,7 +323,7 @@ app.post("/api/send-Data", async (req, res) => {
     if (currentDate === resultDateDev) {
       // Fetch the latest record limited to 1
       const [data] = await db.query(
-        "SELECT Var_Temp, Var_WLvl FROM ?? WHERE Var_Ip = ? AND Date_Dev = ? ORDER BY Num_Id DESC LIMIT 1",
+        "SELECT WaterLevel, WaterTemperature FROM ?? WHERE DeviceIpAddress = ? AND Date = ? ORDER BY Id DESC LIMIT 1",
         [Var_Host, Var_Ip, currentDate]
       );
 
@@ -335,13 +343,13 @@ app.post("/api/DataLogs", async (req, res) => {
   console.log("Request body:", { Var_Host, Var_Ip, Start_Date });
 
   try {
-    const [tables] = await db.query("SHOW TABLES LIKE ?", [Var_Host]);
+    const [tables] = await db.query("SHOW TABLES LIKE ?", [DeviceHostname]);
     if (tables.length === 0) {
       return res.status(404).json({ error: "Table not found" });
     }
 
     const [results] = await db.query(
-      "SELECT * FROM ?? WHERE Var_Ip = ? AND Date_Dev >= ? ORDER BY Num_Id DESC",
+      "SELECT * FROM ?? WHERE DeviceIpAddress = ? AND Date >= ? ORDER BY Id DESC",
       [Var_Host, Var_Ip, Start_Date]
     );
 
@@ -368,31 +376,31 @@ app.post('/api/checkDevice', async (req, res) => {
       const { Var_Host, Var_Ip } = device;
 
       // Check if the table for the device exists
-      const [tables] = await db.query("SHOW TABLES LIKE ?", [Var_Host]);
+      const [tables] = await db.query("SHOW TABLES LIKE ?", [DeviceHostname]);
       if (tables.length === 0) {
         // Update the device status to REPAIR if its table doesn't exist
-        await db.query("UPDATE device_info SET Status = 'REPAIR' WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+        await db.query("UPDATE deviceinformation SET Status = 'REPAIR' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
         continue; // Skip to the next device
       }
 
       // Get the latest record from the device-specific table
-      const [deviceData] = await db.query("SELECT * FROM ?? WHERE Var_Ip = ? ORDER BY Date_Dev DESC, Time_Dev DESC LIMIT 1", [Var_Host, Var_Ip]);
+      const [deviceData] = await db.query("SELECT * FROM ?? WHERE DeviceIpAddress = ? ORDER BY Date DESC, Time DESC LIMIT 1", [Var_Host, Var_Ip]);
 
       if (deviceData.length === 0) {
         continue; // Skip this device if no records are found
       }
 
       const currentDate = convertToManilaTime(new Date().toISOString());
-      const latestDeviceDate = convertToManilaTime(deviceData[0].Date_Dev);
-      const latestDeviceTime = formatTime(deviceData[0].Time_Dev); // Format to HH:MM
+      const latestDeviceDate = convertToManilaTime(deviceData[0].Date);
+      const latestDeviceTime = formatTime(deviceData[0].Time); // Format to HH:MM
       const currentTime = getManilaTime(); // Format to HH:MM
 
       // Compare the date and time
       if (latestDeviceDate !== currentDate || latestDeviceTime !== currentTime) {
         // If date/time mismatch, update the device_info status to INACTIVE
-        await db.query("UPDATE device_info SET Status = 'INACTIVE' WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+        await db.query("UPDATE deviceinformation SET Status = 'INACTIVE' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
       } else {
-        await db.query("UPDATE device_info SET Status = 'ACTIVE' WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+        await db.query("UPDATE deviceinformation SET Status = 'ACTIVE' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
       }
     }
 
@@ -417,10 +425,10 @@ app.post("/api/add-bed-database", async (req, res) => {
   }
 
   try {
-    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ?", [Var_Host, Var_Ip]);
+    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
 
     if (results.length > 0) {
-      return res.status(409).json({ error: "Device with the same hostname or IP already exists" });
+      return res.status(409).json({ error: "Device with the same Hostname or IP Address already exists" });
     }
 
     const startDate = new Date(Start_Date);
@@ -429,12 +437,12 @@ app.post("/api/add-bed-database", async (req, res) => {
     const Harvest_Date = harvestDate.toISOString().split("T")[0];
 
     await db.query(
-      `INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, "ONGOING", ?)`,
-      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, req.session.user.phone]
+      `INSERT INTO hydroframe (DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameLastDay, HydroFrameStartDate, HydroFrameHarvestDate, HydroFrameStatus, AccountId) VALUES (?, ?, ?, ?, ?, ?, "ONGOING", ?)`,
+      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, req.session.user.id]
     );
 
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "ADD HYDRO FRAME")';
-    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+    const activityQuery = 'INSERT INTO useractivity ( AccountId, Activity) VALUES ( ?, "ADD HYDRO FRAME")';
+    await db.query(activityQuery, [req.session.user.id]);
 
     res.status(200).json({ message: "Bed inserted successfully!" });
   } catch (err) {
@@ -455,7 +463,7 @@ app.post("/api/delete-device", async (req, res) => {
 
   try {
     // SQL query to select the record to be deleted
-    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Pnum = ?", [Var_Host, req.session.user.phone]);
+    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND AccountId = ?", [Var_Host, req.session.user.id]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found." });
@@ -465,7 +473,7 @@ app.post("/api/delete-device", async (req, res) => {
     const { Var_Host: name, Var_Ip: ip, Start_Day: sDay, Last_Day: lDay, Start_Date: sDate, Harvest_Date: hDate } = results[0];
 
     // SQL query to delete the record
-    const [deleteResult] = await db.query("DELETE FROM display_bed WHERE Var_Host = ? AND Pnum = ?", [Var_Host, req.session.user.phone]);
+    const [deleteResult] = await db.query("DELETE FROM hydroframe WHERE DeviceHostname = ? AND AccountId = ?", [Var_Host, req.session.user.id]);
 
     if (deleteResult.affectedRows === 0) {
       return res.status(404).json({ message: "Bed not found." });
@@ -476,14 +484,14 @@ app.post("/api/delete-device", async (req, res) => {
 
     // Insert into archived
     await db.query(
-      `INSERT INTO archived (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Date_Archived, Status, Pnum) 
+      `INSERT INTO archive (DeviceHostname, DeviceIpAddress, ArchiveStartDay, ArchiveLastDay, ArchiveStartDate, ArchiveHarvestDate, ArchiveDate, ArchiveStatus, AccountId) 
       VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?, ?)`,
-      [name, ip, sDay, lDay, sDate, hDate, stat, req.session.user.phone]
+      [name, ip, sDay, lDay, sDate, hDate, stat, req.session.user.id]
     );
 
     // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "REMOVE HYDRO FRAME")';
-    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+    const activityQuery = 'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "REMOVE HYDRO FRAME")';
+    await db.query(activityQuery, [req.session.user.id]);
 
     res.status(200).json({ message: "Bed successfully deleted." });
   } catch (err) {
@@ -500,7 +508,7 @@ app.post("/api/update-last-day", async (req, res) => {
 
   try {
     // SQL query to select Last_Day from the database
-    const [results] = await db.query('SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?', [Var_Host, Var_Ip, req.session.user.phone]);
+    const [results] = await db.query('SELECT HydroFrameLastDay FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?', [Var_Host, Var_Ip, req.session.user.id]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found" });
@@ -512,9 +520,9 @@ app.post("/api/update-last-day", async (req, res) => {
       // SQL query to update the Last_Day and Update_Date using DATEDIFF
       await db.query(
         `UPDATE display_bed
-        SET Last_Day = DATEDIFF(?, ?) + ? - 1, Update_Date = ?
-        WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?`,
-        [currentDate, Start_Date, Start_Day, currentDate, Var_Host, Var_Ip, req.session.user.phone]
+        SET HydroFrameLastDay = DATEDIFF(?, ?) + ? - 1, HydroFrameUpdateDate = ?
+        WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?`,
+        [currentDate, Start_Date, Start_Day, currentDate, Var_Host, Var_Ip, req.session.user.id]
       );
 
       res.status(200).json({ message: "Update successful" });
@@ -535,7 +543,7 @@ app.post("/api/dates", async (req, res) => {
   const { Var_Host, Var_Ip } = req.body;
 
   try {
-    const [results] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [Var_Host, Var_Ip, req.session.user.phone]);
+    const [results] = await db.query("SELECT * FROM deviceinformation WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?", [Var_Host, Var_Ip, req.session.user.id]);
     res.json(results);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -569,21 +577,21 @@ app.post('/api/notify-harvest', async (req, res) => {
 
   try {
     const query = `
-      SELECT * FROM display_bed 
-      WHERE Last_Day >= 60 AND Last_Day <= 70 
-        AND (Last_SMS_Date IS NULL OR Last_SMS_Date < CURDATE()) AND Pnum = ?
+      SELECT * FROM hydroframe 
+      WHERE HydroFrameLastDay >= 60 AND HydroFrameLastDay <= 70 
+      AND (HydroFrameLastSMSDate IS NULL OR HydroFrameLastSMSDate < CURDATE()) AND AccountId = ?
     `;
 
-    const [crops] = await db.query(query, [req.session.user.phone]);
+    const [crops] = await db.query(query, [req.session.user.id]);
 
     if (crops.length === 0) {
       return res.status(200).json({ message: 'No crops ready for harvest within the specified range or it already sent an SMS notification' });
     }
 
     for (const crop of crops) {
-      const cropName = crop.Var_Host;
-      const lastDay = crop.Last_Day;
-      const harvestDate = new Date(crop.Harvest_Date);
+      const cropName = crop.DeviceHostname;
+      const lastDay = crop.HydroFrameLastDay;
+      const harvestDate = new Date(crop.HydroFrameHarvestDate);
       const formattedHarvestDate = harvestDate.toDateString();
 
       const message = `Dear Farmer, your crop from "${cropName}" is ready to harvest. It has been growing for ${lastDay} days. Please harvest the crops until ${formattedHarvestDate}.`;
@@ -595,8 +603,8 @@ app.post('/api/notify-harvest', async (req, res) => {
         sendername: "HydroMatic",
       });
 
-      const updateQuery = 'UPDATE display_bed SET Last_SMS_Date = CURDATE(), Status = "HARVEST" WHERE Var_Host = ? AND Var_Ip = ?';
-      await db.query(updateQuery, [crop.Var_Host, crop.Var_Ip]);
+      const updateQuery = 'UPDATE deviceinformation SET HydroFrameLastSMSDate = CURDATE(), Status = "HARVEST" WHERE DeviceHostname = ? AND DeviceIpAddress = ?';
+      await db.query(updateQuery, [crop.DeviceHostname, crop.DeviceIpAddress]);
     }
 
     res.status(200).json({ message: 'SMS notifications sent successfully' });
@@ -611,8 +619,8 @@ app.get('/api/archived', async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
-    const selectArchived = "SELECT * FROM archived WHERE Pnum = ? ORDER BY Archive_Id DESC";
-    const [results] = await db.query(selectArchived, [req.session.user.phone]);
+    const selectArchived = "SELECT * FROM archive WHERE AccountId = ? ORDER BY ArchiveId DESC";
+    const [results] = await db.query(selectArchived, [req.session.user.id]);
     res.json(results); // Send the results as JSON
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
@@ -625,8 +633,8 @@ app.get('/api/Dashboard-Data', async (req, res) => {
   }
 
   try {
-    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? ORDER BY Var_Host ASC";
-    const [results] = await db.query(selectAll, [req.session.user.phone]);
+    const selectAll = "SELECT * FROM hydroframe WHERE AccountId = ? ORDER BY DeviceHostname ASC";
+    const [results] = await db.query(selectAll, [req.session.user.id]);
     res.json(results);
   } catch (err) {
     res.status(500).send({ error: 'Database query error' });
@@ -639,8 +647,8 @@ app.get('/api/TotalBed', async (req, res) => {
   }
 
   try {
-    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ?";
-    const [results] = await db.query(selectAll, [req.session.user.phone]);
+    const selectAll = "SELECT * FROM hydroframe WHERE AccountId = ?";
+    const [results] = await db.query(selectAll, [req.session.user.id]);
     const totalRows = results.length;
     res.json({ total: totalRows });
   } catch (err) {
@@ -655,8 +663,8 @@ app.get('/api/TotalHarvest', async (req, res) => {
   }
 
   try {
-    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? AND Status = 'HARVEST'";
-    const [results] = await db.query(selectAll, [req.session.user.phone]);
+    const selectAll = "SELECT * FROM hydroframe WHERE AccountId = ? AND HydroFrameStatus = 'HARVEST'";
+    const [results] = await db.query(selectAll, [req.session.user.id]);
     const totalRows = results.length;
     res.json({ total: totalRows });
   } catch (err) {
@@ -671,8 +679,8 @@ app.get('/api/TotalOngoing', async (req, res) => {
   }
 
   try {
-    const selectAll = "SELECT * FROM display_bed WHERE Pnum = ? AND Status = 'ONGOING'";
-    const [results] = await db.query(selectAll, [req.session.user.phone]);
+    const selectAll = "SELECT * FROM hydroframe WHERE AccountId = ? AND HydroFrameStatus = 'ONGOING'";
+    const [results] = await db.query(selectAll, [req.session.user.id]);
     const totalRows = results.length;
     res.json({ total: totalRows });
   } catch (err) {
@@ -687,8 +695,8 @@ app.get('/api/account-details', async (req, res) => {
   }
 
   try {
-    const query = `SELECT Acc_Fname as fname, Acc_Lname as lname, Acc_Pnumber as phone FROM account WHERE Acc_Pnumber = ? LIMIT 1`;
-    const [rows] = await db.query(query, [req.session.user.phone]);
+    const query = `SELECT AccountFirstname as fname, AccountLastname as lname, AccountPhoneNumber as phone FROM account WHERE AccountId = ? LIMIT 1`;
+    const [rows] = await db.query(query, [req.session.user.id]);
 
     if (rows.length > 0) {
       res.json(rows[0]);
@@ -719,10 +727,10 @@ app.post('/api/account/update-fname', [
     // SQL query to update the first name in the account table
     const updateAccountFnameQuery = `
       UPDATE account 
-      SET Acc_Fname = ? 
-      WHERE Acc_Pnumber = ?
+      SET AccountFirstname = ? 
+      WHERE AccountId = ?
     `;
-    const [accountUpdateResult] = await db.query(updateAccountFnameQuery, [sanitizeInput(newFname), req.session.user.phone]);
+    const [accountUpdateResult] = await db.query(updateAccountFnameQuery, [sanitizeInput(newFname), req.session.user.id]);
 
     if (accountUpdateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'No account found or first name is unchanged.' });
@@ -730,15 +738,15 @@ app.post('/api/account/update-fname', [
 
     // SQL query to update the first name in the device_info table
     const updateDeviceFnameQuery = `
-      UPDATE device_info 
-      SET Fname = ? 
-      WHERE Pnum = ? AND Fname <> ?
+      UPDATE deviceinformation 
+      SET OwnerFirstname = ? 
+      WHERE OwnerPhoneNumber = ? AND OwnerFirstname <> ?
     `;
     await db.query(updateDeviceFnameQuery, [sanitizeInput(newFname), req.session.user.phone, sanitizeInput(newFname)]);
 
     // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE FIRST NAME")';
-    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+    const activityQuery = 'INSERT INTO useractivity (ArivityId Activity) VALUES (?, "UPDATE FIRST NAME")';
+    await db.query(activityQuery, [req.session.user.id]);
 
     res.send({ message: 'First name updated successfully.' });
   } catch (err) {
@@ -764,10 +772,10 @@ app.post('/api/account/update-lname', [
 
     const updateLnameQuery = `
       UPDATE account 
-      SET Acc_Lname = ? 
-      WHERE Acc_Pnumber = ?
+      SET AccountLastname = ? 
+      WHERE AccountId = ?
     `;
-    const [updateResult] = await db.query(updateLnameQuery, [sanitizeInput(newLname), req.session.user.phone]);
+    const [updateResult] = await db.query(updateLnameQuery, [sanitizeInput(newLname), req.session.user.id]);
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
@@ -775,15 +783,15 @@ app.post('/api/account/update-lname', [
 
     // SQL query to update the last name in the device_info table
     const updateDeviceLnameQuery = `
-      UPDATE device_info 
-      SET Lname = ? 
-      WHERE Pnum = ? AND Lname <> ?
+      UPDATE deviceinformation 
+      SET OwnerLastname = ? 
+      WHERE OwnerPhoneNumber = ? AND OwnerLastname <> ?
     `;
     await db.query(updateDeviceLnameQuery, [sanitizeInput(newLname), req.session.user.phone, sanitizeInput(newLname)]);
 
     // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE LAST NAME")';
-    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+    const activityQuery = 'INSERT INTO useractivity (ActivityId, Activity) VALUES (?, "UPDATE LAST NAME")';
+    await db.query(activityQuery, [req.session.user.id]);
 
     res.send({ message: 'Last name updated successfully.' });
   } catch (err) {
@@ -808,7 +816,7 @@ app.post('/api/account/update-phone', [
     const { newPnumber } = req.body;
 
     const checkPhoneNumberQuery = `
-      SELECT * FROM account WHERE Acc_Pnumber = ?
+      SELECT * FROM account WHERE AccountPhoneNumber = ?
     `;
     const [phoneResults] = await db.query(checkPhoneNumberQuery, [newPnumber]);
 
@@ -818,43 +826,28 @@ app.post('/api/account/update-phone', [
 
     const updatePhoneQuery = `
       UPDATE account 
-      SET Acc_Pnumber = ? 
-      WHERE Acc_Pnumber = ?
+      SET AccountPhoneNumber = ? 
+      WHERE AccountId = ?
     `;
-    const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
+    const [updateResult] = await db.query(updatePhoneQuery, [sanitizeInput(newPnumber), req.session.user.id]);
 
     if (updateResult.affectedRows === 0) {
       return res.status(404).send({ error: 'Old account information is incorrect.' });
     }
 
-    // Update the phone number in related tables
-    const updateArchiveQuery = `
-      UPDATE archive 
-      SET Pnum = ? 
-      WHERE Pnum = ?
-    `;
-    await db.query(updateArchiveQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
-
     const updateDeviceInfoQuery = `
-      UPDATE device_info 
-      SET Pnum = ? 
-      WHERE Pnum = ?
+      UPDATE deviceinformation 
+      SET OwnerPhoneNumber = ? 
+      WHERE OwnerPhoneNumber = ?
     `;
     await db.query(updateDeviceInfoQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
-
-    const updateDisplayBedQuery = `
-      UPDATE display_bed 
-      SET Pnum = ? 
-      WHERE Pnum = ?
-    `;
-    await db.query(updateDisplayBedQuery, [sanitizeInput(newPnumber), req.session.user.phone]);
 
     // Update the session phone
     req.session.user.phone = newPnumber;
 
     // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE PHONE NUMBER")';
-    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, newPnumber]);
+    const activityQuery = 'INSERT INTO useractivity (ActivityId Activity) VALUES (?, "UPDATE PHONE NUMBER")';
+    await db.query(activityQuery, [req.session.user.id]);
 
     res.send({ message: 'Phone number updated successfully.' });
   } catch (err) {
@@ -871,12 +864,12 @@ app.post('/api/account/update-password', async (req, res) => {
   const { newPassword } = req.body;
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   try {
-    const query = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
-    await db.query(query, [hashedPassword, req.session.user.phone]);
+    const query = 'UPDATE account SET AccountPassword = ? WHERE AccountId = ?';
+    await db.query(query, [hashedPassword, req.session.user.id]);
 
     // Insert the activity into the activities table
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "UPDATE PASSWORD")';
-    await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+    const activityQuery = 'INSERT INTO useractivity (ActivityId Activity) VALUES (?, "UPDATE PASSWORD")';
+    await db.query(activityQuery, [req.session.user.id]);
 
     res.json({ message: 'Password updated successfully' });
   } catch (err) {
@@ -889,7 +882,7 @@ app.post('/api/account/forgot-password', async (req, res) => {
   const { phone, newPassword } = req.body;
 
   try {
-    const accountCheckQuery = 'SELECT * FROM account WHERE Acc_Pnumber = ?';
+    const accountCheckQuery = 'SELECT * FROM account WHERE AccountPhoneNumber = ?';
     const [rows] = await db.query(accountCheckQuery, [phone]);
 
     if (rows.length === 0) {
@@ -897,11 +890,11 @@ app.post('/api/account/forgot-password', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-    const updatePasswordQuery = 'UPDATE account SET Acc_Password = ? WHERE Acc_Pnumber = ?';
+    const updatePasswordQuery = 'UPDATE account SET AccountPassword = ? WHERE AccountPhoneNumber = ?';
     await db.query(updatePasswordQuery, [hashedPassword, phone]);
 
-    const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "FORGOT PASSWORD")';
-    await db.query(activityQuery, [rows[0].Acc_Fname, rows[0].Acc_Lname, rows[0].Acc_Pnumber]);
+    const activityQuery = 'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "FORGOT PASSWORD")';
+    await db.query(activityQuery, [rows[0].AccountId]);
 
     res.json({ success: true, message: 'Password updated successfully' });
   } catch (err) {
@@ -921,24 +914,24 @@ app.post('/api/recover', async (req, res) => {
   }
 
   try {
-    const [checkResult] = await db.query("SELECT * FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?", [varHost, varIp, req.session.user.phone]);
+    const [checkResult] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?", [varHost, varIp, req.session.user.id]);
 
     if (checkResult.length === 0) {
-      const [archivedResult] = await db.query("SELECT * FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ?", [id, varHost, varIp]);
+      const [archivedResult] = await db.query("SELECT * FROM archive WHERE AchiveId = ? AND DeviceHostname = ? AND DeviceIpAddress = ?", [id, varHost, varIp]);
 
       if (archivedResult.length === 1) {
         const resultData = archivedResult[0];
-        const lday = resultData.Last_Day;
+        const lday = resultData.ArchiveLastDay;
         const status = lday >= 60 ? "HARVEST" : "ONGOING";
 
-        await db.query("INSERT INTO display_bed (Var_Host, Var_Ip, Start_Day, Last_Day, Start_Date, Harvest_Date, Status, Pnum) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.Var_Host, resultData.Var_Ip, resultData.Start_Day, resultData.Last_Day, resultData.Start_Date, resultData.Harvest_Date, status, req.session.user.phone]);
+        await db.query("INSERT INTO hydroframe (DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameLastDay, HydroFrameStartDate, HydroFrameHarvestDate, HydroFrameStatus, AccountId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.DeviceHostname, resultData.DeviceIpAddress, resultData.HydroFrameStartDay, resultData.HydroFrameLastDay, resultData.HydroFrameStartDate, resultData.HydroFrameHarvestDate, status, req.session.user.id]);
 
-        const [deleteResult] = await db.query("DELETE FROM archived WHERE Archive_Id = ? AND Var_Host = ? AND Var_Ip = ?", [id, varHost, varIp]);
+        const [deleteResult] = await db.query("DELETE FROM archive WHERE ArchiveId = ? AND DeviceHostname = ? AND DeviceIpAddress = ?", [id, varHost, varIp]);
 
         if (deleteResult.affectedRows > 0) {
           // Insert the activity into the activities table
-          const activityQuery = 'INSERT INTO activities (Fname, Lname, Pnum, Activity) VALUES (?, ?, ?, "RECOVER HYDRO FRAME")';
-          await db.query(activityQuery, [req.session.user.fname, req.session.user.lname, req.session.user.phone]);
+          const activityQuery = 'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "RECOVER HYDRO FRAME")';
+          await db.query(activityQuery, [req.session.user.id]);
           res.status(200).json({ message: 'Record recovered and inserted successfully' });
         } else {
           res.status(404).json({ error: 'Record not found for deletion' });
@@ -971,12 +964,12 @@ app.post("/api/notify-anomaly", async (req, res) => {
     try {
       // SQL query to select Last_Day from the database
       const [rows] = await connection.query(
-        'SELECT Last_Day FROM display_bed WHERE Var_Host = ? AND Var_Ip = ? AND Pnum = ?',
-        [Var_Host, Var_Ip, req.session.user.phone]
+        'SELECT HydroFrameLastDay FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?',
+        [Var_Host, Var_Ip, req.session.user.id]
       );
 
       if (rows.length > 0) {
-        const lastDay = rows[0].Last_Day;
+        const lastDay = rows[0].HydroFrameLastDay;
 
         // Check if Last_Day is less than or equal to 60
         if (lastDay < 60) {
@@ -990,7 +983,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
           }
 
           const [results] = await connection.query(
-            'SELECT * FROM ?? WHERE Var_Ip = ? AND Date_Dev >= ? ORDER BY Num_Id DESC',
+            'SELECT * FROM ?? WHERE DeviceIpAddress = ? AND Date >= ? ORDER BY Id DESC',
             [Var_Host, Var_Ip, Start_Date]
           );
 
@@ -998,20 +991,12 @@ app.post("/api/notify-anomaly", async (req, res) => {
             const resultData = results[0];
 
             // Convert resultData.Date_Dev to Manila time (GMT+8)
-            const resultDateDev = convertToManilaTime(resultData.Date_Dev);
-            const resultTimeDev = formatTime(resultData.Time_Dev); // Format to HH:MM
+            const resultDateDev = convertToManilaTime(resultData.Date);
+            const resultTimeDev = formatTime(resultData.Time); // Format to HH:MM
             const currentManilaTime = getManilaTime(); // Format to HH:MM
 
-            console.log('Var_Host:', Var_Host, 'Var_Ip:', Var_Ip, 'Start_Date:', Start_Date, 'phone:', phone);
-            console.log('Current Date:', currentDate);
-            console.log('DateDev Date:', resultDateDev);
-            console.log('Raw Time_Dev:', resultData.Time_Dev);
-            console.log('Formatted TimeDev Date:', resultTimeDev);
-            console.log('Formatted Current Manila Time:', currentManilaTime);
-            console.log('Last Day:', lastDay);
-
-            // Check if Var_Temp is present and dates match
-            if (resultData.Var_Temp !== undefined && (resultData.Var_Temp < 20 || resultData.Var_Temp > 26) && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
+            // Check if WaterTemperature is present and dates match
+            if (resultData.WaterTemperature !== undefined && (resultData.WaterTemperature < 20 || resultData.WaterTemperature > 26) && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
               const cropName = Var_Host;
 
               // Create SMS message for crops experiencing a temperature issue
@@ -1032,8 +1017,8 @@ app.post("/api/notify-anomaly", async (req, res) => {
               });
             }
 
-            // Check if Var_WLvl is present and dates match
-            if (resultData.Var_WLvl !== undefined && resultData.Var_WLvl === 'LOW' && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
+            // Check if WaterLevel is present and dates match
+            if (resultData.Wat !== undefined && resultData.WaterLevel === 'LOW' && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
               const cropName = Var_Host;
 
               // Create SMS message for crops with low water level
@@ -1083,14 +1068,14 @@ app.post('/api/save_device_info', async (req, res) => {
   try {
     // Check if the record exists
     const [result] = await db.query(
-      `SELECT * FROM device_info WHERE Var_Host = ? AND Var_Ip = ?`,
+      `SELECT * FROM deviceinformation WHERE DeviceHostname = ? AND DeviceIpAddress = ?`,
       [hostname, ip_address]
     );
 
     if (result.length === 0) {
       // Insert new record if it does not exist
       await db.query(
-        `INSERT INTO device_info (Var_Host, Var_Ip, Fname, Lname, Pnum, Status) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
+        `INSERT INTO deviceinformation (DeviceHostname, DeviceIpAddress, OwnerFirstname, OwnerLastname, OwnerPhoneNumber, DeviceStatus) VALUES (?, ?, ?, ?, ?, "ACTIVE")`,
         [hostname, ip_address, fname, lname, pnum]
       );
       res.send('New record created successfully.');
@@ -1111,44 +1096,38 @@ app.post('/api/insert_data', async (req, res) => {
   }
 
   try {
-    // Check if the IP address exists in the device_info table and get the Var_Host
     const [deviceInfo] = await db.query(
-      `SELECT Var_Host FROM device_info WHERE Var_Ip = ?`,
+      `SELECT DeviceHostname FROM deviceinformation WHERE DeviceIpAddress = ?`,
       [ip_address]
     );
 
-    let varHost;
+    let DeviceHostname;
 
     if (deviceInfo.length > 0) {
-      // If the IP address is found, use the corresponding Var_Host
-      varHost = deviceInfo[0].Var_Host;
+      DeviceHostname = deviceInfo[0].DeviceHostname;
     } else {
-      // If the IP address is not found, use the hostname from the request
-      varHost = hostname;
+      DeviceHostname = hostname;
     }
 
-    // Check if the table exists for the given varHost
-    const [tableCheck] = await db.query(`SHOW TABLES LIKE ?`, [varHost]);
+    const [tableCheck] = await db.query(`SHOW TABLES LIKE ?`, [DeviceHostname]);
 
     if (tableCheck.length === 0) {
-      // If table does not exist, create it
       await db.query(`
-              CREATE TABLE ${varHost} (
-                  Num_Id INT(255) NOT NULL AUTO_INCREMENT,
-                  Var_Ip VARCHAR(50) NOT NULL,
-                  Var_Temp VARCHAR(50) NOT NULL,
-                  Var_WLvl VARCHAR(50) NOT NULL,
-                  Date_Dev DATE NOT NULL,
-                  Time_Dev TIME NOT NULL,
+              CREATE TABLE ${DeviceHostname} (
+                  Id INT(255) NOT NULL AUTO_INCREMENT,
+                  DeviceIpAddress VARCHAR(50) NOT NULL,
+                  WaterLevel VARCHAR(50) NOT NULL,
+                  WaterTemperature VARCHAR(50) NOT NULL,
+                  Date DATE NOT NULL,
+                  Time TIME NOT NULL,
                   PRIMARY KEY (Num_Id)
               );
           `);
-      console.log(`Table ${varHost} created successfully`);
+      console.log(`Table ${DeviceHostname} created successfully`);
     }
 
-    // Insert the sensor data into the table
     await db.query(
-      `INSERT INTO ${varHost} (Var_Ip, Var_Temp, Var_WLvl, Date_Dev, Time_Dev)
+      `INSERT INTO ${DeviceHostname} (DeviceIpAddress, WaterLevel, WaterTemperatue, Date, Time)
            VALUES (?, ?, ?, CURDATE(), CURTIME())`,
       [ip_address, temperature, water_level]
     );
@@ -1186,7 +1165,7 @@ app.post('/admin-login', async (req, res) => {
   try {
     // Query the database to verify the admin's email and password
     const [rows] = await db.execute(
-      'SELECT * FROM admin WHERE Username = ? AND Password = ?',
+      'SELECT * FROM admin WHERE AdminUsername = ? AND AdminPassword = ?',
       [user, password]
     );
 
@@ -1297,7 +1276,7 @@ app.put('/api/admin/update-user/:id', (req, res) => {
   }
 
   // SQL query to update user details
-  const sql = `UPDATE account SET Acc_Fname = ?, Acc_Lname = ?, Acc_Pnumber = ? WHERE Acc_Pnumber = ?`;
+  const sql = `UPDATE account SET AccountFirstname = ?, AccountLastname = ?, AccountPhoneNumber = ? WHERE AccountId = ?`;
   db.query(sql, [Acc_Fname, Acc_Lname, Acc_Pnumber, userId], (err, result) => {
       if (err) {
           console.error('Error updating user:', err);
@@ -1313,10 +1292,10 @@ app.put('/api/admin/update-user/:id', (req, res) => {
       return res.json({ success: true, message: 'User updated successfully' });
   });
 });
-// API to get the total Users
+// API to get the total user
 app.get('/api/admin/TotalUser', async (req, res) => {
   try {
-    const selectAll = "SELECT * FROM device_info";
+    const selectAll = "SELECT * FROM account";
 
     // Execute the query
     const [results] = await db.query(selectAll);
@@ -1334,7 +1313,7 @@ app.get('/api/admin/TotalUser', async (req, res) => {
 // API to get the total Device
 app.get('/api/admin/TotalDevice', async (req, res) => {
   try {
-    const selectAll = "SELECT * FROM account";
+    const selectAll = "SELECT * FROM deviceinformation";
 
     // Execute the query
     const [results] = await db.query(selectAll);
@@ -1361,11 +1340,22 @@ app.get('/api/admin/new-users', async (req, res) => {
       res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
-// API to display user activities
+// API to display user activities with account details
 app.get('/api/admin/user-activities', async (req, res) => {
   try {
-    // Query to get all user activities from the activities table
-    const activityQuery = 'SELECT * FROM activities ORDER BY Date DESC';
+    // Query to join useractivity with account and get account details
+    const activityQuery = `
+      SELECT 
+        useractivity.Activity, 
+        useractivity.Date, 
+        account.AccountFirstname, 
+        account.AccountLastname, 
+        account.AccountPhoneNumber 
+      FROM useractivity
+      JOIN account ON useractivity.AccountId = account.AccountId
+      ORDER BY useractivity.Date DESC
+    `;
+
     const [rows] = await db.query(activityQuery);
     res.json({ success: true, activities: rows });
   } catch (err) {
@@ -1373,11 +1363,12 @@ app.get('/api/admin/user-activities', async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
+
 // API to see device info
 app.get('/api/admin/device-info', async (req, res) => {
   try {
     // Query to get all devices from the device_info table
-    const deviceQuery = 'SELECT * FROM device_info';
+    const deviceQuery = 'SELECT * FROM deviceinformation';
     const [rows] = await db.query(deviceQuery);
 
     // Send the result back as JSON
@@ -1391,7 +1382,7 @@ app.get('/api/admin/device-info', async (req, res) => {
 app.get('/api/admin/hydro-frames', async (req, res) => {
   try {
     // Query to get all devices from the device_info table
-    const deviceQuery = 'SELECT * FROM display_bed';
+    const deviceQuery = 'SELECT * FROM hydroframe';
     const [rows] = await db.query(deviceQuery);
 
     // Send the result back as JSON
