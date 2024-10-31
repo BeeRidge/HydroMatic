@@ -1251,3 +1251,136 @@
             class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
     </div>
 </div>
+
+
+
+
+<h2 id="deviceTitle" class="text-3xl py-4 font-bold tracking-tight text-center text-gray-200 sm:text-4xl">
+    <span class="text1">HydroMatic</span> Device
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Device in Left -->
+    <div class="text-center md:text-left">
+        <img id="deviceImg" src="/img/wires.jpg" class="mx-auto md:mx-0">
+        <p class="text-gray-400 mt-4">Description: HydroMatic is a smart hydroponics monitoring system
+            tailored for Kratky hydroponic setups, helping farmers optimize water conditions with ease. The
+            system is powered by the ESP8266 microcontroller, which connects to Wi-Fi, enabling remote
+            monitoring for hydroponic system.</p>
+    </div>
+    <!-- Carousel in Right -->
+    <div class="mx-auto max-w-md relative" style="scroll-snap-type: x mandatory;">
+        <!-- Carousel Container -->
+        <div class="carousel-container relative overflow-hidden">
+            <div class="carousel-slide flex transition-transform duration-500" id="carouselSlides">
+                <!-- Carousel Slide 1 -->
+                <div class="carousel-item flex-shrink-0 w-full">
+                    <img class="rounded-t-lg w-full h-auto h-64 object-cover" src="/img/adap.png"
+                        alt="Adapter">
+                    <div class="py-4 px-6 text-center bg-white shadow-lg rounded-b-lg">
+                        <h2 class="text-gray-900 font-bold text-2xl">Adapter</h2>
+                        <p class="text-gray-600 mt-2">This adapter powers the ESP8266 by converting power
+                            fromn an external source, making it compatible with the device's requirements.</p>
+                    </div>
+                </div>
+
+                <!-- Carousel Slide 2 -->
+                <div class="carousel-item flex-shrink-0 w-full">
+                    <img class="rounded-t-lg w-full h-auto h-64 object-cover" src="/img/wifi.png"
+                        alt="WiFi Module">
+                    <div class="py-4 px-6 text-center bg-white shadow-lg rounded-b-lg">
+                        <h2 class="text-gray-900 font-bold text-2xl">WiFi Module</h2>
+                        <p class="text-gray-600 mt-2">The ESP8266 WiFi module is responsible for connecting
+                            the
+                            device to a network, enabling remote access and control over the web.</p>
+                    </div>
+                </div>
+
+                <!-- Carousel Slide 3 -->
+                <div class="carousel-item flex-shrink-0 w-full">
+                    <img class="rounded-t-lg w-full h-auto h-64 object-cover" src="/img/temp.png"
+                        alt="Water Temperature Sensor">
+                    <div class="py-4 px-6 text-center bg-white shadow-lg rounded-b-lg">
+                        <h2 class="text-gray-900 font-bold text-2xl">Water Temperature Sensor</h2>
+                        <p class="text-gray-600 mt-2">This sensor monitors the water temperature, ensuring
+                            it
+                            stays
+                            within the ideal range for system operation.</p>
+                    </div>
+                </div>
+
+                <!-- Carousel Slide 4 -->
+                <div class="carousel-item flex-shrink-0 w-full">
+                    <img class="rounded-t-lg w-full h-auto h-64 object-cover" src="/img/sensor.png"
+                        alt="Air Pump">
+                    <div class="py-4 px-6 text-center bg-white shadow-lg rounded-b-lg">
+                        <h2 class="text-gray-900 font-bold text-2xl">Air Pump</h2>
+                        <p class="text-gray-600 mt-2">The air pump helps oxygenate the water, crucial for
+                            the
+                            health
+                            of plants in hydroponic setups.</p>
+                    </div>
+                </div>
+
+                <!-- Carousel Slide 5 -->
+                <div class="carousel-item flex-shrink-0 w-full">
+                    <img class="rounded-t-lg w-full h-auto h-64 object-cover" src="/img/level.png"
+                        alt="Water Level Sensor">
+                    <div class="py-4 px-6 text-center bg-white shadow-lg rounded-b-lg">
+                        <h2 class="text-gray-900 font-bold text-2xl">Water Level Sensor</h2>
+                        <p class="text-gray-600 mt-2">This sensor tracks water levels, sending alerts for
+                            refills to
+                            maintain optimal water conditions.</p>
+                    </div>
+                </div>
+
+                <!-- Carousel Slide 6 -->
+                <div class="carousel-item flex-shrink-0 w-full">
+                    <img class="rounded-t-lg w-full h-auto h-64 object-cover" src="/img/relay.png"
+                        alt="Relay Module">
+                    <div class="py-4 px-6 text-center bg-white shadow-lg rounded-b-lg">
+                        <h2 class="text-gray-900 font-bold text-2xl">Relay Module</h2>
+                        <p class="text-gray-600 mt-2">The relay module allows the ESP8266 to control
+                            high-power
+                            devices by switching them on and off as needed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <button onclick="prevSlide()"
+                class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white text-gray-700 p-3 rounded-full shadow-md hover:bg-gray-100 hover:shadow-lg focus:outline-none">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <button onclick="nextSlide()"
+                class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white text-gray-700 p-3 rounded-full shadow-md hover:bg-gray-100 hover:shadow-lg focus:outline-none">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Carousel JavaScript -->
+<script>
+    const slides = document.getElementById("carouselSlides");
+    const totalSlides = slides.children.length;
+    let currentSlideIndex = 0;
+
+    function updateSlidePosition() {
+        const slideWidth = slides.children[0].clientWidth;
+        slides.style.transform = `translateX(-${currentSlideIndex * slideWidth}px)`;
+    }
+
+    function nextSlide() {
+        currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+        updateSlidePosition();
+    }
+
+    function prevSlide() {
+        currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+        updateSlidePosition();
+    }
+
+    // Update position on window resize
+    window.addEventListener("resize", updateSlidePosition);
+</script>

@@ -45,8 +45,7 @@
         }
 
         .active-nav-link {
-            background: #86efac;
-            color: #06641b;
+            color: #15cc15;
         }
 
         .nav-item:hover {
@@ -67,7 +66,11 @@
         }
 
         .bg-body {
-            background: #1f272b;
+            background: #2a3338;
+        }
+
+        .bg-body2 {
+            background: #1b2429;
         }
 
         .text1 {
@@ -384,49 +387,26 @@
                 padding-left: 10px;
             }
         }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            background-color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-slide {
+            position: relative;
+            scroll-snap-align: center;
+            min-width: 100%;
+        }
     </style>
 </head>
 
 <body class="font-family-karla">
-    <!-- Sub-header Section -->
-    <div class="sub-header bg-gray-800 text-white py-2 shadow-md hidden lg:block">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-wrap items-center">
-                <div class="w-full lg:w-2/3 sm:w-2/3 mb-2 lg:mb-0">
-                    <div class="left-content">
-                        <p class="text-sm italic">Stay updated with our latest news!</p>
-                    </div>
-                </div>
-                <div class="w-full lg:w-1/3 sm:w-1/3 text-right">
-                    <div class="right-icons">
-                        <ul class="flex justify-end space-x-4">
-                            <li>
-                                <a href="https://www.facebook.com/"
-                                    class="transition-colors duration-300 hover:text-green-500">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="https://www.behance.net/"
-                                    class="transition-colors duration-300 hover:text-green-500">
-                                    <i class="fab fa-behance"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://www.linkedin.com/"
-                                    class="transition-colors duration-300 hover:text-green-500">
-                                    <i class="fab fa-linkedin-in"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Header -->
-    <header class="bg-body py-4 p-6 sticky top-0 z-40">
+    <header class="bg-body2 shadow-lg py-4 p-6 sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <div class="w-16 h-16">
@@ -439,10 +419,12 @@
             </div>
             <!-- Desktop Navigation -->
             <nav id="navbar-menu" class="hidden lg:flex space-x-8">
-                <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
-                <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
-                <a href="#steps" class="nav-link text-white hover:text-green-100">Connect to WiFi</a>
-                <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
+                <a href="#Hero" class="nav-link text-white hover:text-green-100">Sample</a>
+                <a href="#Features" class="nav-link text-white hover:text-green-100">Features</a>
+                <a href="#aboutHydro" class="nav-link text-white hover:text-green-100">HydroMatic</a>
+                <a href="#Steps" class="nav-link text-white hover:text-green-100">Set Up</a>
+                <a href="#aboutUs" class="nav-link text-white hover:text-green-100">About Us</a>
+                <a href="#faq" class="nav-link text-white hover:text-green-100">Faq</a>
                 <button class="nav-link text-white hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
             </nav>
             <!-- Mobile Menu Toggle Button -->
@@ -452,12 +434,13 @@
         </div>
         <!-- Mobile Navigation Menu -->
         <nav id="mobile-menu" class="hidden flex flex-col space-y-4 mt-4">
-            <a href="#features" class="nav-link text-white hover:text-green-100">Features</a>
-            <a href="#device-info" class="nav-link text-white hover:text-green-100">About HydroMatic</a>
-            <a href="#steps" class="nav-link text-white hover:text-green-100">How to</a>
-            <a href="#about-us" class="nav-link text-white hover:text-green-100">About Us</a>
-            <button class="nav-link text-white text-left hover:text-green-100" onclick="openModal()">Log in / Sign
-                up</button>
+            <a href="#Hero" class="nav-link text-white hover:text-green-100">Sample</a>
+            <a href="#Features" class="nav-link text-white hover:text-green-100">Features</a>
+            <a href="#aboutHydro" class="nav-link text-white hover:text-green-100">HydroMatic</a>
+            <a href="#Steps" class="nav-link text-white hover:text-green-100">Set Up</a>
+            <a href="#aboutUs" class="nav-link text-white hover:text-green-100">About Us</a>
+            <a href="#faq" class="nav-link text-white hover:text-green-100">Faq</a>
+            <button class="nav-link text-white hover:text-green-100" onclick="openModal()">Log in / Sign up</button>
         </nav>
     </header>
     <!-- Modal Structure -->
@@ -619,7 +602,7 @@
             </div>
         </div>
     </section>
-    <!-- Device Info -->
+    <!-- HydroMatic -->
     <section id="aboutHydro" class="bg-c py-8">
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-8 gap-y-16 px-4 py-24 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8">
@@ -633,21 +616,42 @@
         </div>
         </div>
     </section>
-    <!-- Steps to Connect the esp8266 to the WiFi -->
-    <section id="Steps" class="bg-body pt-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 id="stepsTitle" class="text-3xl font-bold tracking-tight text-center text-gray-200 sm:text-4xl">
+    <!-- Device -->
+    <section id="Steps" class="bg-body pt-24 pb-16">
+        <div class="mx-auto max-w-7xl text-center">
+            <h2 id="stepsTitle" class="text-3xl pb-8 font-bold tracking-tight text-center text-gray-200 sm:text-4xl">
+                Steps to Set Up and Operate HydroMatic
             </h2>
-            <div class="grid grid-cols-4  gap-2 sm:gap-1 justify-items-center items-center scroll-animation">
-                <img id="stepsImg1" src="" class="h-4/5 rounded-lg bg-gray-100">
-                <img id="stepsImg2" src="" class="h-4/5 rounded-lg bg-gray-100">
-                <img id="stepsImg3" src="" class="h-4/5 rounded-lg bg-gray-100">
-                <img id="stepsImg4" src="" class="h-4/5 rounded-lg bg-gray-100">
+            <div
+                class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-2 justify-items-center items-start scroll-animation">
+                <!-- Step 1 -->
+                <div class="flex flex-col items-center self-start">
+                    <img id="stepsImg1" src="" class="h-4/5 rounded-lg bg-gray-100">
+                    <p id="step1" class="mt-2 text-gray-400"></p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex flex-col items-center self-start">
+                    <img id="stepsImg2" src="" class="h-4/5 rounded-lg bg-gray-100">
+                    <p id="step2" class="mt-2 text-gray-400"></p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex flex-col items-center self-start">
+                    <img id="stepsImg3" src="" class="h-4/5 rounded-lg bg-gray-100">
+                    <p id="step3" class="mt-2 text-gray-400"></p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flex flex-col items-center self-start">
+                    <img id="stepsImg4" src="" class="h-4/5 rounded-lg bg-gray-100">
+                    <p id="step4" class="mt-2 text-gray-400"></p>
+                </div>
             </div>
         </div>
     </section>
     <!-- About Us Section -->
-    <section id="aboutUs" class="bg-gray-100 py-16 ">
+    <section id="aboutUs" class="bg-gray-100 pt-24 pb-16">
         <div class="container mx-auto px-4">
             <!-- About Us Heading -->
             <div class="text-center mb-12">
@@ -673,83 +677,83 @@
         </div>
     </section>
     <!-- FAQ Section -->
-    <section id="faq" class="bg-gray-100 py-16">
+    <section id="faq" class="bg-body pt-24 pb-16">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 id="faqTitle" class="text-5xl font-bold text-gray-800"></h2>
-                <p id="faqDesc" class="text-gray-600 mt-4"></p>
+                <h2 id="faqTitle" class="text-5xl font-bold text-gray-200"></h2>
+                <p id="faqDesc" class="text-gray-300 mt-4"></p>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-4 sm:px-4 md:px-16 lg:px-40">
                 <!-- FAQ Item 1 -->
-                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                <div class="faq-item bg-c p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer1', this)">
-                        <h3 id="faqItem1" class="text-lg font-semibold text-gray-200"></h3>
+                        <h3 id="faqItem1" class="text-lg font-semibold text-gray-700"></h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
                         </button>
                     </div>
-                    <div id="answer1" class="hidden mt-2 text-center text-gray-300">
+                    <div id="answer1" class="hidden mt-2 text-center text-gray-600">
                     </div>
                 </div>
 
                 <!-- FAQ Item 2 -->
-                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                <div class="faq-item bg-c p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer2', this)">
-                        <h3 id="faqItem2" class="text-lg font-semibold text-gray-200"></h3>
+                        <h3 id="faqItem2" class="text-lg font-semibold text-gray-700"></h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
                         </button>
                     </div>
-                    <div id="answer2" class="hidden mt-2 text-center text-gray-300">
+                    <div id="answer2" class="hidden mt-2 text-center text-gray-600">
                     </div>
                 </div>
 
                 <!-- FAQ Item 3 -->
-                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                <div class="faq-item bg-c p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer3', this)">
-                        <h3 id="faqItem3" class="text-lg font-semibold text-gray-200"></h3>
+                        <h3 id="faqItem3" class="text-lg font-semibold text-gray-700"></h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
                         </button>
                     </div>
-                    <div id="answer3" class="hidden mt-2 text-center text-gray-300">
+                    <div id="answer3" class="hidden mt-2 text-center text-gray-600">
                     </div>
                 </div>
 
                 <!-- FAQ Item 4 -->
-                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                <div class="faq-item bg-c p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer4', this)">
-                        <h3 id="faqItem4" class="text-lg font-semibold text-gray-200"></h3>
+                        <h3 id="faqItem4" class="text-lg font-semibold text-gray-700"></h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
                         </button>
                     </div>
-                    <div id="answer4" class="hidden mt-2 text-center text-gray-300">
+                    <div id="answer4" class="hidden mt-2 text-center text-gray-600">
                     </div>
                 </div>
 
                 <!-- FAQ Item 5 -->
-                <div class="faq-item bg-body p-6 rounded-lg shadow-lg cursor-pointer">
+                <div class="faq-item bg-c p-6 rounded-lg shadow-lg cursor-pointer">
                     <div class="flex justify-between items-center" onclick="toggleAnswer('answer5', this)">
-                        <h3 id="faqItem5" class="text-lg font-semibold text-gray-200"></h3>
+                        <h3 id="faqItem5" class="text-lg font-semibold text-gray-700"></h3>
                         <button class="bg-gray-500 text-white py-2 px-3 rounded-full flex items-center">
                             <span class="arrow-icon"><i class="fas fa-chevron-down text-2xl font-bold"></i></span>
                             <!-- Downward Arrow -->
                         </button>
                     </div>
-                    <div id="answer5" class="hidden mt-2 text-center text-gray-300">
+                    <div id="answer5" class="hidden mt-2 text-center text-gray-600">
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <!-- Footer Section -->
-    <footer class="bg-body custom-shadow text-gray-200 py-8">
+    <footer class="bg-body2 custom-shadow text-gray-200 py-8">
         <div class="container mx-auto px-4">
             <!-- Footer Content -->
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -775,7 +779,52 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <!-- Active Nav -->
+    <script>
+        function updateActiveLink() {
+            const sections = document.querySelectorAll("section");
+            const navLinks = document.querySelectorAll(".nav-link");
+
+            // Map sections to their corresponding nav link
+            const sectionMap = {};
+            sections.forEach((section, index) => {
+                const sectionId = section.getAttribute("id");
+                const navLink = document.querySelector(`a[href="#${sectionId}"]`);
+                if (navLink) {
+                    sectionMap[sectionId] = navLink;
+                }
+            });
+
+            // Set up the Intersection Observer
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        const sectionId = entry.target.getAttribute("id");
+
+                        if (entry.isIntersecting) {
+                            // Remove active class from all links
+                            navLinks.forEach((link) => link.classList.remove("active-nav-link"));
+
+                            // Add active class to the current section's link
+                            if (sectionMap[sectionId]) {
+                                sectionMap[sectionId].classList.add("active-nav-link");
+                            }
+                        }
+                    });
+                },
+                {
+                    threshold: 0.5, // Adjust this value to determine when a section is considered "in view"
+                }
+            );
+
+            // Observe each section
+            sections.forEach((section) => observer.observe(section));
+        }
+
+        // Initialize the function
+        updateActiveLink();
+    </script>
+    <!-- Page Content -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Fetch page content
