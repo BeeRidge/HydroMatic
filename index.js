@@ -1120,7 +1120,7 @@ app.post('/api/insert_data', async (req, res) => {
                   WaterTemperature VARCHAR(50) NOT NULL,
                   Date DATE NOT NULL,
                   Time TIME NOT NULL,
-                  PRIMARY KEY (Num_Id)
+                  PRIMARY KEY (Id)
               );
           `);
       console.log(`Table ${DeviceHostname} created successfully`);
