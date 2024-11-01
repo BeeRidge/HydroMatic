@@ -186,8 +186,8 @@
                                 <label for="sortSelect" class="mr-2 text-lg text-header">Filter By:</label>
                                 <select id="sortSelect"
                                     class="px-2 py-1 text-lg border hover:bg-gray-900 hover:text-gray-300 rounded rounded-lg shadow-lg">
-                                    <option value="start_date_asc">Start Date</option>
-                                    <option value="harvest_date_desc">Harvest Date</option>
+                                    <option value="HydroFrameStartDate_asc">Start Date</option>
+                                    <option value="HydroFrameHarvestDate_desc">Harvest Date</option>
                                 </select>
                             </div>
 
@@ -231,38 +231,38 @@
                         title: 'Device Connection',
                         html: `
                             <label>Device Hostname</label><br>
-                            <input type="text" id="Var_Host" class="swal2-input" placeholder="Enter Hostname"><br>
+                            <input type="text" id="DeviceHostname" class="swal2-input" placeholder="Enter Hostname"><br>
                             <label>Device IP Address</label><br>
-                            <input type="text" id="Var_Ip" class="swal2-input" placeholder="Enter IP Address"><br>
+                            <input type="text" id="DeviceIpAddress" class="swal2-input" placeholder="Enter IP Address"><br>
                             <label>How many days ago was lettuce planted?</label><br>
-                            <input type="number" id="Last_Day" class="swal2-input" placeholder="Number of days" min="1" max="365"><br>
+                            <input type="number" id="HydroFrameLastDay" class="swal2-input" placeholder="Number of days" min="1" max="365"><br>
                             <label>Date of Planting</label><br>
-                            <input type="date" id="Start_Date" class="swal2-input" placeholder="Select Date"><br>
+                            <input type="date" id="HydroFrameStartDate" class="swal2-input" placeholder="Select Date"><br>
                             <p>Note!<br> Make sure that the Name and IP are the same as the device Name and IP.</p>
                         `,
                         confirmButtonText: 'Add Device',
                         cancelButtonText: 'Cancel',
                         showCancelButton: true,
                         preConfirm: () => {
-                            const Var_Host = Swal.getPopup().querySelector('#Var_Host').value.trim();
-                            const Var_Ip = Swal.getPopup().querySelector('#Var_Ip').value.trim();
-                            const Last_Day = Swal.getPopup().querySelector('#Last_Day').value.trim();
-                            const Start_Date = Swal.getPopup().querySelector('#Start_Date').value.trim();
+                            const DeviceHostname = Swal.getPopup().querySelector('#DeviceHostname').value.trim();
+                            const DeviceIpAddress = Swal.getPopup().querySelector('#DeviceIpAddress').value.trim();
+                            const HydroFrameLastDay = Swal.getPopup().querySelector('#HydroFrameLastDay').value.trim();
+                            const HydroFrameStartDate = Swal.getPopup().querySelector('#HydroFrameStartDate').value.trim();
 
                             // Input validation on the client side
-                            if (!Var_Host || !/^[a-zA-Z0-9-_]+$/.test(Var_Host)) {
+                            if (!DeviceHostname || !/^[a-zA-Z0-9-_]+$/.test(DeviceHostname)) {
                                 Swal.showValidationMessage('Invalid Hostname. Only letters, numbers, hyphen, and underscore are allowed.');
                                 return false;
                             }
-                            if (!Var_Ip || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(Var_Ip)) {
+                            if (!DeviceIpAddress || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(DeviceIpAddress)) {
                                 Swal.showValidationMessage('Invalid IP Address format.');
                                 return false;
                             }
-                            if (!Last_Day || Last_Day < 1 || Last_Day > 70) {
+                            if (!HydroFrameLastDay || HydroFrameLastDay < 1 || HydroFrameLastDay > 70) {
                                 Swal.showValidationMessage('Invalid number of days. Must be between 1 and 365.');
                                 return false;
                             }
-                            if (!Start_Date) {
+                            if (!HydroFrameStartDate) {
                                 Swal.showValidationMessage('Please enter a valid planting date.');
                                 return false;
                             }
@@ -271,17 +271,17 @@
                             return fetch('/api/display_bed')
                                 .then(response => response.json())
                                 .then(beds => {
-                                    if (isDeviceDuplicate(Var_Host, Var_Ip, beds)) {
+                                    if (isDeviceDuplicate(DeviceHostname, DeviceIpAddress, beds)) {
                                         Swal.showValidationMessage('A device with this hostname or IP address already exists.');
                                         return false;
                                     }
-                                    return { Var_Host, Var_Ip, Last_Day, Start_Date };
+                                    return { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate };
                                 });
                         }
                     })
                         .then((result) => {
                             if (result.isConfirmed) {
-                                const { Var_Host, Var_Ip, Last_Day, Start_Date } = result.value;
+                                const { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate } = result.value;
 
                                 // Ensure the fields match those expected by the server
                                 fetch('/api/add-bed-database', {
@@ -290,10 +290,10 @@
                                         'Content-Type': 'application/json',
                                     },
                                     body: JSON.stringify({
-                                        Var_Host: Var_Host,
-                                        Var_Ip: Var_Ip,
-                                        Last_Day: Last_Day,
-                                        Start_Date: Start_Date
+                                        DeviceHostname: DeviceHostname,
+                                        DeviceIpAddress: DeviceIpAddress,
+                                        HydroFrameLastDay: HydroFrameLastDay,
+                                        HydroFrameStartDate: HydroFrameStartDate
                                     })
                                 })
                                     .then(response => {
@@ -335,18 +335,16 @@
         }
 
         function addBedToUI(deviceInfo, ImageData) {
-            console.log('Adding bed with Start_Date:', deviceInfo.Start_Date); // Debugging line
-
             const bedsContainer = document.getElementById('bedsContainer');
             const newBedDiv = document.createElement('div');
-            const bedId = deviceInfo.Var_Host; // Unique ID for each bed
+            const bedId = deviceInfo.DeviceHostname; // Unique ID for each bed
 
             newBedDiv.className = 'w-full h-3/5 sm:h-3/5 md:h-auto lg:h-auto xl:h-auto bg-gray-300 text-gray-800 hover:bg-gray-800 hover:text-gray-300 border-2 border-gray-800 border-solid rounded-lg shadow-xl p-6 cursor-pointer';
             newBedDiv.innerHTML = `
-                    <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.Var_Host}</h1>
-                    <p class="text-lg">Start Date: ${formatDate(deviceInfo.Start_Date)}</p>
-                    <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.Harvest_Date)}</p>
-                    <img id="possibleImage${deviceInfo.Last_Day}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.Last_Day, ImageData)}" alt="Image for the bed">
+                    <h1 class="text-xl font-bold uppercase text-lg">Name: ${deviceInfo.DeviceHostname}</h1>
+                    <p class="text-lg">Start Date: ${formatDate(deviceInfo.HydroFrameStartDate)}</p>
+                    <p class="text-lg">Harvest Date: ${formatDate(deviceInfo.HydroFrameHarvestDate)}</p>
+                    <img id="possibleImage${deviceInfo.HydroFrameLastDay}" class="w-2/5 sm:w-2/5 md:w-2/5 h-auto block mx-auto" src="${getImageForDays(deviceInfo.HydroFrameLastDay, ImageData)}" alt="Image for the bed">
                     <div class="text-right">
                         <button id="deleteBtn${bedId}" class="mt-4 text-red-700 hover:text-red-600 delete-bed-btn text-right"><i class="fas fa-trash-alt mr-3"></i>Remove</button>
                     </div>
@@ -375,7 +373,7 @@
                                 'Content-Type': 'application/json',
                             },
                             body: JSON.stringify({
-                                Var_Host: bedId,
+                                DeviceHostname: bedId,
                             })
                         })
                             .then(response => {
@@ -405,10 +403,10 @@
 
 
             newBedDiv.addEventListener('click', function () {
-                localStorage.setItem('Var_Host', JSON.stringify(deviceInfo.Var_Host));
-                localStorage.setItem('Var_Ip', JSON.stringify(deviceInfo.Var_Ip));
-                localStorage.setItem('Start_Date', JSON.stringify(deviceInfo.Start_Date));
-                localStorage.setItem('Last_Day', JSON.stringify(deviceInfo.Last_Day));
+                localStorage.setItem('DeviceHostname', JSON.stringify(deviceInfo.DeviceHostname));
+                localStorage.setItem('DeviceIpAddress', JSON.stringify(deviceInfo.DeviceIpAddress));
+                localStorage.setItem('HydroFrameStartDate', JSON.stringify(deviceInfo.HydroFrameStartDate));
+                localStorage.setItem('HydroFrameLastDay', JSON.stringify(deviceInfo.HydroFrameLastDay));
                 window.location.href = 'http://localhost:3000/tables';
             });
         }
@@ -472,17 +470,17 @@
 
         function sortBeds() {
             switch (currentSort) {
-                case 'start_date_asc':
-                    allBeds.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
+                case 'HydroFrameStartDate_asc':
+                    allBeds.sort((a, b) => new Date(a.HydroFrameStartDate) - new Date(b.HydroFrameStartDate));
                     break;
-                case 'start_date_desc':
-                    allBeds.sort((a, b) => new Date(b.Start_Date) - new Date(a.Start_Date));
+                case 'HydroFrameStartDate_desc':
+                    allBeds.sort((a, b) => new Date(b.HydroFrameStartDate) - new Date(a.HydroFrameStartDate));
                     break;
-                case 'harvest_date_asc':
-                    allBeds.sort((a, b) => new Date(a.Harvest_Date) - new Date(b.Harvest_Date));
+                case 'HydroFrameHarvestDate_asc':
+                    allBeds.sort((a, b) => new Date(a.HydroFrameHarvestDate) - new Date(b.HydroFrameHarvestDate));
                     break;
-                case 'harvest_date_desc':
-                    allBeds.sort((a, b) => new Date(b.Harvest_Date) - new Date(a.Harvest_Date));
+                case 'HydroFrameHarvestDate_desc':
+                    allBeds.sort((a, b) => new Date(b.HydroFrameHarvestDate) - new Date(a.HydroFrameHarvestDate));
                     break;
                 default:
                     // No sorting or apply default behavior if needed
@@ -518,7 +516,7 @@
 
 
         function isDeviceDuplicate(hostname, ipAddress, beds) {
-            return beds.some(bed => bed.Var_Host === hostname || bed.Var_Ip === ipAddress);
+            return beds.some(bed => bed.DeviceHostname === hostname || bed.DeviceIpAddress === ipAddress);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -539,7 +537,7 @@
 
         function removeBedFromLocalStorage(bedId) {
             let beds = JSON.parse(localStorage.getItem('beds')) || [];
-            beds = beds.filter(bed => bed.Var_Host !== bedId);
+            beds = beds.filter(bed => bed.DeviceHostname !== bedId);
             localStorage.setItem('beds', JSON.stringify(beds));
         }
     </script>
@@ -549,23 +547,23 @@
             fetch('/api/display_bed')
                 .then(response => response.json())
                 .then(bedData => {
-                    // Create an array of promises for updating Last_Day
+                    // Create an array of promises for updating HydroFrameLastDay
                     const updatePromises = bedData.map(bed => {
-                        const { Var_Host, Var_Ip, Start_Day, Start_Date } = bed;
+                        const { DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameStartDate } = bed;
 
                         // Log the values to check the data being destructured
                         console.log('Data received for bed:', {
-                            Var_Host,
-                            Var_Ip,
-                            Start_Day,
-                            Start_Date
+                            DeviceHostname,
+                            DeviceIpAddress,
+                            HydroFrameStartDay,
+                            HydroFrameStartDate
                         });
 
                         const data = {
-                            Var_Host: Var_Host,
-                            Var_Ip: Var_Ip,
-                            Start_Day: Start_Day,
-                            Start_Date: Start_Date,
+                            DeviceHostname: DeviceHostname,
+                            DeviceIpAddress: DeviceIpAddress,
+                            HydroFrameStartDay: HydroFrameStartDay,
+                            HydroFrameStartDate: HydroFrameStartDate,
                             currentDate: new Date().toISOString().split('T')[0] // Use only the date part
                         };
 
@@ -578,11 +576,11 @@
                         })
                             .then(response => response.json())
                             .then(result => {
-                                console.log('Update Success for ', Var_Host, ':', result);
+                                console.log('Update Success for ', DeviceHostname, ':', result);
                                 return result; // Return result to be handled by Promise.all
                             })
                             .catch(error => {
-                                console.error('Error updating Last_Day for ', Var_Host, ':', error);
+                                console.error('Error updating HydroFrameLastDay for ', DeviceHostname, ':', error);
                                 return Promise.reject(error);
                             });
                     });
@@ -594,7 +592,7 @@
                     console.log('All updates completed:', results);
                 })
                 .catch(error => {
-                    console.error('Error fetching bed data or updating Last_Day:', error);
+                    console.error('Error fetching bed data or updating HydroFrameLastDay:', error);
                 });
         }
         updateData();
@@ -642,12 +640,12 @@
 
                 // Iterate through bedData sequentially with a delay
                 for (const bed of bedData) {
-                    const { Var_Host, Var_Ip, Start_Date } = bed;
+                    const { DeviceHostname, DeviceIpAddress, HydroFrameStartDate } = bed;
 
                     const data = {
-                        Var_Host: Var_Host,
-                        Var_Ip: Var_Ip,
-                        Start_Date: Start_Date,
+                        DeviceHostname: DeviceHostname,
+                        DeviceIpAddress: DeviceIpAddress,
+                        HydroFrameStartDate: HydroFrameStartDate,
                         phone: phone,
                     };
 
@@ -664,10 +662,10 @@
                         });
 
                         const resultJson = await result.json();
-                        console.log('Update Success for', Var_Host, ':', resultJson);
+                        console.log('Update Success for', DeviceHostname, ':', resultJson);
 
                     } catch (error) {
-                        console.error('Error updating Last_Day for', Var_Host, ':', error);
+                        console.error('Error updating HydroFrameLastDay for', DeviceHostname, ':', error);
                     }
 
                     // Introduce a delay of 1 hour (3600000ms) between each API call
@@ -677,7 +675,7 @@
                 console.log('All updates completed');
 
             } catch (error) {
-                console.error('Error fetching bed data or updating Last_Day:', error);
+                console.error('Error fetching bed data or updating HydroFrameLastDay:', error);
             }
         }
 

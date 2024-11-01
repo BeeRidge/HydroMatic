@@ -322,12 +322,12 @@
             // Add rows from the data
             data.forEach(row => {
                 const rowData = [
-                    row.Var_Host,
-                    row.Var_Ip,
-                    new Date(row.Start_Date).toLocaleDateString(),
-                    row.Last_Day,
-                    new Date(row.Harvest_Date).toLocaleDateString(),
-                    row.Status
+                    row.DeviceHostname,
+                    row.DeviceIpAddress,
+                    new Date(row.HydroFrameStartDate).toLocaleDateString(),
+                    row.HydroFrameLastDay,
+                    new Date(row.HydroFrameHarvestDate).toLocaleDateString(),
+                    row.HydroFrameStatus
                 ];
                 tableRows.push(rowData);
             });
@@ -481,22 +481,22 @@
             // Render the rows for the current page
             for (let i = startIndex; i < endIndex; i++) {
                 const row = filteredData[i];
-                const statusClass = row.Status === 'HARVEST' ? 'text-green-500' : 'text-red-500';
+                const statusClass = row.HydroFrameStatus === 'HARVEST' ? 'text-green-500' : 'text-red-500';
 
                 // Convert Dates to MM-DD-YYYY format
-                const startDate = new Date(row.Start_Date);
+                const startDate = new Date(row.HydroFrameStartDate);
                 const formattedStartDate = `${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}-${startDate.getFullYear()}`;
-                const harvestDate = new Date(row.Harvest_Date);
+                const harvestDate = new Date(row.HydroFrameHarvestDate);
                 const formattedHarvestDate = `${(harvestDate.getMonth() + 1).toString().padStart(2, '0')}-${harvestDate.getDate().toString().padStart(2, '0')}-${harvestDate.getFullYear()}`;
 
                 const tableRow = `
                     <tr>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.DeviceHostname}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.DeviceIpAddress}</td>
                         <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedStartDate}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.Last_Day}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">${row.HydroFrameLastDay}</td>
                         <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${formattedHarvestDate}</td>
-                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                        <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.HydroFrameStatus}</td>
                     </tr>
                 `;
                 tableBody.innerHTML += tableRow;
@@ -514,19 +514,19 @@
 
             switch (criteria) {
                 case 'harvestDateDesc':
-                    filteredData.sort((a, b) => new Date(b.Harvest_Date) - new Date(a.Harvest_Date));
+                    filteredData.sort((a, b) => new Date(b.HydroFrameHarvestDate) - new Date(a.HydroFrameHarvestDate));
                     break;
                 case 'startDateAsc':
-                    filteredData.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
+                    filteredData.sort((a, b) => new Date(a.HydroFrameStartDate) - new Date(b.HydroFrameStartDate));
                     break;
                 case 'daysDesc':
-                    filteredData.sort((a, b) => new Date(b.Last_Day) - new Date(a.Last_Day));
+                    filteredData.sort((a, b) => new Date(b.HydroFrameLastDay) - new Date(a.HydroFrameLastDay));
                     break;
                 case 'statusOngoing':
-                    filteredData = allData.filter(row => row.Status === 'ONGOING');
+                    filteredData = allData.filter(row => row.HydroFrameStatus === 'ONGOING');
                     break;
                 case 'statusHarvest':
-                    filteredData = allData.filter(row => row.Status === 'HARVEST');
+                    filteredData = allData.filter(row => row.HydroFrameStatus === 'HARVEST');
                     break;
                 default:
                     filteredData = [...allData];

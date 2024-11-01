@@ -256,7 +256,7 @@ app.get('/api/device_info', async (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({ error: "Table deviceinformation not found" });
     }
-    const [data] = await db.query("SELECT * FROM deviceinformation WHERE AccountId = ?", [req.session.user.id]);
+    const [data] = await db.query("SELECT * FROM deviceinformation WHERE OwnerPhoneNumber = ?", [req.session.user.phone]);
     res.json(data);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -287,14 +287,14 @@ app.post("/api/display_table", async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { Var_Host, Var_Ip } = req.body;
+  const { DeviceHostname, DeviceIpAddress } = req.body;
 
-  if (!Var_Host || !Var_Ip) {
+  if (!DeviceHostname || !DeviceIpAddress) {
     return res.status(400).json({ error: "Missing Hostname or Ip Address" });
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM hydroframe WHERE DeviceHostName = ? AND DeviceIpAddress = ? AND AccountId = ?', [Var_Host, Var_Ip, req.session.user.id]);
+    const [results] = await db.query('SELECT * FROM hydroframe WHERE DeviceHostName = ? AND DeviceIpAddress = ? AND AccountId = ?', [DeviceHostname, DeviceIpAddress, req.session.user.id]);
     if (results.length === 0) {
       return res.status(404).json({ error: "No data found for the given Hostname and Ip Address" });
     }
@@ -304,31 +304,44 @@ app.post("/api/display_table", async (req, res) => {
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
-// Get the data from specific table Limit to 1
 app.post("/api/send-Data", async (req, res) => {
-  const { Var_Host, Var_Ip } = req.body;
+  const { DeviceHostname, DeviceIpAddress } = req.body;
+
+  // Log received parameters
+  console.log("DeviceHostname:", DeviceHostname);
+  console.log("DeviceIpAddress:", DeviceIpAddress);
+
   try {
     const [results] = await db.query("SHOW TABLES LIKE ?", [DeviceHostname]);
     if (results.length === 0) {
+      console.error("Table not found:", DeviceHostname);
       return res.status(404).json({ error: "Table not found" });
     }
 
-    // Use ?? for table names
     const [check] = await db.query("SELECT * FROM ??", [DeviceHostname]);
+    if (!check || check.length === 0) {
+      console.error("No data found in table:", DeviceHostname);
+      return res.status(404).json({ error: "No data in the specified table" });
+    }
 
-    // Convert resultData.Date_Dev to Manila time (GMT+8)
+    // Ensure `convertToManilaTime` is defined and working correctly
     const currentDate = convertToManilaTime(new Date().toISOString());
-    const resultDateDev = convertToManilaTime(check[0].Date_Dev); // Make sure to access the first result
+    const resultDateDev = convertToManilaTime(check[0].Date);
 
     if (currentDate === resultDateDev) {
-      // Fetch the latest record limited to 1
       const [data] = await db.query(
         "SELECT WaterLevel, WaterTemperature FROM ?? WHERE DeviceIpAddress = ? AND Date = ? ORDER BY Id DESC LIMIT 1",
-        [Var_Host, Var_Ip, currentDate]
+        [DeviceHostname, DeviceIpAddress, currentDate]
       );
+
+      if (data.length === 0) {
+        console.error("No records found for today's date and device IP.");
+        return res.status(404).json({ error: "No records found for today's date." });
+      }
 
       return res.json(data);
     } else {
+      console.error("No records found for today's date:", currentDate);
       return res.status(404).json({ error: "No records found for today's date." });
     }
   } catch (err) {
@@ -338,9 +351,9 @@ app.post("/api/send-Data", async (req, res) => {
 });
 // Displaying data logs on the table
 app.post("/api/DataLogs", async (req, res) => {
-  const { Var_Host, Var_Ip, Start_Date } = req.body;
+  const { DeviceHostname, DeviceIpAddress, HydroFrameStartDate } = req.body;
 
-  console.log("Request body:", { Var_Host, Var_Ip, Start_Date });
+  console.log("Request body:", { DeviceHostname, DeviceIpAddress, HydroFrameStartDate });
 
   try {
     const [tables] = await db.query("SHOW TABLES LIKE ?", [DeviceHostname]);
@@ -350,7 +363,7 @@ app.post("/api/DataLogs", async (req, res) => {
 
     const [results] = await db.query(
       "SELECT * FROM ?? WHERE DeviceIpAddress = ? AND Date >= ? ORDER BY Id DESC",
-      [Var_Host, Var_Ip, Start_Date]
+      [DeviceHostname, DeviceIpAddress, HydroFrameStartDate]
     );
 
     console.log("Data fetched from database:", results);
@@ -364,8 +377,8 @@ app.post("/api/DataLogs", async (req, res) => {
 app.post('/api/checkDevice', async (req, res) => {
   try {
     // Get all devices from the device_info table
-    const selectDevices = "SELECT * FROM device_info";
-    const [devices] = await db.query(selectDevices);
+    const selectDevices = "SELECT * FROM deviceinformation WHERE OwnerPhoneNumber = ?";
+    const [devices] = await db.query(selectDevices, [req.session.user.phone]);
 
     if (devices.length === 0) {
       return res.status(404).json({ error: "No devices found" });
@@ -373,18 +386,18 @@ app.post('/api/checkDevice', async (req, res) => {
 
     // Loop through all devices and check their respective table for date/time comparison
     for (const device of devices) {
-      const { Var_Host, Var_Ip } = device;
+      const { DeviceHostname, DeviceIpAddress } = device;
 
       // Check if the table for the device exists
       const [tables] = await db.query("SHOW TABLES LIKE ?", [DeviceHostname]);
       if (tables.length === 0) {
         // Update the device status to REPAIR if its table doesn't exist
-        await db.query("UPDATE deviceinformation SET Status = 'REPAIR' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
+        await db.query("UPDATE deviceinformation SET DeviceStatus = 'REPAIR' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [DeviceHostname, DeviceIpAddress]);
         continue; // Skip to the next device
       }
 
       // Get the latest record from the device-specific table
-      const [deviceData] = await db.query("SELECT * FROM ?? WHERE DeviceIpAddress = ? ORDER BY Date DESC, Time DESC LIMIT 1", [Var_Host, Var_Ip]);
+      const [deviceData] = await db.query("SELECT * FROM ?? WHERE DeviceIpAddress = ? ORDER BY Date DESC, Time DESC LIMIT 1", [DeviceHostname, DeviceIpAddress]);
 
       if (deviceData.length === 0) {
         continue; // Skip this device if no records are found
@@ -398,9 +411,9 @@ app.post('/api/checkDevice', async (req, res) => {
       // Compare the date and time
       if (latestDeviceDate !== currentDate || latestDeviceTime !== currentTime) {
         // If date/time mismatch, update the device_info status to INACTIVE
-        await db.query("UPDATE deviceinformation SET Status = 'INACTIVE' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
+        await db.query("UPDATE deviceinformation SET DeviceStatus = 'INACTIVE' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [DeviceHostname, DeviceIpAddress]);
       } else {
-        await db.query("UPDATE deviceinformation SET Status = 'ACTIVE' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
+        await db.query("UPDATE deviceinformation SET DeviceStatus = 'ACTIVE' WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [DeviceHostname, DeviceIpAddress]);
       }
     }
 
@@ -418,27 +431,27 @@ app.post("/api/add-bed-database", async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { Var_Host, Var_Ip, Last_Day, Start_Date } = req.body;
+  const { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate } = req.body;
 
-  if (!Var_Host || !Var_Ip || !Last_Day || !Start_Date) {
+  if (!DeviceHostname || !DeviceIpAddress || !HydroFrameLastDay || !HydroFrameStartDate) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
-    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [Var_Host, Var_Ip]);
+    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ?", [DeviceHostname, DeviceIpAddress]);
 
     if (results.length > 0) {
       return res.status(409).json({ error: "Device with the same Hostname or IP Address already exists" });
     }
 
-    const startDate = new Date(Start_Date);
+    const startDate = new Date(HydroFrameStartDate);
     const harvestDate = new Date(startDate);
-    harvestDate.setDate(harvestDate.getDate() + (70 - Last_Day));
-    const Harvest_Date = harvestDate.toISOString().split("T")[0];
+    harvestDate.setDate(harvestDate.getDate() + (70 - HydroFrameLastDay));
+    const HydroFrameHarvestDate = harvestDate.toISOString().split("T")[0];
 
     await db.query(
       `INSERT INTO hydroframe (DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameLastDay, HydroFrameStartDate, HydroFrameHarvestDate, HydroFrameStatus, AccountId) VALUES (?, ?, ?, ?, ?, ?, "ONGOING", ?)`,
-      [Var_Host, Var_Ip, Last_Day, Last_Day, Start_Date, Harvest_Date, req.session.user.id]
+      [DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameLastDay, HydroFrameStartDate, HydroFrameHarvestDate, req.session.user.id]
     );
 
     const activityQuery = 'INSERT INTO useractivity ( AccountId, Activity) VALUES ( ?, "ADD HYDRO FRAME")';
@@ -455,25 +468,25 @@ app.post("/api/delete-device", async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  const { Var_Host } = req.body;
+  const { DeviceHostname } = req.body;
 
-  if (!Var_Host) {
+  if (!DeviceHostname) {
     return res.status(400).json({ message: "No hostname provided." });
   }
 
   try {
     // SQL query to select the record to be deleted
-    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND AccountId = ?", [Var_Host, req.session.user.id]);
+    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND AccountId = ?", [DeviceHostname, req.session.user.id]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found." });
     }
 
     // Get the record details
-    const { Var_Host: name, Var_Ip: ip, Start_Day: sDay, Last_Day: lDay, Start_Date: sDate, Harvest_Date: hDate } = results[0];
+    const { DeviceHostname: name, DeviceIpAddress: ip, HydroFrameStartDay: sDay, HydroFrameLastDay: lDay, HydroFrameStartDate: sDate, HydroFrameHarvestDate: hDate } = results[0];
 
     // SQL query to delete the record
-    const [deleteResult] = await db.query("DELETE FROM hydroframe WHERE DeviceHostname = ? AND AccountId = ?", [Var_Host, req.session.user.id]);
+    const [deleteResult] = await db.query("DELETE FROM hydroframe WHERE DeviceHostname = ? AND AccountId = ?", [DeviceHostname, req.session.user.id]);
 
     if (deleteResult.affectedRows === 0) {
       return res.status(404).json({ message: "Bed not found." });
@@ -504,30 +517,30 @@ app.post("/api/update-last-day", async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  const { Var_Host, Var_Ip, Start_Day, Start_Date, currentDate } = req.body;
+  const { DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameStartDate, currentDate } = req.body;
 
   try {
-    // SQL query to select Last_Day from the database
-    const [results] = await db.query('SELECT HydroFrameLastDay FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?', [Var_Host, Var_Ip, req.session.user.id]);
+    // SQL query to select HydroFrameLastDay from the database
+    const [results] = await db.query('SELECT HydroFrameLastDay FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?', [DeviceHostname, DeviceIpAddress, req.session.user.id]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: "Bed not found" });
     }
 
-    const lastDay = results[0].Last_Day;
+    const lastDay = results[0].HydroFrameLastDay;
 
     if (lastDay <= 70) {
-      // SQL query to update the Last_Day and Update_Date using DATEDIFF
+      // SQL query to update the HydroFrameLastDay and Update_Date using DATEDIFF
       await db.query(
-        `UPDATE display_bed
+        `UPDATE hydroframe
         SET HydroFrameLastDay = DATEDIFF(?, ?) + ? - 1, HydroFrameUpdateDate = ?
         WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?`,
-        [currentDate, Start_Date, Start_Day, currentDate, Var_Host, Var_Ip, req.session.user.id]
+        [currentDate, HydroFrameStartDate, HydroFrameStartDay, currentDate, DeviceHostname, DeviceIpAddress, req.session.user.id]
       );
 
       res.status(200).json({ message: "Update successful" });
     } else {
-      res.status(400).json({ message: "Last_Day exceeds 70" });
+      res.status(400).json({ message: "HydroFrameLastDay exceeds 70" });
     }
   } catch (err) {
     console.error("Error:", err);
@@ -540,10 +553,10 @@ app.post("/api/dates", async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { Var_Host, Var_Ip } = req.body;
+  const { DeviceHostname, DeviceIpAddress } = req.body;
 
   try {
-    const [results] = await db.query("SELECT * FROM deviceinformation WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?", [Var_Host, Var_Ip, req.session.user.id]);
+    const [results] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?", [DeviceHostname, DeviceIpAddress, req.session.user.id]);
     res.json(results);
   } catch (err) {
     console.error("Error fetching data:", err);
@@ -559,7 +572,7 @@ app.get("/api/growth-stages", async (req, res) => {
     const growthStages = results.map((row) => ({
       phase_name: row.phase_name,
       description: row.description,
-      start_day: row.start_day,
+      HydroFrameStartDay: row.HydroFrameStartDay,
       end_day: row.end_day,
     }));
 
@@ -917,14 +930,14 @@ app.post('/api/recover', async (req, res) => {
     const [checkResult] = await db.query("SELECT * FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?", [varHost, varIp, req.session.user.id]);
 
     if (checkResult.length === 0) {
-      const [archivedResult] = await db.query("SELECT * FROM archive WHERE AchiveId = ? AND DeviceHostname = ? AND DeviceIpAddress = ?", [id, varHost, varIp]);
+      const [archivedResult] = await db.query("SELECT * FROM archive WHERE ArchiveId = ? AND DeviceHostname = ? AND DeviceIpAddress = ?", [id, varHost, varIp]);
 
       if (archivedResult.length === 1) {
         const resultData = archivedResult[0];
         const lday = resultData.ArchiveLastDay;
         const status = lday >= 60 ? "HARVEST" : "ONGOING";
 
-        await db.query("INSERT INTO hydroframe (DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameLastDay, HydroFrameStartDate, HydroFrameHarvestDate, HydroFrameStatus, AccountId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.DeviceHostname, resultData.DeviceIpAddress, resultData.HydroFrameStartDay, resultData.HydroFrameLastDay, resultData.HydroFrameStartDate, resultData.HydroFrameHarvestDate, status, req.session.user.id]);
+        await db.query("INSERT INTO hydroframe (DeviceHostname, DeviceIpAddress, HydroFrameStartDay, HydroFrameLastDay, HydroFrameStartDate, HydroFrameHarvestDate, HydroFrameStatus, AccountId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [resultData.DeviceHostname, resultData.DeviceIpAddress, resultData.ArchiveStartDay, resultData.ArchiveLastDay, resultData.ArchiveStartDate, resultData.ArchiveHarvestDate, status, req.session.user.id]);
 
         const [deleteResult] = await db.query("DELETE FROM archive WHERE ArchiveId = ? AND DeviceHostname = ? AND DeviceIpAddress = ?", [id, varHost, varIp]);
 
@@ -949,9 +962,9 @@ app.post('/api/recover', async (req, res) => {
 });
 // API Notify user when there's a problem
 app.post("/api/notify-anomaly", async (req, res) => {
-  const { Var_Host, Var_Ip, Start_Date, phone } = req.body;
+  const { DeviceHostname, DeviceIpAddress, HydroFrameStartDate, phone } = req.body;
 
-  if (!Var_Host || !Var_Ip || !Start_Date || !phone) {
+  if (!DeviceHostname || !DeviceIpAddress || !HydroFrameStartDate || !phone) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -962,20 +975,20 @@ app.post("/api/notify-anomaly", async (req, res) => {
     const connection = await db.getConnection();
 
     try {
-      // SQL query to select Last_Day from the database
+      // SQL query to select HydroFrameLastDay from the database
       const [rows] = await connection.query(
         'SELECT HydroFrameLastDay FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?',
-        [Var_Host, Var_Ip, req.session.user.id]
+        [DeviceHostname, DeviceIpAddress, req.session.user.id]
       );
 
       if (rows.length > 0) {
         const lastDay = rows[0].HydroFrameLastDay;
 
-        // Check if Last_Day is less than or equal to 60
+        // Check if HydroFrameLastDay is less than or equal to 60
         if (lastDay < 60) {
           const [tableCheck] = await connection.query(
             'SHOW TABLES LIKE ?',
-            [Var_Host]
+            [DeviceHostname]
           );
 
           if (tableCheck.length === 0) {
@@ -984,7 +997,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
           const [results] = await connection.query(
             'SELECT * FROM ?? WHERE DeviceIpAddress = ? AND Date >= ? ORDER BY Id DESC',
-            [Var_Host, Var_Ip, Start_Date]
+            [DeviceHostname, DeviceIpAddress, HydroFrameStartDate]
           );
 
           if (results.length > 0) {
@@ -997,7 +1010,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
             // Check if WaterTemperature is present and dates match
             if (resultData.WaterTemperature !== undefined && (resultData.WaterTemperature < 20 || resultData.WaterTemperature > 26) && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
-              const cropName = Var_Host;
+              const cropName = DeviceHostname;
 
               // Create SMS message for crops experiencing a temperature issue
               const message = `Caution! Your crop from "${cropName}" is experiencing a temperature issue. Please check your crop. The water temperature cannot be less than 21°C or more than 25°C. Date:${currentDate} Time:${resultTimeDev}`;
@@ -1019,7 +1032,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
 
             // Check if WaterLevel is present and dates match
             if (resultData.Wat !== undefined && resultData.WaterLevel === 'LOW' && currentDate === resultDateDev && currentManilaTime === resultTimeDev) {
-              const cropName = Var_Host;
+              const cropName = DeviceHostname;
 
               // Create SMS message for crops with low water level
               const message = `Caution! Please inspect your crop since the water level from your "${cropName}" is lower than usual. Date:${currentDate} Time:${resultTimeDev}`;
@@ -1043,7 +1056,7 @@ app.post("/api/notify-anomaly", async (req, res) => {
             return res.status(404).json({ message: "No data found for the given criteria" });
           }
         } else {
-          return res.status(404).json({ message: "Last_Day exceeds 60" });
+          return res.status(404).json({ message: "HydroFrameLastDay exceeds 60" });
         }
       } else {
         return res.status(404).json({ message: "Bed not found" });

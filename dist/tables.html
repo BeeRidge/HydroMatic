@@ -185,12 +185,12 @@
                                 <div class="space-x-2">
                                     <h1 class="font-bold text-gray-200 uppercase text-lg">Water Temperature</h1>
                                     <i class="fas fa-thermometer-half text-gray-400 text-5xl"></i>
-                                    <h2 id="waterTemp"></h2>
+                                    <h2 id="waterTemp" class="text-gray-300 "></h2>
                                 </div>
                                 <div class="space-x-2">
                                     <h1 class="font-bold uppercase text-lg text-gray-200">Water Level</h1>
                                     <i class="fas fa-tint text-5xl text-gray-400"></i>
-                                    <h2 id="waterLevel"></h2>
+                                    <h2 id="waterLevel" class="text-gray-300 "></h2>
                                 </div>
                             </div>
                             <!-- square container -->
@@ -314,11 +314,11 @@
     <!-- Bed status -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const varHost = localStorage.getItem('Var_Host');
-            const varIp = localStorage.getItem('Var_Ip');
+            const DeviceHostname = localStorage.getItem('DeviceHostname');
+            const DeviceIpAddress = localStorage.getItem('DeviceIpAddress');
 
-            console.log("Var_Host:", varHost);
-            console.log("Var_Ip:", varIp);
+            console.log("DeviceHostname:", DeviceHostname);
+            console.log("DeviceIpAddress:", DeviceIpAddress);
 
             Promise.all([
                 fetch('/api/display_table', {
@@ -327,8 +327,8 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        Var_Host: JSON.parse(varHost),
-                        Var_Ip: JSON.parse(varIp),
+                        DeviceHostname: JSON.parse(DeviceHostname),
+                        DeviceIpAddress: JSON.parse(DeviceIpAddress),
                     }),
                 }).then(response => {
                     if (!response.ok) {
@@ -351,17 +351,17 @@
                 }
 
                 // Ensure Last_Day is treated as an integer
-                const lastDaysValue = parseInt(DeviceData[0].Last_Day, 10);
+                const lastDaysValue = parseInt(DeviceData[0].HydroFrameLastDay, 10);
 
                 // Find the record with the exact Last_Day value
-                const Days = DeviceData.find(record => parseInt(record.Last_Day, 10) === lastDaysValue);
+                const Days = DeviceData.find(record => parseInt(record.HydroFrameLastDay, 10) === lastDaysValue);
 
                 if (!Days) {
                     throw new Error("No matching record found.");
                 }
 
                 // Update the "days" element with the final result
-                document.getElementById("days").textContent = `${Days.Last_Day} /70`;
+                document.getElementById("days").textContent = `${Days.HydroFrameLastDay} /70`;
 
                 // Find the matching image phase based on the days result
                 const imagePhase = ImageData.find(phase => lastDaysValue >= phase.start_day && lastDaysValue <= phase.end_day);
@@ -416,11 +416,11 @@
     <!-- Water status -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const Hostname = localStorage.getItem("Var_Host");
-            const IpAddress = localStorage.getItem("Var_Ip");
+            const DeviceHostname = localStorage.getItem("DeviceHostname");
+            const DeviceIpAddress = localStorage.getItem("DeviceIpAddress");
 
             // Check if data exists and is valid
-            if (!Hostname || !IpAddress) {
+            if (!DeviceHostname || !DeviceIpAddress) {
                 Swal.fire({
                     title: "Error!",
                     text: "Data is missing from localStorage.",
@@ -430,11 +430,11 @@
                 return;
             }
 
-            let hostnameData, ipAddressData;
+            let DeviceHostnameData, DeviceIpAddressData;
 
             try {
-                hostnameData = JSON.parse(Hostname);
-                ipAddressData = JSON.parse(IpAddress);
+                DeviceHostnameData = JSON.parse(DeviceHostname);
+                DeviceIpAddressData = JSON.parse(DeviceIpAddress);
             } catch (e) {
                 Swal.fire({
                     title: "Error!",
@@ -446,7 +446,7 @@
             }
 
             // Display the hostname
-            document.getElementById("hostname").textContent = hostnameData;
+            document.getElementById("hostname").textContent = DeviceHostnameData;
 
             fetch("/api/send-Data", {
                 method: "POST",
@@ -454,8 +454,8 @@
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    Var_Host: hostnameData,
-                    Var_Ip: ipAddressData,
+                    DeviceHostname: DeviceHostnameData,
+                    DeviceIpAddress: DeviceIpAddressData,
                 }),
             })
                 .then((response) => {
@@ -466,8 +466,8 @@
                 })
                 .then((data) => {
                     console.log("Success:", data);
-                    document.getElementById("waterTemp").textContent = data[0].Var_Temp;
-                    document.getElementById("waterLevel").textContent = data[0].Var_WLvl;
+                    document.getElementById("waterTemp").textContent = data[0].WaterTemperature;
+                    document.getElementById("waterLevel").textContent = data[0].WaterLevel;
                 })
                 .catch((error) => {
                     console.error("Error:", error);
@@ -517,12 +517,12 @@
     <!-- Table Data logs -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const Hostname = localStorage.getItem("Var_Host");
-            const IpAddress = localStorage.getItem("Var_Ip");
-            const Start_Date = localStorage.getItem("Start_Date");
+            const DeviceHostname = localStorage.getItem("DeviceHostname");
+            const DeviceIpAddress = localStorage.getItem("DeviceIpAddress");
+            const HydroFrameStartDate = localStorage.getItem("HydroFrameStartDate");
 
             // Check if data exists and is valid
-            if (!Hostname || !IpAddress) {
+            if (!DeviceHostname || !DeviceIpAddress) {
                 Swal.fire({
                     title: "Error!",
                     text: "Data is missing from localStorage.",
@@ -532,12 +532,12 @@
                 return;
             }
 
-            let hostnameData, ipAddressData;
+            let DeviceHostnameData, DeviceIpAddressData;
 
             try {
-                hostnameData = JSON.parse(Hostname);
-                ipAddressData = JSON.parse(IpAddress);
-                startdateData = JSON.parse(Start_Date);
+                DeviceHostnameData = JSON.parse(DeviceHostname);
+                DeviceIpAddressData = JSON.parse(DeviceIpAddress);
+                HydroFrameStartDateData = JSON.parse(HydroFrameStartDate);
             } catch (e) {
                 Swal.fire({
                     title: "Error!",
@@ -549,7 +549,7 @@
             }
 
             // Display the hostname
-            document.getElementById("hostname").textContent = hostnameData;
+            document.getElementById("hostname").textContent = DeviceHostnameData;
 
             fetch("/api/DataLogs", {
                 method: "POST",
@@ -557,9 +557,9 @@
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    Var_Host: hostnameData,
-                    Var_Ip: ipAddressData,
-                    Start_Date: startdateData,
+                    DeviceHostname: DeviceHostnameData,
+                    DeviceIpAddress: DeviceIpAddressData,
+                    HydroFrameStartDate: HydroFrameStartDateData,
                 }),
             })
                 .then((response) => {
@@ -598,11 +598,11 @@
                             const row = document.createElement("tr");
 
                             row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${hostnameData}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.Time_Dev}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(log.Date_Dev)}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.Var_WLvl}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.Var_Temp}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${DeviceHostnameData}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.Time}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(log.Date)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.WaterLevel}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.WaterTemperature}</td>
             `;
 
                             tableBody.appendChild(row);
@@ -704,17 +704,14 @@
             }
 
             function fetchDates() {
-                const Hostname = localStorage.getItem("Var_Host");
-                const IpAddress = localStorage.getItem("Var_Ip");
+                const DeviceHostname = localStorage.getItem("DeviceHostname");
+                const DeviceIpAddress = localStorage.getItem("DeviceIpAddress");
 
-                console.log('Hostname:', Hostname);
-                console.log('IpAddress:', IpAddress);
-
-                let hostnameData, ipAddressData;
+                let DeviceHostnameData, DeviceIpAddressData;
 
                 try {
-                    hostnameData = JSON.parse(Hostname);
-                    ipAddressData = JSON.parse(IpAddress);
+                    DeviceHostnameData = JSON.parse(DeviceHostname);
+                    DeviceIpAddressData = JSON.parse(DeviceIpAddress);
                 } catch (e) {
                     Swal.fire({
                         title: "Error!",
@@ -730,7 +727,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ Var_Host: hostnameData, Var_Ip: ipAddressData })
+                    body: JSON.stringify({ DeviceHostname: DeviceHostnameData, DeviceIpAddress: DeviceIpAddressData })
                 })
                     .then(response => {
                         if (!response.ok) {
@@ -741,11 +738,9 @@
                     .then(data => {
                         if (data.length > 0) {
                             console.log('Fetched dates:', data); // Log the fetched dates
-                            const { Start_Date, Harvest_Date } = data[0];
-                            startDate = new Date(Start_Date);
-                            harvestDate = new Date(Harvest_Date);
-                            console.log('Start Date:', startDate); // Log the start date
-                            console.log('Harvest Date:', harvestDate); // Log the harvest date
+                            const { HydroFrameStartDate, HydroFrameHarvestDate } = data[0];
+                            startDate = new Date(HydroFrameStartDate);
+                            harvestDate = new Date(HydroFrameHarvestDate);
                             updateCalendar(); // Update the calendar after fetching data
                         } else {
                             console.error('No data found');

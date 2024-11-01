@@ -180,8 +180,8 @@
                                 <label for="sortSelect" class="mr-2 text-lg text-gray-800">Filter By:</label>
                                 <select id="sortSelect"
                                     class="px-3 py-2 text-lg hover:bg-gray-900 hover:text-gray-300 border rounded rounded-lg shadow-lg">
-                                    <option value="start_date_asc">Start Date</option>
-                                    <option value="harvest_date_desc">Harvest Date</option>
+                                    <option value="ArchiveStartDate_asc">Start Date</option>
+                                    <option value="ArchiveHarvestDate_desc">Harvest Date</option>
                                     <option value="archived_date_desc">Archived Date</option>
                                     <option value="status_finished">Status Finish</option>
                                     <option value="status_removed">Status Remove</option>
@@ -347,20 +347,20 @@
             // Filter the data based on the selected filter
             filteredData = [...allData];
             switch (filter) {
-                case 'start_date_asc':
-                    filteredData.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
+                case 'ArchiveStartDate_asc':
+                    filteredData.sort((a, b) => new Date(a.ArchiveStartDate) - new Date(b.ArchiveStartDate));
                     break;
-                case 'harvest_date_desc':
-                    filteredData.sort((a, b) => new Date(b.Harvest_Date) - new Date(a.Harvest_Date));
+                case 'ArchiveHarvestDate_desc':
+                    filteredData.sort((a, b) => new Date(b.ArchiveHarvestDate) - new Date(a.ArchiveHarvestDate));
                     break;
                 case 'archived_date_desc':
-                    filteredData.sort((a, b) => new Date(b.Date_Archived) - new Date(a.Date_Archived));
+                    filteredData.sort((a, b) => new Date(b.ArchiveDate) - new Date(a.ArchiveDate));
                     break;
                 case 'status_finished':
-                    filteredData = filteredData.filter(row => row.Status === 'FINISHED');
+                    filteredData = filteredData.filter(row => row.ArchiveStatus === 'FINISHED');
                     break;
                 case 'status_removed':
-                    filteredData = filteredData.filter(row => row.Status === 'REMOVED');
+                    filteredData = filteredData.filter(row => row.ArchiveStatus === 'REMOVED');
                     break;
                 default:
                     filteredData = [...allData];
@@ -407,7 +407,7 @@
             const endIndex = Math.min(startIndex + rowsPerPage, filteredData.length);
             for (let i = startIndex; i < endIndex; i++) {
                 const row = filteredData[i];
-                const statusClass = row.Status === 'FINISHED' ? 'text-green-500' : 'text-red-500';
+                const statusClass = row.ArchiveStatus === 'FINISHED' ? 'text-green-500' : 'text-red-500';
 
                 // Format dates to MM-DD-YYYY
                 const formatDate = (dateString) => {
@@ -418,28 +418,28 @@
                     return `${month}-${day}-${year}`;
                 };
 
-                const restoreButton = row.Status === 'FINISHED' ? '' : `
+                const restoreButton = row.ArchiveStatus === 'FINISHED' ? '' : `
             <button id="restoreBtn" class="restore bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
-                data-id="${row.Archive_Id}"
-                data-var-host="${row.Var_Host}"
-                data-var-ip="${row.Var_Ip}"
-                data-date="${formatDate(row.Date_Archived)}">
+                data-id="${row.ArchiveId}"
+                data-var-host="${row.DeviceHostname}"
+                data-var-ip="${row.DeviceIpAddress}"
+                data-date="${formatDate(row.ArchiveDate)}">
                 Restore
             </button>
         `;
 
-                const archivedDate = formatDate(row.Date_Archived);
-                const startDate = formatDate(row.Start_Date);
-                const harvestDate = formatDate(row.Harvest_Date);
+                const archivedDate = formatDate(row.ArchiveDate);
+                const startDate = formatDate(row.ArchiveStartDate);
+                const harvestDate = formatDate(row.ArchiveHarvestDate);
 
                 const tableRow = `
             <tr>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.DeviceHostname}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.DeviceIpAddress}</td>
                 <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${startDate}</td>
                 <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${harvestDate}</td>
                 <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${archivedDate}</td>
-                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.Status}</td>
+                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg ${statusClass}">${row.ArchiveStatus}</td>
                 <td class="px-6 py-4 border-b border-gray-200 text-center text-lg">
                     ${restoreButton}
                 </td>
@@ -517,19 +517,19 @@
 
             // Filter data for the selected year
             const filteredData = data.filter(row => {
-                const archiveYear = new Date(row.Date_Archived).getFullYear();
+                const archiveYear = new Date(row.ArchiveDate).getFullYear();
                 return archiveYear === selectedYear;
             });
 
             // Add rows from the filtered data
             filteredData.forEach(row => {
                 const rowData = [
-                    row.Var_Host,
-                    row.Var_Ip,
-                    new Date(row.Start_Date).toLocaleDateString(),
-                    new Date(row.Harvest_Date).toLocaleDateString(),
-                    new Date(row.Date_Archived).toLocaleDateString(),
-                    row.Status
+                    row.DeviceHostname,
+                    row.DeviceIpAddress,
+                    new Date(row.ArchiveStartDate).toLocaleDateString(),
+                    new Date(row.ArchiveHarvestDate).toLocaleDateString(),
+                    new Date(row.ArchiveDate).toLocaleDateString(),
+                    row.ArchiveStatus
                 ];
                 tableRows.push(rowData);
             });

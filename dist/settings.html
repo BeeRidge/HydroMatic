@@ -550,9 +550,9 @@
                         data.forEach(row => {
                             const tableRow = `
                             <tr>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Var_Host}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.Var_Ip}</td>
-                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.Status}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.DeviceHostname}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700">${row.DeviceIpAddress}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-center text-lg text-gray-700 font-bold uppercase">${row.DeviceStatus}</td>
                             </tr>
                             `;
                             tableBody.innerHTML += tableRow;
