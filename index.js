@@ -1127,7 +1127,7 @@ app.post('/api/insert_data', async (req, res) => {
     }
 
     await db.query(
-      `INSERT INTO ${DeviceHostname} (DeviceIpAddress, WaterLevel, WaterTemperatue, Date, Time)
+      `INSERT INTO ${DeviceHostname} (DeviceIpAddress, WaterLevel, WaterTemperature, Date, Time)
            VALUES (?, ?, ?, CURDATE(), CURTIME())`,
       [ip_address, temperature, water_level]
     );
