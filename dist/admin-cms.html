@@ -326,37 +326,41 @@
                                 </div>
                             </section>
                             <!-- Steps to Connect the esp8266 to the WiFi -->
-                            <section id="Steps" class="bg-body pt-24 pb-16">
+                            <section id="Steps" class="bg-body pt-12 pb-8">
                                 <div class="mx-auto max-w-7xl text-center">
-                                    <h2 id="stepsTitle" class="text-3xl pb-8 font-bold tracking-tight text-center text-gray-200 sm:text-4xl">
-                                    </h2>
-                                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-2 justify-items-center items-start scroll-animation">
+                                    <h2 id="stepsTitle" class="text-2xl pb-6 font-bold tracking-tight text-gray-100 sm:text-3xl"></h2>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center items-start scroll-animation">
+                            
                                         <!-- Step 1 -->
-                                        <div class="flex flex-col items-center self-start">
-                                            <img id="stepsImg1" src="" class="h-4/5 rounded-lg bg-gray-100">
-                                            <p id="step1" contenteditable="true" class="mt-2 text-gray-400"></p>
+                                        <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs ">
+                                            <img id="stepsImg1" src="" alt="Step 1 Image" class="object-cover rounded-lg mb-4">
+                                            <h3 class="text-lg font-bold text-gray-100 mb-2">Step 1</h3>
+                                            <p id="step1" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Set up your HydroMatic hardware.</p>
                                         </div>
                             
                                         <!-- Step 2 -->
-                                        <div class="flex flex-col items-center self-start">
-                                            <img id="stepsImg2" src="" class="h-4/5 rounded-lg bg-gray-100">
-                                            <p id="step2" contenteditable="true" class="mt-2 text-gray-400"></p>
+                                        <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm ">
+                                            <img id="stepsImg2" src="" alt="Step 2 Image" class="  object-cover rounded-lg mb-4">
+                                            <h3 class="text-lg font-bold text-gray-100 mb-2">Step 2</h3>
+                                            <p id="step2" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Connect the device to your network.</p>
                                         </div>
                             
                                         <!-- Step 3 -->
-                                        <div class="flex flex-col items-center self-start">
-                                            <img id="stepsImg3" src="" class="h-4/5 rounded-lg bg-gray-100">
-                                            <p id="step3" contenteditable="true" class="mt-2 text-gray-400"></p>
+                                        <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm ">
+                                            <img id="stepsImg3" src="" alt="Step 3 Image" class=" object-cover rounded-lg mb-4">
+                                            <h3 class="text-lg font-bold text-gray-100 mb-2">Step 3</h3>
+                                            <p id="step3" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Calibrate the system and test sensors.</p>
                                         </div>
                             
                                         <!-- Step 4 -->
-                                        <div class="flex flex-col items-center self-start">
-                                            <img id="stepsImg4" src="" class="h-4/5 rounded-lg bg-gray-100">
-                                            <p id="step4" contenteditable="true" class="mt-2 text-gray-400"></p>
+                                        <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm h-[400px]">
+                                            <img id="stepsImg4" src="" alt="Step 4 Image" class=" object-cover rounded-lg mb-4">
+                                            <h3 class="text-lg font-bold text-gray-100 mb-2">Step 4</h3>
+                                            <p id="step4" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Start automated monitoring and control.</p>
                                         </div>
                                     </div>
                                 </div>
-                            </section> 
+                            </section>
                             <!-- About Us Section -->
                             <section id="aboutUs" class="bg-gray-100 py-16 ">
                                 <div class="container mx-auto px-4">
@@ -509,8 +513,7 @@
             </section>
         </div>
     </main>
-    <!-- CMS content load and update -->
-     
+    <!-- CMS content load and update --> 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Variable to keep track of the selected image ID and section ID
@@ -732,6 +735,7 @@
             });
         });
     </script>
+    <!-- Logout -->
     <script>
         document.getElementById('logout-button').addEventListener('click', function () {
             // Use the server-side logout endpoint to clear the session
@@ -759,9 +763,8 @@
             });
         });
     </script>
-     
+    <!-- Function to check if the admin is already logged in  -->
     <script>
-        // Function to check if the admin is already logged in
         function checkAdminSession() {
             fetch('/api/check-session', {
                 method: 'GET',
@@ -783,8 +786,5 @@
         // Check the session on page load
         document.addEventListener('DOMContentLoaded', checkAdminSession);
     </script>
-    
-      
 </body>
-
 </html>
