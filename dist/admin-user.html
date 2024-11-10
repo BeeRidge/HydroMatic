@@ -133,7 +133,7 @@
                                 placeholder="Search by First Name, Last Name, or Phone Number"
                                 class="w-full p-2 border border-gray-300 rounded-lg shadow-sm" />
                         </div>
-                        <table id="newUserTable"
+                        <table id="userTable"
                             class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
                             <thead class="bg-sky-custom text-white">
                                 <tr>
@@ -150,20 +150,184 @@
                                         class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
                                         Date</th>
                                     <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Actions</th>
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-center text-sm font-semibold uppercase tracking-wider">
+                                        Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="newUserBody">
+                            <tbody class="bg-white divide-y divide-gray-200" id="userBody">
                                 <!-- Data will be inserted here by JavaScript -->
                             </tbody>
                         </table>
 
                         <div id="pagination" class="flex items-center justify-center mt-4">
-                            <button id="prevNewUserBtn"
+                            <button id="prevUserBtn"
                                 class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
-                            <span id="newUserPageIndicator" class="text-lg text-gray-600 mx-2"></span>
-                            <button id="nextNewUserBtn"
+                            <span id="userPageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                            <button id="nextUserBtn"
+                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Device Table -->
+                    <div class="w-full shadow-lg p-6 bg-gray-200">
+                        <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroMatic Device</h1>
+                        <div class="mb-4">
+                            <input type="text" id="searchInput"
+                                placeholder="Search by First Name, Last Name, Phone Number, Device Hostname, or Device Ip Address"
+                                class="w-full p-2 border border-gray-300 rounded-lg shadow-sm" />
+                        </div>
+                        <table id="deviceTable"
+                            class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
+                            <thead class="bg-sky-custom text-white">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Owner First Name</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Owner Last Name</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Owner Phone Number</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Device Hostname</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Device Ip Address</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-center text-sm font-semibold uppercase tracking-wider">
+                                        Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="deviceBody">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+
+                        <div id="pagination" class="flex items-center justify-center mt-4">
+                            <button id="prevDeviceBtn"
+                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
+                            <span id="devicePageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                            <button id="nextDeviceBtn"
+                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- HydroFrame Table -->
+                    <div class="w-full shadow-lg p-6 bg-gray-200">
+                        <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroFrame</h1>
+                        <div class="grid grid-cols-3">
+                            <div class="mb-4 col-span-3">
+                                <input type="text" id="searchInput"
+                                    placeholder="Search by First Name, Last Name, Phone Number"
+                                    class="w-full p-2 border border-gray-300 rounded-lg shadow-sm" />
+                            </div>
+                            <!-- <div class="mb-4 pl-44 text-right items-end">
+                                <button id="addBedBtn"
+                                    class="p-2 rounded-lg text-white text-center bg-teal-custom  hover:bg-gray-700 hover:text-gray-200 w-full">
+                                    <p> + Add Hydro Frame </p>
+                                </button>
+                            </div> -->
+                        </div>
+                        <table id="hydroframeTable"
+                            class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
+                            <thead class="bg-sky-custom text-white">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Owner Name</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Hostname</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Ip Address</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Start Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Start Day</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Last Day</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Harvest Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-center text-sm font-semibold uppercase tracking-wider">
+                                        Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="hydroframeBody">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+
+                        <div id="pagination" class="flex items-center justify-center mt-4">
+                            <button id="prevhydroframeBtn"
+                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
+                            <span id="hydroframePageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                            <button id="nexthydroframeBtn"
+                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Archive Table -->
+                    <div class="w-full shadow-lg p-6 bg-gray-200">
+                        <h1 class="text-2xl font-bold text-gray-800 mb-4">Archive</h1>
+                        <div class="mb-4">
+                            <input type="text" id="searchInput"
+                                placeholder="Search by First Name, Last Name, Phone Number"
+                                class="w-full p-2 border border-gray-300 rounded-lg shadow-sm" />
+                        </div>
+                        <table id="archiveTable"
+                            class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
+                            <thead class="bg-sky-custom text-white">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Owner Name</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Hostname</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Ip Address</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Start Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Start Day</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Last Day</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Harvest Date</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 border-b-2 border-gray-300 text-center text-sm font-semibold uppercase tracking-wider">
+                                        Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="archiveBody">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+
+                        <div id="pagination" class="flex items-center justify-center mt-4">
+                            <button id="prevArchiveBtn"
+                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
+                            <span id="archivePageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                            <button id="nextArchiveBtn"
                                 class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
                         </div>
                     </div>
@@ -174,155 +338,547 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Variables for New Users
-        let newUsers = [];
-        let filteredUsers = [];
-        let curPageNewUsers = 1;
-        const itemPerPage = 10;
+        const ITEMSPERPAGE = 10; // Number of items per page
+        let hydroframes = []; // HydroFrame data array
+        let archives = []; // Archive data array
+        let curPageHydroframe = 1; // Current page for HydroFrame
+        let curPageArchive = 1; // Current page for Archive
 
-        // Function to fetch new user data
-        async function fetchNewUserData() {
+        // Fetch HydroFrame Data
+        async function fetchHydroframes() {
             try {
-                const response = await fetch('/api/admin/new-users');
-                const data = await response.json();
-
+                const res = await fetch('/api/admin/hydroframe');
+                const data = await res.json();
                 if (data.success) {
-                    newUsers = data.users;
-                    filteredUsers = newUsers; // Set filtered users to the full list initially
-                    displayNewUserPage(curPageNewUsers);
+                    hydroframes = data.data;
+                    refreshHydroframeTable();
                 } else {
-                    console.error('Failed to fetch new user data:', data.error);
+                    console.error('Failed to fetch HydroFrame data:', data.error);
                 }
-            } catch (err) {
-                console.error('Error fetching new user data:', err);
+            } catch (error) {
+                console.error('Error fetching HydroFrame data:', error);
             }
         }
 
-        // Function to display new users on the page
-        function displayNewUserPage(page) {
-            const newUserBody = document.getElementById('newUserBody');
-            newUserBody.innerHTML = '';
+        // Fetch Archive Data
+        async function fetchArchives() {
+            try {
+                const res = await fetch('/api/admin/archive');
+                const data = await res.json();
+                if (data.success) {
+                    archives = data.data || [];
+                    refreshArchiveTable();
+                } else {
+                    console.error('Failed to fetch Archive data:', data.error);
+                    archives = []; // Reset archives
+                    refreshArchiveTable(); // Show empty table
+                }
+            } catch (error) {
+                console.error('Error fetching Archive data:', error);
+                archives = []; // Reset on fetch failure
+                refreshArchiveTable();
+            }
+        }
 
-            const start = (page - 1) * itemPerPage;
-            const end = start + itemPerPage;
-            const paginatedUsers = filteredUsers.slice(start, end);
 
-            paginatedUsers.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${user.Acc_Fname}</td>
-                    <td class="px-6 py-4 text-left">${user.Acc_Lname}</td>
-                    <td class="px-6 py-4 text-left">${user.Acc_Pnumber}</td>
-                    <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
-                    <td class="px-6 py-4 text-left">
-                        <button class="editBtn px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-lg hover:bg-yellow-600" data-id="${user.Acc_Pnumber}">Edit</button>
+        // Refresh HydroFrame Table
+        function refreshHydroframeTable() {
+            const start = (curPageHydroframe - 1) * ITEMSPERPAGE;
+            const end = start + ITEMSPERPAGE;
+            const pageHydroframes = hydroframes.slice(start, end);
+
+            const tbody = document.getElementById('hydroframeBody');
+            tbody.innerHTML = '';
+
+            pageHydroframes.forEach((item) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4">${item.AccountFirstname} ${item.AccountLastname}</td>
+                    <td class="px-6 py-4">${item.DeviceHostname}</td>
+                    <td class="px-6 py-4">${item.DeviceIpAddress}</td>
+                    <td class="px-6 py-4">${new Date(item.HydroFrameStartDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${item.HydroFrameStartDay}</td>
+                    <td class="px-6 py-4">${item.HydroFrameLastDay}</td>
+                    <td class="px-6 py-4">${new Date(item.HydroFrameHarvestDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${item.HydroFrameStatus}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button class="editHydroFramebtn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600" data-id="${item.HydroFrameId}">Edit</button>
                     </td>
                 `;
-                newUserBody.appendChild(row);
+                tbody.appendChild(tr);
             });
 
-            document.getElementById('newUserPageIndicator').textContent = `Page ${page} of ${Math.ceil(filteredUsers.length / itemPerPage)}`;
-            document.getElementById('prevNewUserBtn').disabled = page === 1;
-            document.getElementById('nextNewUserBtn').disabled = page === Math.ceil(filteredUsers.length / itemPerPage);
+            rebindHydroframeEvents();
+            updatePagination(hydroframes.length, curPageHydroframe, 'hydroframe');
+        }
 
-            // Attach event listeners to the edit buttons
-            document.querySelectorAll('.editBtn').forEach(button => {
+        // Refresh Archive Table
+        function refreshArchiveTable() {
+            const start = (curPageArchive - 1) * ITEMSPERPAGE;
+            const end = start + ITEMSPERPAGE;
+            const pageArchives = archives.slice(start, end);
+
+            const tbody = document.getElementById('archiveBody');
+            tbody.innerHTML = '';
+
+            pageArchives.forEach((item) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4">${item.AccountFirstname} ${item.AccountLastname}</td>
+                    <td class="px-6 py-4">${item.DeviceHostname}</td>
+                    <td class="px-6 py-4">${item.DeviceIpAddress}</td>
+                    <td class="px-6 py-4">${new Date(item.ArchiveStartDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${item.ArchiveStartDay}</td>
+                    <td class="px-6 py-4">${item.ArchiveLastDay}</td>
+                    <td class="px-6 py-4">${new Date(item.ArchiveHarvestDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${item.ArchiveStatus}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button class="editArchivebtn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600" data-id="${item.ArchiveId}">Edit</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            rebindArchiveEvents();
+            updatePagination(archives.length, curPageArchive, 'archive');
+        }
+
+        // Rebind Edit Events for HydroFrame
+        function rebindHydroframeEvents() {
+            document.querySelectorAll('#hydroframeBody .editHydroFramebtn').forEach(button => {
                 button.addEventListener('click', () => {
-                    const userId = button.getAttribute('data-id');
-                    openEditModal(userId);
+                    const id = button.dataset.id;
+                    editHydroFrameItem(id);
                 });
             });
         }
 
-        // Function to open the edit modal using SweetAlert for a user
-        function openEditModal(userId) {
-            const user = newUsers.find(u => u.Acc_Pnumber === userId);
-
-            console.log("Opening edit modal for user:", user); // Debugging log
-
-            if (user) {
-                Swal.fire({
-                    title: 'Edit User Details',
-                    html: `
-                        <input type="text" id="swal-input-fname" class="swal2-input" placeholder="First Name" value="${user.Acc_Fname}">
-                        <input type="text" id="swal-input-lname" class="swal2-input" placeholder="Last Name" value="${user.Acc_Lname}">
-                        <input type="text" id="swal-input-pnumber" class="swal2-input" placeholder="Phone Number" value="${user.Acc_Pnumber}">
-                    `,
-                    focusConfirm: false,
-                    showCancelButton: true,
-                    confirmButtonText: 'Save',
-                    cancelButtonText: 'Cancel',
-                    preConfirm: () => {
-                        const newFname = document.getElementById('swal-input-fname').value;
-                        const newLname = document.getElementById('swal-input-lname').value;
-                        const newPnumber = document.getElementById('swal-input-pnumber').value;
-
-                        if (!newFname || !newLname || !newPnumber) {
-                            Swal.showValidationMessage('All fields are required');
-                            return false;
-                        }
-
-                        return { newFname, newLname, newPnumber };
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const { newFname, newLname, newPnumber } = result.value;
-                        updateUser(userId, newFname, newLname, newPnumber);
-                    }
+        // Rebind Edit Events for Archive
+        function rebindArchiveEvents() {
+            document.querySelectorAll('#archiveBody .editArchivebtn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    editArchiveItem(id);
                 });
-            } else {
-                console.error("User not found for ID:", userId); // Error log if user not found
-            }
+            });
         }
 
-        // Function to update user details on the server
-        async function updateUser(userId, newFname, newLname, newNumber) {
-            console.log("Updating user:", userId, newFname, newLname, newNumber); // Log update action
-            try {
-                const response = await fetch(`/api/admin/update-user/${userId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        Acc_Fname: newFname,
-                        Acc_Lname: newLname,
-                        Acc_Pnumber: newNumber
-                    }),
-                });
+        // Edit HydroFrame Item
+        function editHydroFrameItem(id) {
+            const item = hydroframes.find(h => h.HydroFrameId == id);
+            if (!item) {
+                console.error('HydroFrame item not found');
+                return;
+            }
 
-                const result = await response.json();
-                if (result.success) {
-                    // Update the local data and re-render the table
-                    const userIndex = newUsers.findIndex(u => u.Acc_Pnumber === userId);
-                    if (userIndex > -1) {
-                        newUsers[userIndex].Acc_Fname = newFname;
-                        newUsers[userIndex].Acc_Lname = newLname;
-                        newUsers[userIndex].Acc_Pnumber = newNumber;
-                        displayNewUserPage(curPageNewUsers); // Refresh the displayed data
-
-                        // Show SweetAlert success message
-                        Swal.fire({
-                            title: 'Success',
-                            text: 'User details updated successfully!',
-                            icon: 'success',
-                            confirmButtonText: 'OK',
-                        });
-                    }
-                } else {
-                    console.error("Failed to update user:", result.error);
-                    Swal.fire('Error', 'Failed to update user details. Please try again.', 'error');
+            Swal.fire({
+                title: 'Edit HydroFrame',
+                html: `
+                    <input id="DeviceHostname" value="${item.DeviceHostname}" class="swal2-input">
+                    <input id="DeviceIpAddress" value="${item.DeviceIpAddress}" class="swal2-input">
+                    <input id="HydroFrameStartDate" type="date" value="${new Date(item.HydroFrameStartDate).toISOString().split('T')[0]}" class="swal2-input">
+                    <input id="HydroFrameStartDay" value="${item.HydroFrameStartDay}" class="swal2-input">
+                    <input id="HydroFrameLastDay" value="${item.HydroFrameLastDay}" class="swal2-input">
+                    <input id="HydroFrameHarvestDate" type="date" value="${new Date(item.HydroFrameHarvestDate).toISOString().split('T')[0]}" class="swal2-input"><br>
+                    <select id="HydroFrameStatus" class="swal2-input">
+                        <option value="ONGOING" ${item.HydroFrameStatus === 'ONGOING' ? 'selected' : ''}>ONGOING</option>
+                        <option value="HARVEST" ${item.HydroFrameStatus === 'HARVEST' ? 'selected' : ''}>HARVEST</option>
+                    </select>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                preConfirm: () => ({
+                    DeviceHostname: document.getElementById('DeviceHostname').value,
+                    DeviceIpAddress: document.getElementById('DeviceIpAddress').value,
+                    HydroFrameStartDate: document.getElementById('HydroFrameStartDate').value,
+                    HydroFrameStartDay: document.getElementById('HydroFrameStartDay').value,
+                    HydroFrameLastDay: document.getElementById('HydroFrameLastDay').value,
+                    HydroFrameHarvestDate: document.getElementById('HydroFrameHarvestDate').value,
+                    HydroFrameStatus: document.getElementById('HydroFrameStatus').value
+                })
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateHydroFrameItem(id, result.value);
                 }
-            } catch (err) {
-                console.error("Error updating user:", err);
-                Swal.fire('Error', 'An error occurred while updating user details.', 'error');
+            });
+        }
+
+        // Edit Archive Item
+        function editArchiveItem(id) {
+            const item = archives.find(ar => ar.ArchiveId == id);
+            if (!item) {
+                console.error('Archive item not found');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Edit Archive',
+                html: `
+                    <input id="DeviceHostname" value="${item.DeviceHostname}" class="swal2-input">
+                    <input id="DeviceIpAddress" value="${item.DeviceIpAddress}" class="swal2-input">
+                    <input id="ArchiveStartDate" type="date" value="${new Date(item.ArchiveStartDate).toISOString().split('T')[0]}" class="swal2-input">
+                    <input id="ArchiveStartDay" value="${item.ArchiveStartDay}" class="swal2-input">
+                    <input id="ArchiveLastDay" value="${item.ArchiveLastDay}" class="swal2-input">
+                    <input id="ArchiveHarvestDate" type="date" value="${new Date(item.ArchiveHarvestDate).toISOString().split('T')[0]}" class="swal2-input"><br>
+                    <select id="ArchiveStatus" class="swal2-input">
+                        <option value="REMOVED" ${item.ArchiveStatus === 'REMOVED' ? 'selected' : ''}>REMOVED</option>
+                        <option value="FINISHED" ${item.ArchiveStatus === 'FINISHED' ? 'selected' : ''}>FINISHED</option>
+                    </select>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                preConfirm: () => ({
+                    DeviceHostname: document.getElementById('DeviceHostname').value,
+                    DeviceIpAddress: document.getElementById('DeviceIpAddress').value,
+                    ArchiveStartDate: document.getElementById('ArchiveStartDate').value,
+                    ArchiveStartDay: document.getElementById('ArchiveStartDay').value,
+                    ArchiveLastDay: document.getElementById('ArchiveLastDay').value,
+                    ArchiveHarvestDate: document.getElementById('ArchiveHarvestDate').value,
+                    ArchiveStatus: document.getElementById('ArchiveStatus').value
+                })
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateArchiveItem(id, result.value);
+                }
+            });
+        }
+
+        // Update HydroFrame Item
+        async function updateHydroFrameItem(id, updatedData) {
+            try {
+                const response = await fetch(`/api/admin/updateHydroFrame/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update HydroFrame item');
+                }
+
+                console.log('HydroFrame updated successfully');
+                fetchHydroframes();
+            } catch (error) {
+                console.error('Error updating HydroFrame:', error);
             }
         }
 
-        // Fetch initial data
-        fetchNewUserData();
-    </script>
+        // Update Archive Item
+        async function updateArchiveItem(id, updatedData) {
+            try {
+                const response = await fetch(`/api/admin/updateArchive/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
 
+                if (!response.ok) {
+                    throw new Error('Failed to update Archive item');
+                }
+
+                console.log('Archive updated successfully');
+                fetchArchives();
+            } catch (error) {
+                console.error('Error updating Archive:', error);
+            }
+        }
+
+        // Update Pagination
+        function updatePagination(totalItems, currentPage, type) {
+            const totalPages = Math.ceil(totalItems / ITEMSPERPAGE) || 1; // Ensure at least one page
+            const prevBtn = document.getElementById(`prev${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+            const nextBtn = document.getElementById(`next${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+            const pageIndicator = document.getElementById(`${type}PageIndicator`);
+
+            prevBtn.disabled = currentPage === 1 || totalItems === 0;
+            nextBtn.disabled = currentPage === totalPages || totalItems === 0;
+            pageIndicator.innerText = totalItems === 0 ? 'No Data' : `Page ${currentPage} of ${totalPages}`;
+        }
+
+
+        // Pagination controls for HydroFrame
+        document.getElementById('prevhydroframeBtn').addEventListener('click', () => {
+            if (curPageHydroframe > 1) {
+                curPageHydroframe--;
+                refreshHydroframeTable();
+            }
+        });
+
+        document.getElementById('nexthydroframeBtn').addEventListener('click', () => {
+            if (curPageHydroframe < Math.ceil(hydroframes.length / ITEMSPERPAGE)) {
+                curPageHydroframe++;
+                refreshHydroframeTable();
+            }
+        });
+
+        // Pagination controls for Archive
+        document.getElementById('prevArchiveBtn').addEventListener('click', () => {
+            if (curPageArchive > 1) {
+                curPageArchive--;
+                refreshArchiveTable();
+            }
+        });
+
+        document.getElementById('nextArchiveBtn').addEventListener('click', () => {
+            if (curPageArchive < Math.ceil(archives.length / ITEMSPERPAGE)) {
+                curPageArchive++;
+                refreshArchiveTable();
+            }
+        });
+
+        // Fetch data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchHydroframes();
+            fetchArchives();
+        });
+    </script>
+    <!-- User & Device Table -->
+    <script>
+        const ITEMS_PER_PAGE = 10;
+        let users = [];
+        let devices = [];
+        let curPageUsers = 1;
+        let curPageDevices = 1;
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                const data = await res.json();
+
+                console.log('Fetched Users:', data); // Log fetched data
+
+                if (Array.isArray(data)) {
+                    users = data;
+                } else if (data.users && Array.isArray(data.users)) {
+                    users = data.users;
+                } else {
+                    throw new Error('Invalid data format: expected array of users');
+                }
+
+                refreshUserTable(); // Refresh UI
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        }
+
+        async function fetchDevices() {
+            try {
+                const res = await fetch('/api/admin/devices');
+                const data = await res.json();
+
+                console.log('Device API Response:', data); // Log the full response
+
+                if (data.device && Array.isArray(data.device)) { // Note: data.device (singular)
+                    devices = data.device; // Extract the array from the 'device' property
+                } else {
+                    throw new Error('Invalid data format: expected an array inside "device" property');
+                }
+
+                refreshDeviceTable(); // Call the function to refresh the table with the new data
+            } catch (error) {
+                console.error('Error fetching devices:', error);
+            }
+        }
+
+        function refreshUserTable() {
+            console.log('Refreshing user table with users:', users); // Debug log
+            const start = (curPageUsers - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const pageUsers = users.slice(start, end);
+
+            const tbody = document.getElementById('userBody');
+            tbody.innerHTML = ''; // Clear table
+
+            pageUsers.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td class="px-6 py-4 text-left">${user.AccountFirstname}</td>
+            <td class="px-6 py-4 text-left">${user.AccountLastname}</td>
+            <td class="px-6 py-4 text-left">${user.AccountPhoneNumber}</td>
+            <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
+            <td class="text-center"><button class="edit-user-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300" data-id="${user.AccountId}">Edit</button></td>
+        `;
+                tbody.appendChild(tr);
+            });
+
+            rebindUserEvents(); // Rebind click events
+            updatePagination(users.length, curPageUsers, 'user');
+        }
+
+
+
+        function refreshDeviceTable() {
+            const start = (curPageDevices - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const pageDevices = devices.slice(start, end);
+
+            const tbody = document.getElementById('deviceBody');
+            tbody.innerHTML = '';
+
+            pageDevices.forEach(device => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-left">${device.OwnerFirstname}</td>
+                    <td class="px-6 py-4 text-left">${device.OwnerLastname}</td>
+                    <td class="px-6 py-4 text-left">${device.OwnerPhoneNumber}</td>
+                    <td class="px-6 py-4 text-left">${device.DeviceHostname}</td>
+                    <td class="px-6 py-4 text-left">${device.DeviceIpAddress}</td>
+                    <td class="text-center"><button class="edit-device-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300" data-id="${device.DeviceId}">Edit</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            rebindDeviceEvents();
+            updatePagination(devices.length, curPageDevices, 'device');
+        }
+
+        function rebindUserEvents() {
+            document.querySelectorAll('.edit-user-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    editUser(id);
+                });
+            });
+        }
+
+        function rebindDeviceEvents() {
+            document.querySelectorAll('.edit-device-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    editDevice(id);
+                });
+            });
+        }
+
+        function editUser(id) {
+            const user = users.find(u => u.AccountId == id);
+            Swal.fire({
+                title: 'Edit User',
+                html: `
+                    <input id="AccountFirstname" value="${user.AccountFirstname}" class="swal2-input">
+                    <input id="AccountLastname" value="${user.AccountLastname}" class="swal2-input">
+                    <input id="AccountPhoneNumber" value="${user.AccountPhoneNumber}" class="swal2-input">
+                `,
+                showCancelButton: true, // Add cancel button
+                confirmButtonText: 'Save',
+                cancelButtonText: 'Cancel',
+                preConfirm: () => ({
+                    AccountFirstname: document.getElementById('AccountFirstname').value,
+                    AccountLastname: document.getElementById('AccountLastname').value,
+                    AccountPhoneNumber: document.getElementById('AccountPhoneNumber').value
+                })
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateUser(id, result.value);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    console.log('User update canceled');
+                }
+            });
+        }
+
+        function editDevice(id) {
+            const device = devices.find(d => d.DeviceId == id);
+            Swal.fire({
+                title: 'Edit Device',
+                html: `
+                    <input id="OwnerFirstname" value="${device.OwnerFirstname}" class="swal2-input">
+                    <input id="OwnerLastname" value="${device.OwnerLastname}" class="swal2-input">
+                    <input id="OwnerPhoneNumber" value="${device.OwnerPhoneNumber}" class="swal2-input">
+                    <input id="DeviceHostname" value="${device.DeviceHostname}" class="swal2-input">
+                    <input id="DeviceIpAddress" value="${device.DeviceIpAddress}" class="swal2-input">
+                `,
+                showCancelButton: true, // Add cancel button
+                confirmButtonText: 'Save',
+                cancelButtonText: 'Cancel',
+                preConfirm: () => ({
+                    OwnerFirstname: document.getElementById('OwnerFirstname').value,
+                    OwnerLastname: document.getElementById('OwnerLastname').value,
+                    OwnerPhoneNumber: document.getElementById('OwnerPhoneNumber').value,
+                    DeviceHostname: document.getElementById('DeviceHostname').value,
+                    DeviceIpAddress: document.getElementById('DeviceIpAddress').value
+                })
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateDevice(id, result.value);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    console.log('Device update canceled');
+                }
+            });
+        }
+
+
+        async function updateUser(id, { AccountFirstname, AccountLastname, AccountPhoneNumber }) {
+            try {
+                const response = await fetch(`/api/admin/updateUser/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ AccountFirstname, AccountLastname, AccountPhoneNumber })
+                });
+
+                if (!response.ok) throw new Error('Update failed');
+
+                console.log('User updated successfully');
+                await fetchUsers(); // Ensure data refresh
+                refreshUserTable(); // Force table redraw immediately
+            } catch (error) {
+                console.error('Error updating user:', error);
+            }
+        }
+
+        async function updateDevice(id, { OwnerFirstname, OwnerLastname, OwnerPhoneNumber, DeviceHostname, DeviceIpAddress }) {
+            await fetch(`/api/admin/updateDevice/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ OwnerFirstname, OwnerLastname, OwnerPhoneNumber, DeviceHostname, DeviceIpAddress })
+            });
+            fetchDevices();
+        }
+
+        function updatePagination(totalItems, currentPage, type) {
+            const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+            const prevBtn = type === 'user' ? 'prevUserBtn' : 'prevDeviceBtn';
+            const nextBtn = type === 'user' ? 'nextUserBtn' : 'nextDeviceBtn';
+            const indicator = type === 'user' ? 'userPageIndicator' : 'devicePageIndicator';
+
+            document.getElementById(prevBtn).disabled = currentPage === 1;
+            document.getElementById(nextBtn).disabled = currentPage === totalPages;
+            document.getElementById(indicator).innerText = `Page ${currentPage} of ${totalPages}`;
+        }
+
+        document.getElementById('prevUserBtn').addEventListener('click', () => {
+            if (curPageUsers > 1) {
+                curPageUsers--;
+                refreshUserTable();
+            }
+        });
+
+        document.getElementById('nextUserBtn').addEventListener('click', () => {
+            if (curPageUsers < Math.ceil(users.length / ITEMS_PER_PAGE)) {
+                curPageUsers++;
+                refreshUserTable();
+            }
+        });
+
+        document.getElementById('prevDeviceBtn').addEventListener('click', () => {
+            if (curPageDevices > 1) {
+                curPageDevices--;
+                refreshDeviceTable();
+            }
+        });
+
+        document.getElementById('nextDeviceBtn').addEventListener('click', () => {
+            if (curPageDevices < Math.ceil(devices.length / ITEMS_PER_PAGE)) {
+                curPageDevices++;
+                refreshDeviceTable();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUsers();
+            fetchDevices();
+        });
+    </script>
+    <!-- Check logged admin -->
     <script>
         // Function to check if the admin is already logged in
         function checkAdminSession() {
@@ -346,6 +902,7 @@
         // Check the session on page load
         document.addEventListener('DOMContentLoaded', checkAdminSession);
     </script>
+    <!-- Logout -->
     <script>
         document.getElementById('logout-button').addEventListener('click', function () {
             // Use the server-side logout endpoint to clear the session

@@ -477,6 +477,9 @@
                         title="Password must be at least 6 characters long and contain only letters and numbers"
                         required>
                 </div>
+                
+                
+
                 <div class="flex justify-end">
                     <a id="forgotPassword"
                         class="text-red-500 cursor-pointer hover:text-red-700 transition duration-300 ease-in-out">
@@ -534,6 +537,95 @@
                             Code</button>
                     </div>
                 </div>
+
+                <div class="mt-6">
+                    <div class="flex items-start">
+                        <input id="termsCheckbox" type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="termsCheckbox" class="ml-3 text-gray-700">
+                            I agree to the 
+                            <a id="openTermsModal" class="text-blue-500 hover:text-blue-700 cursor-pointer">
+                                Terms and Conditions
+                            </a>.
+                        </label>
+                    </div>
+                    <p id="termsError" class="hidden text-red-500 text-sm mt-2">You must agree to the Terms and Conditions.</p>
+                </div>
+                
+                <!-- Modal -->
+                <div id="termsModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center">
+                    <div class="bg-white rounded-lg shadow-lg w-3/4">
+                        <div class="p-5">
+                            <h2 class="text-2xl font-bold mb-4">Terms and Conditions</h2>
+                            <div class="max-h-96 overflow-y-auto">
+                                <pre class="text-justify  whitespace-pre-wrap">
+
+    Terms and Conditions
+    Effective Date:  November 14, 2024
+    Welcome to HydroMatic! By accessing or using our website and services, you agree to these Terms and Conditions ("Terms"). Please read them carefully.
+    1. Acceptance of Terms
+    By creating an account or using our services, you agree to be bound by these Terms. If you do not agree, please discontinue use of our platform.
+    2. Use of Services
+    HydroMatic provides hydroponics monitoring tools and notifications to help manage your system. You agree to:
+    •	Use the services only for lawful purposes.
+    •	Ensure your account information, including your phone number, is accurate and secure.
+    •	Not disrupt or interfere with the operation of our platform.
+    3. Intellectual Property
+    All content on the HydroMatic website, including text, graphics, logos, and software, is owned by HydroMatic and is protected by applicable intellectual property laws. You may not copy, distribute, or modify any part of our website without prior permission.
+    4. Limitation of Liability
+    HydroMatic is not liable for any damages resulting from your use of our platform, including data loss or service interruptions. Our services are provided "as is," without any warranties, express or implied.
+    5. Account Suspension and Termination
+    We may suspend or terminate your account if you violate these Terms or engage in activities that harm our platform or other users.
+    6. Changes to Terms
+    We reserve the right to update these Terms at any time. Changes will be effective upon posting. Continued use of our services indicates your acceptance of the updated Terms.
+    7. Contact Us
+    For any questions or concerns regarding these Terms, please contact us at: hydromatic@gmail.com
+    
+    
+    Privacy Policy
+    Effective Date:  November 14, 2024
+    HydroMatic ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy outlines how we collect, use, and safeguard your personal information when you use our hydroponics monitoring website and services.
+    1. Information We Collect
+    We collect the following information to provide and improve our services:
+    •	Personal Information: Phone number, provided during registration, to send system notifications (e.g., water level and temperature alerts).
+    •	Technical Information: IP address and device details for security, analytics, and service optimization.
+    •	Usage Data: Information about your interactions with our website, such as pages visited and features used.
+    2. How We Use Your Information
+    We use your information for the following purposes:
+    •	Service Delivery: To monitor your hydroponics system and send timely alerts.
+    •	Security: To detect and prevent unauthorized access or misuse.
+    •	Analytics and Improvements: To understand usage patterns and enhance our platform.
+    3. How We Protect Your Information
+    We implement robust security measures, including encryption and secure data storage, to protect your personal information.
+    4. Sharing Your Information
+    We do not sell or rent your personal information. However, we may share it with:
+    •	Service Providers: Trusted third parties that facilitate our services (e.g., SMS gateways, hosting providers).
+    •	Legal Requirements: When necessary to comply with legal obligations or protect our rights.
+    5. Cookies and Tracking Technologies
+    We use cookies and similar technologies to enhance your browsing experience and gather usage statistics. You can manage your cookie preferences through your browser settings.
+    6. Your Rights
+    You have the right to:
+    •	Access, update, or delete your personal information.
+    •	Opt-out of non-essential notifications and data collection where applicable.
+    7. Changes to This Privacy Policy
+    We may update this Privacy Policy periodically. Any changes will be posted on this page with the revised "Effective Date."
+    8. Contact Us
+    If you have any questions or concerns about this Privacy Policy, please contact us at: hydromatic@gmail.com
+    
+    
+    
+                                        <!-- Full Terms and Conditions content goes here -->
+                                  
+                                    
+                                </pre>
+                            </div>
+                        </div>
+                        <div class="flex justify-end p-4 border-t">
+                            <button id="closeTermsModal" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <button type="submit"
                     class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition duration-300 ease-in-out">Sign
                     Up</button>
@@ -567,34 +659,34 @@
                 </p>
             </div>
             <div class="zoom-container mx-auto">
-                <img id="sampleDevice" src="" class="w-full h-auto">
+                <video id=" img\1110 (2)(1).mp4"src="img\1110 (2)(1).mp4" class="w-auto h-auto object-cover" autoplay loop muted playsinline></video>
+                 
+                
             </div>
         </div>
     </section>
     <!-- Features Section -->
-    <section id="Features" class="bg-body py-44 ">
-        <div class="container mx-auto text-center p-6 ">
+    <section id="Features" class="bg-body py-44">
+        <div class="container mx-auto text-center p-6">
             <h2 id="featTitle" class="text-5xl font-bold text-gray-200 mb-8 scroll-animation"></h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-4xl text-d mb-4">
-                        <i class="fas fa-calendar-days"></i>
+                        <i class="fas fa-calendar-days" style="color: #15cc15;"></i>
                     </div>
-                    <h3 id="realTime" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation">
-                    </h3>
+                    <h3 id="realTime" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"></h3>
                     <p id="realTimeText" class="text-lg text-gray-800 mb-2 scroll-animation"></p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-4xl text-d mb-4">
-                        <i class="fas fa-bell"></i>
+                        <i class="fas fa-bell" style="color: #15cc15;"></i>
                     </div>
-                    <h3 id="sms" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation">
-                    </h3>
+                    <h3 id="sms" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"></h3>
                     <p id="smsText" class="text-lg text-gray-800 mb-2 scroll-animation"></p>
                 </div>
                 <div class="feature-item p-6 bg-gray-100 rounded-lg shadow-lg">
                     <div class="text-4xl text-d mb-4">
-                        <i class="fas fa-seedling"></i>
+                        <i class="fas fa-network-wired" style="color: #15cc15;"></i>
                     </div>
                     <h3 id="IoT" class="text-2xl font-bold text-gray-800 mb-2 scroll-animation"></h3>
                     <p id="IoTText" class="text-lg text-gray-800 mb-2 scroll-animation"></p>
@@ -602,6 +694,7 @@
             </div>
         </div>
     </section>
+    
     <!-- HydroMatic -->
     <section id="aboutHydro" class="bg-c py-8">
         <div
@@ -617,39 +710,46 @@
         </div>
     </section>
     <!-- Device -->
-    <section id="Steps" class="bg-body pt-24 pb-16">
+    <section id="Steps" class="bg-body pt-12 pb-8">
         <div class="mx-auto max-w-7xl text-center">
-            <h2 id="stepsTitle" class="text-3xl pb-8 font-bold tracking-tight text-center text-gray-200 sm:text-4xl">
+            <h2 id="stepsTitle" class="text-2xl pb-6 font-bold tracking-tight text-gray-100 sm:text-3xl">
                 Steps to Set Up and Operate HydroMatic
             </h2>
-            <div
-                class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-2 justify-items-center items-start scroll-animation">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center items-start scroll-animation">
+    
                 <!-- Step 1 -->
-                <div class="flex flex-col items-center self-start">
-                    <img id="stepsImg1" src="" class="h-4/5 rounded-lg bg-gray-100">
-                    <p id="step1" class="mt-2 text-gray-400"></p>
+                <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm h-400px">
+                    <img id="stepsImg1" src="" alt="Step 1 Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <h3 class="text-lg font-bold text-gray-100 mb-2">Step 1</h3>
+                    <p id="step1" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Set up your HydroMatic hardware.</p>
                 </div>
-
+    
                 <!-- Step 2 -->
-                <div class="flex flex-col items-center self-start">
-                    <img id="stepsImg2" src="" class="h-4/5 rounded-lg bg-gray-100">
-                    <p id="step2" class="mt-2 text-gray-400"></p>
+                <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm h-[400px]">
+                    <img id="stepsImg2" src="" alt="Step 2 Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <h3 class="text-lg font-bold text-gray-100 mb-2">Step 2</h3>
+                    <p id="step2" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Connect the device to your network.</p>
                 </div>
-
+    
                 <!-- Step 3 -->
-                <div class="flex flex-col items-center self-start">
-                    <img id="stepsImg3" src="" class="h-4/5 rounded-lg bg-gray-100">
-                    <p id="step3" class="mt-2 text-gray-400"></p>
+                <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm h-[400px]">
+                    <img id="stepsImg3" src="" alt="Step 3 Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <h3 class="text-lg font-bold text-gray-100 mb-2">Step 3</h3>
+                    <p id="step3" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Calibrate the system and test sensors.</p>
                 </div>
-
+    
                 <!-- Step 4 -->
-                <div class="flex flex-col items-center self-start">
-                    <img id="stepsImg4" src="" class="h-4/5 rounded-lg bg-gray-100">
-                    <p id="step4" class="mt-2 text-gray-400"></p>
+                <div class="flex flex-col items-center bg-gray-700 rounded-lg shadow-lg p-4 w-full max-w-xs sm:max-w-sm h-[400px]">
+                    <img id="stepsImg4" src="" alt="Step 4 Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <h3 class="text-lg font-bold text-gray-100 mb-2">Step 4</h3>
+                    <p id="step4" class="text-gray-100 text-sm sm:text-base font-medium mb-2">Start automated monitoring and control.</p>
                 </div>
             </div>
         </div>
     </section>
+    
+    
+    
     <!-- About Us Section -->
     <section id="aboutUs" class="bg-gray-100 pt-24 pb-16">
         <div class="container mx-auto px-4">
@@ -779,6 +879,35 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    document.getElementById('openTermsModal').addEventListener('click', function() {
+        document.getElementById('termsModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeTermsModal').addEventListener('click', function() {
+        document.getElementById('termsModal').classList.add('hidden');
+    });
+
+    // Example form submission check
+    document.getElementById('termsCheckbox').addEventListener('change', function() {
+        const errorText = document.getElementById('termsError');
+        if (this.checked) {
+            errorText.classList.add('hidden');
+        }
+    });
+
+    function validateForm() {
+        const termsCheckbox = document.getElementById('termsCheckbox');
+        const errorText = document.getElementById('termsError');
+        if (!termsCheckbox.checked) {
+            errorText.classList.remove('hidden');
+            return false;
+        }
+        return true;
+    }
+</script>
     <!-- Active Nav -->
     <script>
         function updateActiveLink() {

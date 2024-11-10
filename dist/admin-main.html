@@ -638,9 +638,9 @@
             // Add rows from the filtered activity data
             activities.forEach(activity => {
                 const activityData = [
-                    activity.Fname,
-                    activity.Lname,
-                    activity.Pnum,
+                    activity.AccountFirstname,
+                    activity.AccountLastname,
+                    activity.AccountPhoneNumber,
                     activity.Activity,
                     new Date(activity.Date).toLocaleDateString()
                 ];
