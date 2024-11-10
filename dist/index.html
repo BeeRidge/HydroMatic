@@ -339,7 +339,7 @@
             const newBedDiv = document.createElement('div');
             const bedId = deviceInfo.DeviceHostname; // Unique ID for each bed
 
-            newBedDiv.className = 'w-full max-w-xs bg-gray-300 text-gray-800 hover:bg-gray-800 hover:text-gray-300 border-2 0 rounded-lg shadow-xl p-4 cursor-pointer';
+            newBedDiv.className = 'w-full max-w-xs bg-gray-300 text-gray-800 hover:bg-gray-800 hover:text-gray-300 border-2 0 rounded-lg shadow-lg p-4 cursor-pointer';
 newBedDiv.innerHTML = `
     <h1 class="text-lg font-bold uppercase mb-2">Name: ${deviceInfo.DeviceHostname}</h1>
     <p class="text-md mb-1">Start Date: ${formatDate(deviceInfo.HydroFrameStartDate)}</p>
