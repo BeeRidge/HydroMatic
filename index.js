@@ -903,7 +903,7 @@ app.post(
 
       // Insert the activity into the activities table
       const activityQuery =
-        'INSERT INTO useractivity (ArivityId Activity) VALUES (?, "UPDATE FIRST NAME")';
+        'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "UPDATE FIRST NAME")';
       await db.query(activityQuery, [req.session.user.id]);
 
       res.send({ message: "First name updated successfully." });
@@ -960,7 +960,7 @@ app.post(
 
       // Insert the activity into the activities table
       const activityQuery =
-        'INSERT INTO useractivity (ActivityId, Activity) VALUES (?, "UPDATE LAST NAME")';
+        'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "UPDATE LAST NAME")';
       await db.query(activityQuery, [req.session.user.id]);
 
       res.send({ message: "Last name updated successfully." });
@@ -1029,7 +1029,7 @@ app.post(
 
       // Insert the activity into the activities table
       const activityQuery =
-        'INSERT INTO useractivity (ActivityId Activity) VALUES (?, "UPDATE PHONE NUMBER")';
+        'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "UPDATE PHONE NUMBER")';
       await db.query(activityQuery, [req.session.user.id]);
 
       res.send({ message: "Phone number updated successfully." });
@@ -1053,7 +1053,7 @@ app.post("/api/account/update-password", async (req, res) => {
 
     // Insert the activity into the activities table
     const activityQuery =
-      'INSERT INTO useractivity (ActivityId Activity) VALUES (?, "UPDATE PASSWORD")';
+      'INSERT INTO useractivity (AccountId, Activity) VALUES (?, "UPDATE PASSWORD")';
     await db.query(activityQuery, [req.session.user.id]);
 
     res.json({ message: "Password updated successfully" });
@@ -1657,7 +1657,7 @@ app.patch("/api/admin/updateHydroFrame/:id", async (req, res) => {
   }
 });
 app.patch("/api/admin/updateArchive/:id", async (req, res) => {
-  const hydroFrameId = req.params.id;
+  const ArchiveId = req.params.id;
   const {
       DeviceHostname,
       DeviceIpAddress,
@@ -1681,7 +1681,7 @@ app.patch("/api/admin/updateArchive/:id", async (req, res) => {
           return res.status(400).json({ success: false, error: "All fields are required" });
       }
 
-      const sql = `UPDATE hydroframe SET 
+      const sql = `UPDATE archive SET 
           DeviceHostname = ?, 
           DeviceIpAddress = ?, 
           ArchiveStartDate = ?, 
@@ -1699,7 +1699,7 @@ app.patch("/api/admin/updateArchive/:id", async (req, res) => {
           ArchiveLastDay,
           ArchiveHarvestDate,
           ArchiveStatus,
-          hydroFrameId
+          ArchiveId
       ]);
 
       if (result.affectedRows === 0) {
