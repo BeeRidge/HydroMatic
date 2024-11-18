@@ -141,10 +141,10 @@
                     <div class="flex flex-wrap bg-gray-200">
                         <div class="w-full md:w-1/2 xl:w-1/3 p-6">
                             <div
-                                class="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-500 rounded-lg shadow-xl p-5">
+                                class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-500 rounded-lg shadow-xl p-5">
                                 <div class="flex flex-row items-center">
                                     <div class="flex-shrink pr-4">
-                                        <div class="rounded-full p-5 bg-green-600"><i
+                                        <div class="rounded-full p-5 bg-blue-600"><i
                                                 class="fas fa-users fa-2x fa-inverse"></i></div>
                                     </div>
                                     <div class="flex-1 text-right md:text-center">
@@ -171,16 +171,16 @@
                         </div>
                         <div class="w-full md:w-1/2 xl:w-1/3 p-6">
                             <div
-                                class="bg-gradient-to-b from-pink-200 to-pink-100 border-b-4 border-pink-900 rounded-lg shadow-xl p-5">
+                                class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-500 rounded-lg shadow-xl p-5">
                                 <div class="flex flex-row items-center">
                                     <div class="flex-shrink pr-4">
-                                        <div class="rounded-full py-5 px-6 bg-pink-900"><i
+                                        <div class="rounded-full py-5 px-6 bg-blue-600"><i
                                                 class="fas fa-file fa-2x fa-inverse"></i></div>
                                     </div>
                                     <div class="flex-1 text-right md:text-center">
                                         <h2 class="text-xl pb-2 font-bold uppercase text-gray-600">User Activities</h2>
                                         <button id="printOutLogsBtn"
-                                            class="bg-pink-800 text-white py-2 px-4 rounded hover:bg-pink-900">
+                                            class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-700">
                                             Print Out
                                         </button>
                                     </div>
@@ -190,21 +190,26 @@
                     </div>
 
                     <!-- Tables Section -->
-                    <!-- Tables Section -->
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
                         <!-- Table 1: New Users -->
-                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col justify-between">
+                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col">
                             <h1 class="text-2xl font-bold text-gray-800 mb-4">New Users</h1>
                             <div class="overflow-auto">
                                 <table id="newUserTable"
                                     class="w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
-                                    <thead class="bg-sky-custom text-white">
+                                    <thead class="bg-cyan-custom text-white">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Name
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Name
                                             </th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Phone Number
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Phone Number
                                             </th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Date</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Date</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200" id="newUserBody">
@@ -214,32 +219,40 @@
                             </div>
                             <div id="pagination" class="flex items-center justify-center">
                                 <button id="prevNewUserBtn"
-                                    class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg mr-2">
+                                    class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg mr-2">
                                     Previous
                                 </button>
                                 <span id="newUserPageIndicator" class="text-lg text-gray-600 mx-2"></span>
                                 <button id="nextNewUserBtn"
-                                    class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg ml-2">
+                                    class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg ml-2">
                                     Next
                                 </button>
                             </div>
                         </div>
 
                         <!-- Table 2: HydroMatic Device -->
-                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col justify-between">
+                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col">
                             <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroMatic Device</h1>
                             <div class="overflow-auto">
                                 <table id="deviceTable"
                                     class="w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
-                                    <thead class="bg-teal-custom text-white">
+                                    <thead class="bg-cyan-custom text-white">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Phone Number
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Phone Number
                                             </th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Device Name
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Device Name
                                             </th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">IP Address
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                IP Address
                                             </th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Status</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Status</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200" id="deviceBody">
@@ -249,29 +262,35 @@
                             </div>
                             <div id="devicePagination" class="flex items-center justify-center">
                                 <button id="prevDeviceBtn"
-                                    class="px-4 py-2 bg-teal-custom text-lg text-white rounded-lg shadow-lg mr-2">
+                                    class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg mr-2">
                                     Previous
                                 </button>
                                 <span id="devicePageIndicator" class="text-lg text-gray-600 mx-2"></span>
                                 <button id="nextDeviceBtn"
-                                    class="px-4 py-2 bg-teal-custom text-lg text-white rounded-lg shadow-lg ml-2">
+                                    class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg ml-2">
                                     Next
                                 </button>
                             </div>
                         </div>
 
                         <!-- Table 3: User Activities -->
-                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col justify-between">
+                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col">
                             <h1 class="text-2xl font-bold text-gray-800 mb-4">User Activities</h1>
                             <div class="overflow-auto">
                                 <table id="activityTable"
                                     class="w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
                                     <thead class="bg-cyan-custom text-white">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Date</th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Activity
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Date</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Activity
                                             </th>
-                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Phone Number
+                                            <th
+                                                class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">
+                                                Phone Number
                                             </th>
                                         </tr>
                                     </thead>
@@ -340,6 +359,11 @@
     </script>
     <!-- Load Tables -->
     <script>
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('en-US', options).replace(',', '');
+        }
+
         // Combined Script for User Activities, HydroMatic Device, and New Users
         let activities = [];
         let devices = [];
@@ -378,12 +402,13 @@
             paginatedActivities.forEach(activity => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${new Date(activity.Date).toLocaleDateString()}</td>
-                    <td class="px-6 py-4 text-left">${activity.Activity}</td>
-                    <td class="px-6 py-4 text-left">${activity.AccountPhoneNumber}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${formatDate(activity.Date)}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${activity.Activity}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${activity.AccountPhoneNumber}</td>
                 `;
                 activityBody.appendChild(row);
             });
+
 
             document.getElementById('activityPageIndicator').textContent = `Page ${page} of ${Math.ceil(activities.length / itemPerPage)}`;
             document.getElementById('prevActivityBtn').disabled = page === 1;
@@ -419,13 +444,14 @@
             paginatedDevices.forEach(device => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${device.OwnerPhoneNumber}</td>
-                    <td class="px-6 py-4 text-left">${device.DeviceHostname}</td>
-                    <td class="px-6 py-4 text-left">${device.DeviceIpAddress}</td>
-                    <td class="px-6 py-4 text-left">${device.DeviceStatus}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${device.OwnerPhoneNumber}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${device.DeviceHostname}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${device.DeviceIpAddress}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${device.DeviceStatus}</td>
                 `;
                 deviceBody.appendChild(row);
             });
+
 
             document.getElementById('devicePageIndicator').textContent = `Page ${page} of ${Math.ceil(devices.length / itemPerPage)}`;
             document.getElementById('prevDeviceBtn').disabled = page === 1;
@@ -464,12 +490,13 @@
             paginatedUsers.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${user.AccountFirstname} ${user.AccountLastname}</td>
-                    <td class="px-6 py-4 text-left">${user.AccountPhoneNumber}</td>
-                    <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
-                `;
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${user.AccountFirstname} ${user.AccountLastname}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${user.AccountPhoneNumber}</td>
+                    <td class="px-6 py-4 text-left whitespace-nowrap">${formatDate(user.Date)}</td>
+                 `;
                 newUserBody.appendChild(row);
             });
+
 
             document.getElementById('newUserPageIndicator').textContent = `Page ${page} of ${Math.ceil(newUsers.length / itemPerPage)}`;
             document.getElementById('prevNewUserBtn').disabled = page === 1;

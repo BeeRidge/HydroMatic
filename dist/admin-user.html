@@ -347,18 +347,18 @@
             });
             document.getElementById(targetTableId).classList.remove('hidden');
         }
-    
+
         // Attach click event listeners to "Manage" menu items
         document.querySelector('[data-target="manage-menu"]').addEventListener('click', () => {
             const manageMenu = document.getElementById('manage-menu');
             manageMenu.classList.toggle('hidden');
         });
-    
+
         document.querySelectorAll('#manage-menu a').forEach(item => {
             item.addEventListener('click', (event) => {
                 event.preventDefault();
                 const href = event.target.getAttribute('href');
-    
+
                 // Determine which table to show based on the menu item clicked
                 switch (href) {
                     case 'admin-userAccount':
@@ -376,20 +376,24 @@
                     default:
                         break;
                 }
-    
+
                 // Collapse the manage menu after selection
                 document.getElementById('manage-menu').classList.add('hidden');
             });
         });
-    
+
         // Hide all tables except the default one on page load
         document.addEventListener('DOMContentLoaded', () => {
             showTable('userAccountTable'); // Set the default table to be shown
         });
     </script>
-    
 
     <script>
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('en-US', options).replace(',', '');
+        }
+
         const ITEMSPERPAGE = 10; // Number of items per page
         let hydroframes = []; // HydroFrame data array
         let archives = []; // Archive data array
@@ -448,10 +452,10 @@
                     <td class="px-6 py-4">${item.AccountFirstname} ${item.AccountLastname}</td>
                     <td class="px-6 py-4">${item.DeviceHostname}</td>
                     <td class="px-6 py-4">${item.DeviceIpAddress}</td>
-                    <td class="px-6 py-4">${new Date(item.HydroFrameStartDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${formatDate(item.HydroFrameStartDate)}</td>
                     <td class="px-6 py-4">${item.HydroFrameStartDay}</td>
                     <td class="px-6 py-4">${item.HydroFrameLastDay}</td>
-                    <td class="px-6 py-4">${new Date(item.HydroFrameHarvestDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${formatDate(item.HydroFrameHarvestDate)}</td>
                     <td class="px-6 py-4">${item.HydroFrameStatus}</td>
                     <td class="px-6 py-4 text-center">
                         <button class="editHydroFramebtn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600" data-id="${item.HydroFrameId}">Edit</button>
@@ -479,10 +483,10 @@
                     <td class="px-6 py-4">${item.AccountFirstname} ${item.AccountLastname}</td>
                     <td class="px-6 py-4">${item.DeviceHostname}</td>
                     <td class="px-6 py-4">${item.DeviceIpAddress}</td>
-                    <td class="px-6 py-4">${new Date(item.ArchiveStartDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${formatDate(item.ArchiveStartDate)}</td>
                     <td class="px-6 py-4">${item.ArchiveStartDay}</td>
                     <td class="px-6 py-4">${item.ArchiveLastDay}</td>
-                    <td class="px-6 py-4">${new Date(item.ArchiveHarvestDate).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">${formatDate(item.ArchiveHarvestDate)}</td>
                     <td class="px-6 py-4">${item.ArchiveStatus}</td>
                     <td class="px-6 py-4 text-center">
                         <button class="editArchivebtn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600" data-id="${item.ArchiveId}">Edit</button>
@@ -686,6 +690,11 @@
     </script>
     <!-- User & Device Table -->
     <script>
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('en-US', options).replace(',', '');
+        }
+
         const ITEMS_PER_PAGE = 10;
         let users = [];
         let devices = [];
@@ -744,12 +753,14 @@
             pageUsers.forEach(user => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-            <td class="px-6 py-4 text-left">${user.AccountFirstname}</td>
-            <td class="px-6 py-4 text-left">${user.AccountLastname}</td>
-            <td class="px-6 py-4 text-left">${user.AccountPhoneNumber}</td>
-            <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
-            <td class="text-center"><button class="edit-user-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300" data-id="${user.AccountId}">Edit</button></td>
-        `;
+                    <td class="px-6 py-4 text-left">${user.AccountFirstname}</td>
+                    <td class="px-6 py-4 text-left">${user.AccountLastname}</td>
+                    <td class="px-6 py-4 text-left">${user.AccountPhoneNumber}</td>
+                    <td class="px-6 py-4 text-left">${formatDate(user.Date)}</td>
+                    <td class="text-center">
+                        <button class="edit-user-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300" data-id="${user.AccountId}">Edit</button>
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
 
