@@ -136,6 +136,7 @@
                             <h1 class="font-bold pl-2">Dashboard</h1>
                         </div>
                     </div>
+
                     <!-- Card for Total Users and Total Device -->
                     <div class="flex flex-wrap bg-gray-200">
                         <div class="w-full md:w-1/2 xl:w-1/3 p-6">
@@ -179,129 +180,122 @@
                                     <div class="flex-1 text-right md:text-center">
                                         <h2 class="text-xl pb-2 font-bold uppercase text-gray-600">User Activities</h2>
                                         <button id="printOutLogsBtn"
-                                            class="bg-pink-800 text-white py-2 px-4 rounded hover:bg-pink-900">Print
-                                            Out</button>
+                                            class="bg-pink-800 text-white py-2 px-4 rounded hover:bg-pink-900">
+                                            Print Out
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- TABLE FOR NEW USERS -->
-                    <div class="w-full shadow-lg p-6 bg-gray-200">
-                        <h1 class="text-2xl font-bold text-gray-800 mb-4">New Users</h1>
-                        <table id="newUserTable"
-                            class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
-                            <thead class="bg-sky-custom text-white"> <!-- Changed class -->
-                                <tr>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        First Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Last Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Phone Number</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Date</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="newUserBody">
-                                <!-- Data will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
 
-                        <!-- Move pagination here -->
-                        <div id="pagination" class="flex items-center justify-center mt-4">
-                            <button id="prevNewUserBtn"
-                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom mr-2">Previous</button>
-                            <span id="newUserPageIndicator" class="text-lg text-gray-600 mx-2"></span>
-                            <button id="nextNewUserBtn"
-                                class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg hover:bg-sky-custom ml-2">Next</button>
+                    <!-- Tables Section -->
+                    <!-- Tables Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
+                        <!-- Table 1: New Users -->
+                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col justify-between">
+                            <h1 class="text-2xl font-bold text-gray-800 mb-4">New Users</h1>
+                            <div class="overflow-auto">
+                                <table id="newUserTable"
+                                    class="w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
+                                    <thead class="bg-sky-custom text-white">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Name
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Phone Number
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200" id="newUserBody">
+                                        <!-- Data will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="pagination" class="flex items-center justify-center">
+                                <button id="prevNewUserBtn"
+                                    class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg mr-2">
+                                    Previous
+                                </button>
+                                <span id="newUserPageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                                <button id="nextNewUserBtn"
+                                    class="px-4 py-2 bg-sky-custom text-lg text-white rounded-lg shadow-lg ml-2">
+                                    Next
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <!-- TABLE FOR HYDROMATIC DEVICE -->
-                    <div class="w-full shadow-lg p-6 bg-gray-200">
-                        <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroMatic Device</h1>
-                        <table id="deviceTable"
-                            class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
-                            <thead class="bg-teal-custom text-white"> <!-- Changed class -->
-                                <tr>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        First Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Last Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Phone Number</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Device Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        IP Address</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="deviceBody">
-                                <!-- Data will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
 
-                        <!-- HydroMatic Device Pagination -->
-                        <div id="devicePagination" class="flex items-center justify-center mt-4">
-                            <button id="prevDeviceBtn"
-                                class="px-4 py-2 bg-teal-custom text-lg text-white rounded-lg shadow-lg hover:bg-teal-custom mr-2">Previous</button>
-                            <span id="devicePageIndicator" class="text-lg text-gray-600 mx-2"></span>
-                            <button id="nextDeviceBtn"
-                                class="px-4 py-2 bg-teal-custom text-lg text-white rounded-lg shadow-lg hover:bg-teal-custom ml-2">Next</button>
+                        <!-- Table 2: HydroMatic Device -->
+                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col justify-between">
+                            <h1 class="text-2xl font-bold text-gray-800 mb-4">HydroMatic Device</h1>
+                            <div class="overflow-auto">
+                                <table id="deviceTable"
+                                    class="w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
+                                    <thead class="bg-teal-custom text-white">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Phone Number
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Device Name
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">IP Address
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200" id="deviceBody">
+                                        <!-- Data will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="devicePagination" class="flex items-center justify-center">
+                                <button id="prevDeviceBtn"
+                                    class="px-4 py-2 bg-teal-custom text-lg text-white rounded-lg shadow-lg mr-2">
+                                    Previous
+                                </button>
+                                <span id="devicePageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                                <button id="nextDeviceBtn"
+                                    class="px-4 py-2 bg-teal-custom text-lg text-white rounded-lg shadow-lg ml-2">
+                                    Next
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <!-- TABLE FOR USER ACTIVITIES -->
-                    <div class="w-full shadow-lg p-6 bg-gray-200">
-                        <h1 class="text-2xl font-bold text-gray-800 mb-4">User Activities</h1>
-                        <table id="activityTable"
-                            class="w-full divide-y divide-gray-300 rounded-lg shadow-lg overflow-hidden">
-                            <thead class="bg-cyan-custom text-white"> <!-- Changed class -->
-                                <tr>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        First Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Last Name</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Phone Number</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Activity</th>
-                                    <th
-                                        class="px-6 py-4 border-b-2 border-gray-300 text-left text-sm font-semibold uppercase tracking-wider">
-                                        Date</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="activityBody">
-                                <!-- Data will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
 
-                        <!-- User Activity Pagination -->
-                        <div id="activityPagination" class="flex items-center justify-center mt-4">
-                            <button id="prevActivityBtn"
-                                class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg hover:bg-cyan-custom mr-2">Previous</button>
-                            <span id="activityPageIndicator" class="text-lg text-gray-600 mx-2"></span>
-                            <button id="nextActivityBtn"
-                                class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg hover:bg-cyan-custom ml-2">Next</button>
+                        <!-- Table 3: User Activities -->
+                        <div class="bg-white shadow-lg p-6 rounded-lg flex flex-col justify-between">
+                            <h1 class="text-2xl font-bold text-gray-800 mb-4">User Activities</h1>
+                            <div class="overflow-auto">
+                                <table id="activityTable"
+                                    class="w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
+                                    <thead class="bg-cyan-custom text-white">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Date</th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Activity
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase whitespace-nowrap">Phone Number
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200" id="activityBody">
+                                        <!-- Data will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="activityPagination" class="flex items-center justify-center">
+                                <button id="prevActivityBtn"
+                                    class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg mr-2">
+                                    Previous
+                                </button>
+                                <span id="activityPageIndicator" class="text-lg text-gray-600 mx-2"></span>
+                                <button id="nextActivityBtn"
+                                    class="px-4 py-2 bg-cyan-custom text-lg text-white rounded-lg shadow-lg ml-2">
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
+
             <!-- Modal for PDF Preview -->
             <div id="pdfModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
                 <div class="bg-white rounded-lg shadow-lg p-4 w-11/12 max-w-3xl relative">
@@ -313,7 +307,7 @@
                         </button>
                     </div>
                     <iframe id="pdfPreview" class="w-full h-96 mt-4" frameborder="0"></iframe>
-                   <!--  <div class="flex justify-end mt-4">
+                    <!--  <div class="flex justify-end mt-4">
                         <button id="savePdfBtn" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Save
                             PDF</button>
                     </div> -->
@@ -384,11 +378,9 @@
             paginatedActivities.forEach(activity => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${activity.AccountFirstname}</td>
-                    <td class="px-6 py-4 text-left">${activity.AccountLastname}</td>
-                    <td class="px-6 py-4 text-left">${activity.AccountPhoneNumber}</td>
-                    <td class="px-6 py-4 text-left">${activity.Activity}</td>
                     <td class="px-6 py-4 text-left">${new Date(activity.Date).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 text-left">${activity.Activity}</td>
+                    <td class="px-6 py-4 text-left">${activity.AccountPhoneNumber}</td>
                 `;
                 activityBody.appendChild(row);
             });
@@ -427,8 +419,6 @@
             paginatedDevices.forEach(device => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${device.OwnerFirstname}</td>
-                    <td class="px-6 py-4 text-left">${device.OwnerLastname}</td>
                     <td class="px-6 py-4 text-left">${device.OwnerPhoneNumber}</td>
                     <td class="px-6 py-4 text-left">${device.DeviceHostname}</td>
                     <td class="px-6 py-4 text-left">${device.DeviceIpAddress}</td>
@@ -474,8 +464,7 @@
             paginatedUsers.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-left">${user.AccountFirstname}</td>
-                    <td class="px-6 py-4 text-left">${user.AccountLastname}</td>
+                    <td class="px-6 py-4 text-left">${user.AccountFirstname} ${user.AccountLastname}</td>
                     <td class="px-6 py-4 text-left">${user.AccountPhoneNumber}</td>
                     <td class="px-6 py-4 text-left">${new Date(user.Date).toLocaleDateString()}</td>
                 `;
@@ -724,21 +713,21 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    // Clear any token from local storage
-                    localStorage.removeItem('token');
-                    // Clear any session-related data from cookies
-                    document.cookie = 'session=; Max-Age=0; path=/';
-                    // Redirect to the login page
-                    window.location.href = '/admin-login';
-                } else {
-                    alert('Error logging out');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => {
+                    if (response.ok) {
+                        // Clear any token from local storage
+                        localStorage.removeItem('token');
+                        // Clear any session-related data from cookies
+                        document.cookie = 'session=; Max-Age=0; path=/';
+                        // Redirect to the login page
+                        window.location.href = '/admin-login';
+                    } else {
+                        alert('Error logging out');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
     </script>
 </body>

@@ -1424,7 +1424,7 @@
                     sessionStorage.setItem('authToken', data.token);
 
                     Swal.fire('Success', 'Login successful!', 'success').then(() => {
-                        window.location.href = 'http://localhost:3000/dashboard';
+                        window.location.href = 'http://192.168.100.25:3000/dashboard';
                     });
                 } else {
                     Swal.fire('Error', data.error || 'Login failed', 'error');

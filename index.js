@@ -17,12 +17,18 @@ const PORT = process.env.PORT || 3000;
 // Configure session middleware
 app.use(
   session({
-    secret: "c1a5da10672b82ad5af1bb0abb714293c5fa9667005bc4712017ac00eea56d27", // Replace with a secure secret key
+    secret: "a5da10672b82ad5af1bb0abb714293c5fa9667005bc4712017ac00eea56d27",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }, // 1-day session expiration
+    cookie: {
+      secure: false, // Set true only if using HTTPS
+      httpOnly: true,
+      sameSite: 'lax', // Allows cross-origin navigation on the same domain
+      maxAge: 24 * 60 * 60 * 1000, // 1-day expiration
+    },
   })
 );
+
 // Configure multer for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -1386,7 +1392,7 @@ const checkUserSession = (req, res, next) => {
   if (req.session.user) {
     next(); // Proceed to the next middleware or route handler if the user is logged in
   } else {
-    res.redirect("/"); // Redirect to the landing page if not logged in as a user
+    res.redirect(`${res.locals.hostUrl}/`); // Redirect to the landing page if not logged in as a user
   }
 };
 // API endpoint to check the session status
@@ -1753,7 +1759,7 @@ app.get("/api/admin/TotalDevice", async (req, res) => {
 app.get("/api/admin/new-users", async (req, res) => {
   try {
     // Query to get all new users from the account table
-    const userQuery = "SELECT * FROM account ORDER BY Date DESC"; // Ensure this is the correct table and field names
+    const userQuery = "SELECT * FROM account ORDER BY AccountId DESC"; // Ensure this is the correct table and field names
     const [rows] = await db.query(userQuery);
     res.json({ success: true, users: rows }); // Ensure you are sending users
   } catch (err) {
@@ -1884,45 +1890,57 @@ const checkAdminSession = (req, res, next) => {
   if (req.session.admin) {
     next(); // Proceed to the next middleware or route handler if the admin is logged in
   } else {
-    res.redirect("/admin-login"); // Redirect to the landing page if not logged in as an admin
+    res.redirect(`${res.locals.hostUrl}/admin-login`); // Redirect to the landing page if not logged in as an admin
   }
 };
 // Handle admin-login.html
 app.get("/admin-login", (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
 });
 // Admin-protected routes
 app.get("/admin-main", checkAdminSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
 });
 app.get("/admin-user", checkAdminSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-user.html"));
 });
 app.get("/admin-cms", checkAdminSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
 });
 // Handle login.html
 app.get("/login", (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "login.html"));
 });
 // User-protected routes
 app.get("/index", checkUserSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
-app.get("/dashboard", checkUserSession, (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "dashboard.html"));
+app.get('/dashboard', checkUserSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
+  res.sendFile(path.join(__dirname, 'dist', 'dashboard.html'));
 });
+
 app.get("/settings", checkUserSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "settings.html"));
 });
 app.get("/archive", checkUserSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "archive.html"));
 });
 app.get("/tables", checkUserSession, (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "tables.html"));
 });
 // Serve the home page
 app.get("/", (req, res) => {
+  const hostUrl = `${req.protocol}://${req.get('host')}`;
   console.log("Serving landing.html");
   res.sendFile(path.join(__dirname, "dist", "landing.html"), (err) => {
     if (err) {
@@ -1931,13 +1949,17 @@ app.get("/", (req, res) => {
     }
   });
 });
+app.use((req, res, next) => {
+  res.locals.hostUrl = `${req.protocol}://${req.get('host')}`;
+  next();
+});
 // Handle 404 errors
 app.use((req, res) => {
   res.status(404).send("404 Not Found");
 });
 // Handle PORT serve
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '192.168.100.25', () => {
+  console.log(`Server is running on http://192.168.100.25:${PORT}`);
 });
 
 /* ----------------------------------------------------Functions--------------------------------------------------------- */
