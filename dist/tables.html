@@ -84,8 +84,6 @@
 
             font-weight: 700;
         }
-
-    
     </style>
 </head>
 
@@ -165,8 +163,7 @@
                     <div id="itemContainer"
                         class="w-full h-full grid grid-flow-row grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-5 overflow-auto pb-16">
                         <!-- Days -->
-                        <div
-                            class="w-full bg-body border  rounded-lg shadow-lg p-6 aspect-square border-gray-600 ">
+                        <div class="w-full bg-body border  rounded-lg shadow-lg p-6 aspect-square border-gray-600 ">
                             <h1 class="font-bold uppercase text-gray-200 text-lg">Days to harvest</h1>
                             <h1 id="days" class="text-gray-200"></h1>
                             <div id="showImage" class="w-full flex flex-col  items-center">
@@ -179,8 +176,7 @@
                             </div>
                         </div>
                         <!-- Water Status -->
-                        <div
-                            class="w-full bg-body  border rounded-lg shadow-lg p-6 aspect-square border-gray-600 ">
+                        <div class="w-full bg-body  border rounded-lg shadow-lg p-6 aspect-square border-gray-600 ">
                             <div class="w-full h-full grid grid-rows-2 items-center justify-center text-center">
                                 <div class="space-x-2">
                                     <h1 class="font-bold text-gray-200 uppercase text-lg">Water Temperature</h1>
@@ -375,7 +371,7 @@
                 if (imagePhase) {
                     // Create and display the image element
                     const imageElement = document.createElement('img');
-                    imageElement.src = imagePhase.image_path ? `${window.location.origin}/${imagePhase.image_path}` : 'http://localhost:3000/img/lettuce7.png';
+                    imageElement.src = imagePhase.image_path ? `${window.location.origin}/${imagePhase.image_path}` : 'http://192.168.100.25:3000/img/lettuce7.png';
                     imageElement.alt = "Image for the bed";
                     imageElement.className = 'w-1/2 h-1/2 block mx-auto';
 
@@ -598,15 +594,16 @@
                             const row = document.createElement("tr");
 
                             row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${DeviceHostnameData}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.Time}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(log.Date)}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.WaterLevel}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.WaterTemperature}</td>
-            `;
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${DeviceHostnameData}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.Time}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(log.Date)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.WaterLevel}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${log.WaterTemperature}</td>
+                            `;
 
                             tableBody.appendChild(row);
                         });
+
 
                         document.getElementById("pageInfo").textContent = `Page ${page}`;
                         document.getElementById("prevPage").disabled = page === 1;
@@ -642,14 +639,13 @@
 
             if (isNaN(date.getTime())) {
                 console.error('Invalid date:', dateString);
-                return 'Invalid Date'; // or return a placeholder text
+                return 'Invalid Date'; // Placeholder for invalid dates
             }
 
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            const formatter = new Intl.DateTimeFormat('en-US', options);
-            const [{ value: month }, , { value: day }, , { value: year }] = formatter.formatToParts(date);
-            return `${month}-${day}-${year}`;
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options); // Example output: "Jan 20 2000"
         }
+
     </script>
     <!-- Calendar -->
     <script>
@@ -781,24 +777,24 @@
                 method: 'GET',
                 credentials: 'include' // Ensure cookies are included in the request
             })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.isAuthenticated) {
-                    // Redirect to the login page if the session is not valid
-                    Swal.fire({
-                        title: 'Session Expired',
-                        text: 'Please log in again.',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = 'http://localhost:3000/';
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error checking session:', error);
-                window.location.href = 'http://localhost:3000/';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.isAuthenticated) {
+                        // Redirect to the login page if the session is not valid
+                        Swal.fire({
+                            title: 'Session Expired',
+                            text: 'Please log in again.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = 'http://192.168.100.25:3000/';
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking session:', error);
+                    window.location.href = 'http://192.168.100.25:3000/';
+                });
         }
 
         // Call the session check function when the page loads
@@ -831,7 +827,7 @@
                     });
 
                     // Redirect to the login page
-                    window.location.href = 'http://localhost:3000/';
+                    window.location.href = 'http://192.168.100.25:3000/';
                 } else {
                     Swal.fire({
                         title: 'Logout Failed',
@@ -855,4 +851,5 @@
         document.getElementById('mobile-logout').addEventListener('click', logoutUser);
     </script>
 </body>
+
 </html>

@@ -562,6 +562,7 @@ app.post("/api/delete-device", async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+  
   const { DeviceHostname } = req.body;
 
   if (!DeviceHostname) {
@@ -587,6 +588,7 @@ app.post("/api/delete-device", async (req, res) => {
       HydroFrameLastDay: lDay,
       HydroFrameStartDate: sDate,
       HydroFrameHarvestDate: hDate,
+      HydroFrameStatus: status, // Fetch HydroFrameStatus to determine the archive status
     } = results[0];
 
     // SQL query to delete the record
@@ -599,13 +601,14 @@ app.post("/api/delete-device", async (req, res) => {
       return res.status(404).json({ message: "Bed not found." });
     }
 
-    // Determine status
-    const stat = lDay < 70 ? "REMOVED" : "FINISHED";
+    // Determine status based on HydroFrameStatus
+    const stat = status === "HARVEST" ? "FINISHED" : "REMOVED";
 
     // Insert into archived
     await db.query(
       `INSERT INTO archive (DeviceHostname, DeviceIpAddress, ArchiveStartDay, ArchiveLastDay, ArchiveStartDate, ArchiveHarvestDate, ArchiveDate, ArchiveStatus, AccountId) 
       VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?, ?)`,
+
       [name, ip, sDay, lDay, sDate, hDate, stat, req.session.user.id]
     );
 
@@ -622,11 +625,12 @@ app.post("/api/delete-device", async (req, res) => {
       .json({ message: "Failed to delete the bed from the database." });
   }
 });
-// Updated /api/update-last-day endpoint
+
 app.post("/api/update-last-day", async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+
   const {
     DeviceHostname,
     DeviceIpAddress,
@@ -636,20 +640,27 @@ app.post("/api/update-last-day", async (req, res) => {
   } = req.body;
 
   try {
-    // SQL query to select HydroFrameLastDay from the database
     const [results] = await db.query(
       "SELECT HydroFrameLastDay FROM hydroframe WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?",
       [DeviceHostname, DeviceIpAddress, req.session.user.id]
     );
 
-    if (results.length === 0) {
+    if (!Array.isArray(results) || results.length === 0) {
       return res.status(404).json({ message: "Bed not found" });
     }
 
     const lastDay = results[0].HydroFrameLastDay;
 
     if (lastDay <= 70) {
-      // SQL query to update the HydroFrameLastDay and Update_Date using DATEDIFF
+      if (lastDay >= 60) {
+        await db.query(
+          `UPDATE hydroframe
+          SET HydroFrameStatus = 'HARVEST'
+          WHERE DeviceHostname = ? AND DeviceIpAddress = ? AND AccountId = ?`,
+          [DeviceHostname, DeviceIpAddress, req.session.user.id]
+        );
+      }
+
       await db.query(
         `UPDATE hydroframe
         SET HydroFrameLastDay = DATEDIFF(?, ?) + ? - 1, HydroFrameUpdateDate = ?
@@ -665,15 +676,17 @@ app.post("/api/update-last-day", async (req, res) => {
         ]
       );
 
-      res.status(200).json({ message: "Update successful" });
+      return res.status(200).json({ message: "Update successful" });
     } else {
-      res.status(400).json({ message: "HydroFrameLastDay exceeds 70" });
+      return res.status(400).json({ message: "HydroFrameLastDay exceeds 70" });
     }
   } catch (err) {
     console.error("Error:", err);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Database error", details: err.message });
   }
 });
+
+
 // API for Dates
 app.post("/api/dates", async (req, res) => {
   if (!req.session.user) {
@@ -750,7 +763,7 @@ app.post("/api/notify-harvest", async (req, res) => {
       });
 
       const updateQuery =
-        'UPDATE deviceinformation SET HydroFrameLastSMSDate = CURDATE(), Status = "HARVEST" WHERE DeviceHostname = ? AND DeviceIpAddress = ?';
+        'UPDATE hydroframe SET HydroFrameLastSMSDate = CURDATE(), HydroFrameStatus = "HARVEST" WHERE DeviceHostname = ? AND DeviceIpAddress = ?';
       await db.query(updateQuery, [crop.DeviceHostname, crop.DeviceIpAddress]);
     }
 
@@ -1392,7 +1405,7 @@ const checkUserSession = (req, res, next) => {
   if (req.session.user) {
     next(); // Proceed to the next middleware or route handler if the user is logged in
   } else {
-    res.redirect(`${res.locals.hostUrl}/`); // Redirect to the landing page if not logged in as a user
+    res.redirect(`http://192.168.100.25:${PORT}/`); // Redirect to the landing page if not logged in as a user
   }
 };
 // API endpoint to check the session status
@@ -1890,68 +1903,52 @@ const checkAdminSession = (req, res, next) => {
   if (req.session.admin) {
     next(); // Proceed to the next middleware or route handler if the admin is logged in
   } else {
-    res.redirect(`${res.locals.hostUrl}/admin-login`); // Redirect to the landing page if not logged in as an admin
+    res.redirect(`http://192.168.100.25:${PORT}/admin-login`); // Redirect to the landing page if not logged in as an admin
   }
 };
 // Handle admin-login.html
 app.get("/admin-login", (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-login.html"));
 });
 // Admin-protected routes
 app.get("/admin-main", checkAdminSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-main.html"));
 });
 app.get("/admin-user", checkAdminSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-user.html"));
 });
 app.get("/admin-cms", checkAdminSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "admin-cms.html"));
 });
 // Handle login.html
 app.get("/login", (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "login.html"));
 });
 // User-protected routes
 app.get("/index", checkUserSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 app.get('/dashboard', checkUserSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, 'dist', 'dashboard.html'));
 });
 
 app.get("/settings", checkUserSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "settings.html"));
 });
 app.get("/archive", checkUserSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "archive.html"));
 });
 app.get("/tables", checkUserSession, (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
   res.sendFile(path.join(__dirname, "dist", "tables.html"));
 });
 // Serve the home page
 app.get("/", (req, res) => {
-  const hostUrl = `${req.protocol}://${req.get('host')}`;
-  console.log("Serving landing.html");
   res.sendFile(path.join(__dirname, "dist", "landing.html"), (err) => {
     if (err) {
       console.error("Error serving landing.html:", err);
       res.status(500).send("Internal Server Error");
     }
   });
-});
-app.use((req, res, next) => {
-  res.locals.hostUrl = `${req.protocol}://${req.get('host')}`;
-  next();
 });
 // Handle 404 errors
 app.use((req, res) => {
