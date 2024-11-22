@@ -305,20 +305,57 @@ app.get("/api/display_bed", async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SHOW TABLES LIKE "hydroframe"');
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Table hydroframe not found" });
-    }
-    const [data] = await db.query(
+    // Fetch the hydroframe data for the user's account
+    const [hydroframeData] = await db.query(
       "SELECT * FROM hydroframe WHERE AccountId = ? ORDER BY HydroFrameStartDay ASC",
       [req.session.user.id]
     );
-    res.json(data);
+
+    if (hydroframeData.length === 0) {
+      return res.status(404).json({ error: "No data found for this account" });
+    }
+
+    // Initialize an array to hold the enriched data
+    const enrichedData = [];
+
+    // Process each row to fetch additional data using CROSS JOIN
+    for (const row of hydroframeData) {
+      const tableName = db.escapeId(row.DeviceHostname); // Escapes and formats the table name
+
+      // Construct the CROSS JOIN query to fetch WaterLevel and WaterTemperature with a limit
+      const crossJoinQuery = `
+        SELECT hf.*, sd.WaterLevel, sd.WaterTemperature 
+        FROM hydroframe AS hf
+        CROSS JOIN ${tableName} AS sd
+        ON hf.DeviceIpAddress = sd.DeviceIpAddress
+        LIMIT 1
+      `;
+
+      // Execute the CROSS JOIN query
+      const [crossJoinData] = await db.query(crossJoinQuery);
+
+      // Add the original hydroframe row and cross-joined data to the result
+      enrichedData.push({
+        ...row, // Include all fields from hydroframe
+        crossJoinData: crossJoinData.length > 0 ? crossJoinData.map(item => ({
+          WaterLevel: item.WaterLevel,
+          WaterTemperature: item.WaterTemperature,
+          ...item, // Include other fields from the cross-joined table
+        })) : null, // Add cross-joined data
+      });
+    }
+
+    // Send the enriched data as the response
+    res.json(enrichedData);
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data from database" });
   }
 });
+
+
+
+
 // Get specific data from table display_bed
 app.post("/api/display_table", async (req, res) => {
   if (!req.session.user) {

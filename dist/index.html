@@ -222,106 +222,104 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- add & display bed -->
     <script>
-        document.getElementById('addBedBtn').addEventListener('click', function () {
-            Promise.all([
-                fetch('/api/display_bed').then(response => response.json()),
-                fetch('/api/growthtimeline').then(response => response.json()),
-            ])
-                .then(([DeviceData, ImageData]) => {
-                    Swal.fire({
-                        title: 'Device Connection',
-                        html: `
-                            <label>Device Hostname</label><br>
-                            <input type="text" id="DeviceHostname" class="swal2-input" placeholder="Enter Hostname"><br>
-                            <label>Device IP Address</label><br>
-                            <input type="text" id="DeviceIpAddress" class="swal2-input" placeholder="Enter IP Address"><br>
-                            <label>How many days ago was lettuce planted?</label><br>
-                            <input type="number" id="HydroFrameLastDay" class="swal2-input" placeholder="Number of days" min="1" max="365"><br>
-                            <label>Date of Planting</label><br>
-                            <input type="date" id="HydroFrameStartDate" class="swal2-input" placeholder="Select Date"><br>
-                            <p>Note!<br> Make sure that the Name and IP are the same as the device Name and IP.</p>
-                        `,
-                        confirmButtonText: 'Add Device',
-                        cancelButtonText: 'Cancel',
-                        showCancelButton: true,
-                        preConfirm: () => {
-                            const DeviceHostname = Swal.getPopup().querySelector('#DeviceHostname').value.trim();
-                            const DeviceIpAddress = Swal.getPopup().querySelector('#DeviceIpAddress').value.trim();
-                            const HydroFrameLastDay = Swal.getPopup().querySelector('#HydroFrameLastDay').value.trim();
-                            const HydroFrameStartDate = Swal.getPopup().querySelector('#HydroFrameStartDate').value.trim();
+        document.getElementById('addBedBtn').addEventListener('click', async function () {
+            try {
+                const [deviceDataResponse, imageDataResponse] = await Promise.all([
+                    fetch('/api/display_bed'),
+                    fetch('/api/growthtimeline')
+                ]);
 
-                            // Input validation on the client side
-                            if (!DeviceHostname || !/^[a-zA-Z0-9-_]+$/.test(DeviceHostname)) {
-                                Swal.showValidationMessage('Invalid Hostname. Only letters, numbers, hyphen, and underscore are allowed.');
-                                return false;
-                            }
-                            if (!DeviceIpAddress || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(DeviceIpAddress)) {
-                                Swal.showValidationMessage('Invalid IP Address format.');
-                                return false;
-                            }
-                            if (!HydroFrameLastDay || HydroFrameLastDay < 1 || HydroFrameLastDay > 70) {
-                                Swal.showValidationMessage('Invalid number of days. Must be between 1 and 365.');
-                                return false;
-                            }
-                            if (!HydroFrameStartDate) {
-                                Swal.showValidationMessage('Please enter a valid planting date.');
-                                return false;
-                            }
+                if (!deviceDataResponse.ok || !imageDataResponse.ok) {
+                    throw new Error('Failed to fetch one or more API endpoints.');
+                }
 
-                            // Further validation on server-side
-                            return fetch('/api/display_bed')
-                                .then(response => response.json())
-                                .then(beds => {
-                                    if (isDeviceDuplicate(DeviceHostname, DeviceIpAddress, beds)) {
-                                        Swal.showValidationMessage('A device with this hostname or IP address already exists.');
-                                        return false;
-                                    }
-                                    return { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate };
-                                });
+                const DeviceData = await deviceDataResponse.json();
+                const ImageData = await imageDataResponse.json();
+
+                Swal.fire({
+                    title: 'Device Connection',
+                    html: `
+                <label>Device Hostname</label><br>
+                <input type="text" id="DeviceHostname" class="swal2-input" placeholder="Enter Hostname"><br>
+                <label>Device IP Address</label><br>
+                <input type="text" id="DeviceIpAddress" class="swal2-input" placeholder="Enter IP Address"><br>
+                <label>How many days ago was lettuce planted?</label><br>
+                <input type="number" id="HydroFrameLastDay" class="swal2-input" placeholder="Number of days" min="1" max="365"><br>
+                <label>Date of Planting</label><br>
+                <input type="date" id="HydroFrameStartDate" class="swal2-input" placeholder="Select Date"><br>
+                <p>Note!<br> Make sure that the Name and IP are the same as the device Name and IP.</p>
+            `,
+                    confirmButtonText: 'Add Device',
+                    cancelButtonText: 'Cancel',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const DeviceHostname = Swal.getPopup().querySelector('#DeviceHostname').value.trim();
+                        const DeviceIpAddress = Swal.getPopup().querySelector('#DeviceIpAddress').value.trim();
+                        const HydroFrameLastDay = Swal.getPopup().querySelector('#HydroFrameLastDay').value.trim();
+                        const HydroFrameStartDate = Swal.getPopup().querySelector('#HydroFrameStartDate').value.trim();
+
+                        // Input validation
+                        if (!DeviceHostname || !/^[a-zA-Z0-9-_]+$/.test(DeviceHostname)) {
+                            Swal.showValidationMessage('Invalid Hostname. Only letters, numbers, hyphen, and underscore are allowed.');
+                            return false;
                         }
-                    })
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                const { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate } = result.value;
+                        if (!DeviceIpAddress || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(DeviceIpAddress)) {
+                            Swal.showValidationMessage('Invalid IP Address format.');
+                            return false;
+                        }
+                        if (!HydroFrameLastDay || HydroFrameLastDay < 1 || HydroFrameLastDay > 365) {
+                            Swal.showValidationMessage('Invalid number of days. Must be between 1 and 365.');
+                            return false;
+                        }
+                        if (!HydroFrameStartDate) {
+                            Swal.showValidationMessage('Please enter a valid planting date.');
+                            return false;
+                        }
 
-                                // Ensure the fields match those expected by the server
-                                fetch('/api/add-bed-database', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                        DeviceHostname: DeviceHostname,
-                                        DeviceIpAddress: DeviceIpAddress,
-                                        HydroFrameLastDay: HydroFrameLastDay,
-                                        HydroFrameStartDate: HydroFrameStartDate
-                                    })
+                        return { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate };
+                    }
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const { DeviceHostname, DeviceIpAddress, HydroFrameLastDay, HydroFrameStartDate } = result.value;
+
+                        try {
+                            const addResponse = await fetch('/api/add-bed-database', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    DeviceHostname,
+                                    DeviceIpAddress,
+                                    HydroFrameLastDay,
+                                    HydroFrameStartDate
                                 })
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            throw new Error('Failed to insert data in the database.');
-                                        }
-                                        return response.json();
-                                    })
-                                    .then(() => {
-                                        // Reload the beds from the database to get the latest data
-                                        loadBedsFromDatabase();
-                                    })
-                                    .catch(error => {
-                                        console.error('Error insertion', error);
-                                        Swal.fire('Error', 'Could not insert data to the database', 'error');
-                                    });
+                            });
+
+                            if (!addResponse.ok) {
+                                throw new Error('Failed to insert data in the database.');
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching data:', error);
-                            Swal.fire('Error', 'Could not retrieve data from server', 'error');
-                        });
+
+                            await loadBedsFromDatabase(); // Refresh beds after successful addition
+                        } catch (error) {
+                            console.error('Error adding bed:', error);
+                            Swal.fire('Error', 'Could not insert data to the database.', 'error');
+                        }
+                    }
                 });
+            } catch (error) {
+                console.error('Error fetching initial data:', error);
+                Swal.fire('Error', 'Failed to load required data.', 'error');
+            }
         });
 
 
+
         function formatDate(dateString) {
+            if (!dateString) {
+                return 'Date Not Available'; // Fallback for null or undefined dates
+            }
+
             const date = new Date(dateString);
 
             if (isNaN(date.getTime())) {
@@ -330,34 +328,58 @@
             }
 
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options); // Returns "Jan 20 2000"
+            return date.toLocaleDateString('en-US', options); // Example: "Jan 20, 2024"
         }
-
 
         function addBedToUI(deviceInfo, ImageData) {
             const bedsContainer = document.getElementById('bedsContainer');
             const newBedDiv = document.createElement('div');
-            const bedId = deviceInfo.DeviceHostname; // Unique ID for each bed
+            const bedId = deviceInfo.DeviceHostname || 'Unknown'; // Fallback for missing hostname
 
-            newBedDiv.className = 'w-full max-w-xs bg-gray-300 text-gray-800 hover:bg-gray-800 hover:text-gray-300 border-2 0 rounded-lg shadow-lg p-4 cursor-pointer';
+            // Extract WaterLevel and WaterTemperature from crossJoinData
+            const waterData = deviceInfo.crossJoinData && deviceInfo.crossJoinData.length > 0
+                ? deviceInfo.crossJoinData[0] // Use the first entry from the crossJoinData array
+                : null;
+
+            const waterLevel = waterData ? waterData.WaterTemperature : 'N/A';
+            const waterTemperature = waterData ? waterData.WaterLevel : 'N/A';
+
+            // Check conditions for background color
+            const isWaterLevelLow = waterLevel && waterLevel == 'LOW';
+            const isTemperatureCritical = waterTemperature > 25 || waterTemperature < 18;
+
+            // Check if no data is available
+            const isDataMissing = !waterData;
+
+            // Assign conditional background color
+            const bgColorClass = isDataMissing
+                ? 'bg-red-500' // Red for missing data
+                : (isWaterLevelLow && isTemperatureCritical
+                    ? 'bg-orange-500' // Orange for critical conditions
+                    : 'bg-gray-300'); // Default background for normal conditions
+
+            newBedDiv.className = `w-full max-w-xs ${bgColorClass} text-gray-800 hover:bg-gray-800 hover:text-gray-300 border-2 rounded-lg shadow-lg p-4 cursor-pointer`;
             newBedDiv.innerHTML = `
-            <h1 class="text-lg font-bold uppercase mb-2">Name: ${deviceInfo.DeviceHostname}</h1>
-            <p class="text-md mb-1">Start Date: ${formatDate(deviceInfo.HydroFrameStartDate)}</p>
-            <p class="text-md mb-3">Harvest Date: ${formatDate(deviceInfo.HydroFrameHarvestDate)}</p>
-            <img id="possibleImage${deviceInfo.HydroFrameLastDay}" 
-                class="w-3/4 h-auto object-contain mx-auto my-2" 
-                 src="${getImageForDays(deviceInfo.HydroFrameLastDay, ImageData)}" 
-                alt="Image for the bed">
-            <div class="text-center mt-4">
-                <button id="deleteBtn${bedId}" 
-                    class="text-red-500 hover:text-red-400 delete-bed-btn">
-                    <i class="fas fa-trash-alt mr-2"></i>Remove
-                </button>
-            </div>
-            `;
+        <h1 class="text-lg font-bold uppercase mb-2">Name: ${deviceInfo.DeviceHostname || 'N/A'}</h1>
+        <p class="text-md mb-1">Start Date: ${deviceInfo.HydroFrameStartDate ? formatDate(deviceInfo.HydroFrameStartDate) : 'Data Not Available'}</p>
+        <p class="text-md mb-3">Harvest Date: ${deviceInfo.HydroFrameHarvestDate ? formatDate(deviceInfo.HydroFrameHarvestDate) : 'Data Not Available'}</p>
+        <p class="text-md mb-3">Water Level: ${waterLevel}</p>
+        <p class="text-md mb-3">Water Temperature: ${waterTemperature}°C</p>
+        <img id="possibleImage${deviceInfo.HydroFrameLastDay}" 
+             class="w-3/4 h-auto object-contain mx-auto my-2" 
+             src="${deviceInfo.HydroFrameLastDay ? getImageForDays(deviceInfo.HydroFrameLastDay, ImageData) : 'placeholder.png'}" 
+             alt="Image for the bed">
+        <div class="text-center mt-4">
+            <button id="deleteBtn${bedId}" 
+                class="text-red-900 hover:text-red-700 delete-bed-btn">
+                <i class="fas fa-trash-alt mr-2"></i>Remove
+            </button>
+        </div>
+    `;
 
             bedsContainer.appendChild(newBedDiv);
 
+            // Add delete functionality
             newBedDiv.querySelector(`#deleteBtn${bedId}`).addEventListener('click', function (event) {
                 event.stopPropagation();
                 Swal.fire({
@@ -370,9 +392,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         newBedDiv.remove();
-                        removeBedFromLocalStorage(bedId);
 
-                        // Send data to the server to update the database
                         fetch('/api/delete-device', {
                             method: 'POST',
                             headers: {
@@ -389,15 +409,7 @@
                                 return response.json();
                             })
                             .then(() => {
-                                Swal.fire({
-                                    title: 'Removed!',
-                                    text: 'The Hydro Frame has been removed successfully.',
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    // Reload the page when the user clicks 'OK'
-                                    location.reload();
-                                });
+                                Swal.fire('Removed!', 'The Hydro Frame has been removed successfully.', 'success');
                             })
                             .catch(error => {
                                 console.error('Error:', error);
@@ -405,8 +417,6 @@
                     }
                 });
             });
-
-
 
             newBedDiv.addEventListener('click', function () {
                 localStorage.setItem('DeviceHostname', JSON.stringify(deviceInfo.DeviceHostname));
@@ -416,6 +426,7 @@
                 window.location.href = 'http://192.168.100.25:3000/tables';
             });
         }
+
 
         function getImageForDays(days, ImageData) {
             const imagePhase = ImageData.find(phase => days >= phase.start_day && days <= phase.end_day);
@@ -435,44 +446,28 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch beds from the database.');
                 }
-                allBeds = await response.json(); // Store all beds
-                console.log('Fetched beds:', allBeds); // Debugging line
+
+                allBeds = await response.json(); // Ensure this does not throw if response is empty
+                console.log('Fetched beds:', allBeds);
 
                 const imageResponse = await fetch('/api/growthtimeline');
                 if (!imageResponse.ok) {
                     throw new Error('Failed to fetch growth timeline data.');
                 }
+
                 const ImageData = await imageResponse.json();
-                console.log('ImageData:', ImageData); // Debugging line
+                console.log('ImageData:', ImageData);
 
-                renderBeds(currentPage, ImageData); // Display the first page of beds
-
-                // Set up event listeners for pagination buttons
-                document.getElementById('prevBtn').addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        renderBeds(currentPage, ImageData);
-                    }
-                });
-
-                document.getElementById('nextBtn').addEventListener('click', () => {
-                    if (currentPage < Math.ceil(allBeds.length / bedsPerPage)) {
-                        currentPage++;
-                        renderBeds(currentPage, ImageData);
-                    }
-                });
-
-                // Set up event listener for sort dropdown
-                document.getElementById('sortSelect').addEventListener('change', (event) => {
-                    currentSort = event.target.value; // Update current sort option
-                    sortBeds(); // Call sort function
-                    renderBeds(currentPage, ImageData); // Render sorted beds
-                });
-
+                renderBeds(currentPage, ImageData);
             } catch (error) {
-                console.error('Error fetching beds:', error);
+                console.error('Error loading beds:', error);
+                document.getElementById('bedsContainer').innerHTML = `
+                    <div class="p-16 text-center font-bold text-4xl text-gray-800">Error loading beds. Please try again later.</div>
+                `;
             }
         }
+
+
 
         function sortBeds() {
             switch (currentSort) {
@@ -489,36 +484,29 @@
                     allBeds.sort((a, b) => new Date(b.HydroFrameHarvestDate) - new Date(a.HydroFrameHarvestDate));
                     break;
                 default:
-                    // No sorting or apply default behavior if needed
+                    // Fallback sorting logic, if any
                     break;
             }
         }
 
         function renderBeds(page, ImageData) {
             const bedsContainer = document.getElementById('bedsContainer');
-            bedsContainer.innerHTML = ''; // Clear previous beds
+            bedsContainer.innerHTML = ''; // Clear previous content
 
-            if (allBeds.length === 0) {
-                // Display a centered message when no beds are available
-                bedsContainer.innerHTML = '<div class="p-16 col-span-4 text-center font-bold text-4xl text-gray-800 ">No Hydro Frame Added</div>';
-                document.getElementById('pageIndicator').textContent = ''; // Clear pagination indicator
+            if (!allBeds || allBeds.length === 0) {
+                bedsContainer.innerHTML = '<div class="text-center text-gray-800 text-2xl">No beds available.</div>';
                 return;
             }
 
-            // Calculate start and end index for the current page
             const startIndex = (page - 1) * bedsPerPage;
             const endIndex = Math.min(startIndex + bedsPerPage, allBeds.length);
 
-            // Render the beds for the current page
             for (let i = startIndex; i < endIndex; i++) {
                 addBedToUI(allBeds[i], ImageData);
             }
 
-            // Update pagination indicator
             document.getElementById('pageIndicator').textContent = `Page ${page} of ${Math.ceil(allBeds.length / bedsPerPage)}`;
         }
-
-
 
 
         function isDeviceDuplicate(hostname, ipAddress, beds) {
