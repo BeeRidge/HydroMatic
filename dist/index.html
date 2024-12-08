@@ -337,16 +337,24 @@
             const bedId = deviceInfo.DeviceHostname || 'Unknown'; // Fallback for missing hostname
 
             // Extract WaterLevel and WaterTemperature from crossJoinData
+            // Extract WaterLevel and WaterTemperature from crossJoinData
             const waterData = deviceInfo.crossJoinData && deviceInfo.crossJoinData.length > 0
                 ? deviceInfo.crossJoinData[0] // Use the first entry from the crossJoinData array
                 : null;
 
-            const waterLevel = waterData ? waterData.WaterTemperature : 'N/A';
-            const waterTemperature = waterData ? waterData.WaterLevel : 'N/A';
+            console.log("Water Data:", waterData); // Debug the data structure
 
-            // Check conditions for background color
-            const isWaterLevelLow = waterLevel && waterLevel == 'LOW';
-            const isTemperatureCritical = waterTemperature > 25 || waterTemperature < 18;
+            const waterLevel = waterData ? waterData.WaterTemperature : null;
+            const waterTemperature = waterData ? parseFloat(waterData.WaterLevel) : null;
+
+            console.log("WaterLevel:", waterLevel);
+            console.log("WaterTemperature:", waterTemperature);
+
+            // Check conditions
+            const isWaterLevelLow = waterLevel === 'LOW';
+            const isTemperatureHigh = waterTemperature > 25;
+            const isTemperatureLow = waterTemperature < 18;
+
 
             // Check if no data is available
             const isDataMissing = !waterData;
@@ -354,7 +362,7 @@
             // Assign conditional background color
             const bgColorClass = isDataMissing
                 ? 'bg-red-500' // Red for missing data
-                : (isWaterLevelLow && isTemperatureCritical
+                : (isWaterLevelLow || isTemperatureHigh || isTemperatureLow
                     ? 'bg-orange-500' // Orange for critical conditions
                     : 'bg-gray-300'); // Default background for normal conditions
 
@@ -363,12 +371,12 @@
         <h1 class="text-lg font-bold uppercase mb-2">Name: ${deviceInfo.DeviceHostname || 'N/A'}</h1>
         <p class="text-md mb-1">Start Date: ${deviceInfo.HydroFrameStartDate ? formatDate(deviceInfo.HydroFrameStartDate) : 'Data Not Available'}</p>
         <p class="text-md mb-3">Harvest Date: ${deviceInfo.HydroFrameHarvestDate ? formatDate(deviceInfo.HydroFrameHarvestDate) : 'Data Not Available'}</p>
-        <p class="text-md mb-3">Water Level: ${waterLevel}</p>
-        <p class="text-md mb-3">Water Temperature: ${waterTemperature}°C</p>
+        ${isWaterLevelLow ? `<p class="text-md mb-3">Water level is LOW</p>` : ''}
+        ${(isTemperatureHigh || isTemperatureLow) ? `<p class="text-md mb-3">Water Temperature is ${isTemperatureHigh ? 'HIGH' : 'LOW'} (${waterTemperature}°C)</p>` : ''}
         <img id="possibleImage${deviceInfo.HydroFrameLastDay}" 
-             class="w-3/4 h-auto object-contain mx-auto my-2" 
-             src="${deviceInfo.HydroFrameLastDay ? getImageForDays(deviceInfo.HydroFrameLastDay, ImageData) : 'placeholder.png'}" 
-             alt="Image for the bed">
+            class="w-3/4 h-auto object-contain mx-auto my-2" 
+            src="${deviceInfo.HydroFrameLastDay ? getImageForDays(deviceInfo.HydroFrameLastDay, ImageData) : 'placeholder.png'}" 
+            alt="Image for the bed">
         <div class="text-center mt-4">
             <button id="deleteBtn${bedId}" 
                 class="text-red-900 hover:text-red-700 delete-bed-btn">
@@ -426,6 +434,8 @@
                 window.location.href = 'http://192.168.100.25:3000/tables';
             });
         }
+
+
 
 
         function getImageForDays(days, ImageData) {
